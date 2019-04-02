@@ -23,6 +23,11 @@ class App extends Component {
 
     this.state.filesArray.push(this.state.filename);  // filename => fileData
     console.log("files array: ", this.state.filesArray);
+
+    // re-render list component upon adding list item
+    //this.forceUpdate();
+    //OR https://stackoverflow.com/questions/33080657/react-update-one-item-in-a-list-without-recreating-all-items
+
     // show in list component
 
     // should assign file's unique id to key
