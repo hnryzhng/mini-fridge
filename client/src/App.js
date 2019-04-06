@@ -21,21 +21,20 @@ class App extends Component {
     // check if file is valid
     // valid: smaller than x size, fewer than y files in user list
 
-    this.state.filesArray.push(this.state.filename);  // filename => fileData
-    console.log("files array: ", this.state.filesArray);
+    // send object of username, file name, file data to db
+    // only show file in front end if post was successful
 
-    // re-render list component upon adding list item
-    //this.forceUpdate();
-    //OR https://stackoverflow.com/questions/33080657/react-update-one-item-in-a-list-without-recreating-all-items
+    // axios.post("http://localhost:3001/uploadFile", {}) // {user, file name, file data}
+    //        .then(); 
 
-    // show in list component
+    // .then()
+    this.setState({filesArray: [...this.state.filesArray, this.state.filename]}); // set state to change state, use spread operator to create a new array instead of mutating old one
+    //console.log("files array: ", this.state.filesArray);
+
 
     // should assign file's unique id to key
 
-    // PROBLEM: should re-render component after upload so that file name will show in list?
-
   }
-
 
   render() {
 
@@ -51,15 +50,34 @@ class App extends Component {
         </div>
 
         <div id="listContainer" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
-          <ul id="list">
-            {this.state.filesArray.map((file, index)=>{
-              return <li key={index}>{file}</li>
-            })}
-          </ul> 
+          <List filesArray={this.state.filesArray} />  
         </div>
+
 
       </div>
     );
   }
 }
+
+class List extends Component {
+  render() {
+    let list = this.props.filesArray.map((file,index)=>{
+      return <Item key={index} fileName={file} />
+    });
+
+    return <ul>{list}</ul>; 
+    
+  }
+
+}
+
+class Item extends Component {
+  render() {
+    return(
+      <li>{this.props.fileName}</li>
+    )
+  }
+}
+
+
 export default App;
