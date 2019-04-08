@@ -5,7 +5,7 @@ const DataSchema = new Schema(
 	{
 		_id: Number,
 		name: String,
-		data: String,	// PROBLEM
+		data: String,	// PROBLEM: include data, or store in directory with id as file name?
 		active: Boolean	// active or inactive: accessed by a user or not
 	},
 	{ timestamps: true }

@@ -25,7 +25,11 @@ app.use(logger("dev"));
 
 // PROCESS REQUESTS
 router.get('/uploadFile', function(req, res){
-	// 
+	
+	// receive validated user info and file info
+
+	//  
+
 
 
 
