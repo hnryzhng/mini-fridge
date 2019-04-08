@@ -26,13 +26,9 @@ app.use(logger("dev"));
 // PROCESS REQUESTS
 router.get('/uploadFile', function(req, res){
 	
-	// receive validated user info and file info
-
-	//  
-
-
-
-
+	// receive validated user and file data
+	console.log("file name: ", req.body.file_name);
+	console.log("file data: ", req.body.file_data);
 
 });
 

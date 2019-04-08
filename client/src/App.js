@@ -7,20 +7,19 @@ class App extends Component {
     user: null,
     fileName: null,
     fileData: null,
-    filesArray: []
+    fileNamesArray: []
   };
 
   //componentWillMount() {
-    // load list of file data for specific signed in user when List component mounts
+    // load list of file names for specific signed in user when List component mounts
   //}
 
   //componentUnmount() {
   //}
 
-  handleFileUpload = (event) => {
-  	// show file path in component (placeholder: this.filePath)
-  	// extract file name
-  	// extract file data
+  storeFile = (event) => {
+  	let file = event.target.files[0];
+  	this.setState({fileData: file});
   }
 
   uploadFile = () => {
@@ -34,7 +33,7 @@ class App extends Component {
     // isLoggedIn()?
     // const userId = grabUserId();
 
-
+    console.log("file data: ", this.state.fileData);
 
     var requestObj = {
     	//user_id: userId,
@@ -42,12 +41,12 @@ class App extends Component {
     	file_name: "",	// grab from end of rel path
     	file_data: this.state.fileData
     }
-    // axios.post("http://localhost:3001/uploadFile", {}) // {user, file name, file data}
-    //        .then(); 
+    axios.post("http://localhost:3001/uploadFile", requestObj); // {user, file name, file data}
+    //        .then();
 
     // .then()
-    this.setState({filesArray: [...this.state.filesArray, this.state.fileName]}); // set state to change state, use spread operator to create a new array instead of mutating old one
-    //console.log("files array: ", this.state.filesArray);
+    this.setState({fileNamesArray: [...this.state.fileNamesArray, this.state.fileName]}); // set state to change state, use spread operator to create a new array instead of mutating old one
+    //console.log("files array: ", this.state.fileNamesArray);
 
     // should assign file's unique id to key
 
@@ -61,7 +60,7 @@ class App extends Component {
 
         <input type="text" style={{ width: "300px" }} placeholder="put file name" onChange={ event => this.setState({fileName: event.target.value}) }/>
 
-        <input type="file" style={{ width: "300px" }} placeholder="upload file" onChange= {this.handleFileUpload} />
+        <input type="file" style={{ width: "300px" }} placeholder="upload file" onChange= { event => this.setState({fileData: event.target.files[0]}) } />
 
         <button id="upload file" onClick={()=>{this.uploadFile()}}>
           upload file
@@ -71,7 +70,7 @@ class App extends Component {
         </div>
 
         <div id="listContainer" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
-          <List filesArray={this.state.filesArray} />  
+          <List fileNamesArray={this.state.fileNamesArray} />  
         </div>
 
 
@@ -82,7 +81,7 @@ class App extends Component {
 
 class List extends Component {
   render() {
-    let list = this.props.filesArray.map((file,index)=>{
+    let list = this.props.fileNamesArray.map((file,index)=>{
       return <Item key={index} fileName={file} />
     });
 
