@@ -3,15 +3,17 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const logger = require("morgan");
 const cors = require("cors");
+const multer = require("multer");	// package for processing binary data of uploaded files
+
 
 const app = express();
-const router = app.Router();
-const backendPort  = 3001;
+const router = express.Router();
+const api_port  = 3001;
 
-const dbRoute = "";
-mongoost.connect(
+const dbRoute = "mongodb+srv://admin:minifridge@cluster0-baqzp.mongodb.net/test?retryWrites=true"
+mongoose.connect(
 	dbRoute,
-	{userNewUrlParser: true}
+	{useNewUrlParser: true}
 );
 
 let db = mongoose.connection;
@@ -21,18 +23,18 @@ db.on("error", console.error.bind(console, "db connection error: "));
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(cors());
-app.use(logger("dev"));
+//app.use(logger("dev"));
 
 // PROCESS REQUESTS
-router.get('/uploadFile', function(req, res){
+router.post('/uploadFile', function(req, res){
 	
 	// receive validated user and file data
-	console.log("file name: ", req.body.file_name);
-	console.log("file data: ", req.body.file_data);
+	console.log("file name: ", req.name);
+	console.log("file data: ", req.file);
 
 });
 
-//app.use("/api", router);
+app.use("/api", router);
 
 app.listen(api_port, () => console.log(`Listening to ${api_port}`));
 

@@ -22,6 +22,12 @@ class App extends Component {
   	this.setState({fileData: file});
   }
 
+  handleFileUpload = (event) => {
+    this.setState({fileName: event.target.files[0].name})
+    this.setState({fileData: event.target.files[0]});
+
+  }
+
   uploadFile = () => {
     // check if file is valid
     // valid: smaller than x size, fewer than y files in user list
@@ -32,16 +38,18 @@ class App extends Component {
     // if logged in, then submit data 
     // isLoggedIn()?
     // const userId = grabUserId();
-
+    
+    console.log("file name: ", this.state.fileName);
     console.log("file data: ", this.state.fileData);
+    
+    const formDataObj = new FormData();
 
-    var requestObj = {
-    	//user_id: userId,
-    	//logged_in: true,
-    	file_name: "",	// grab from end of rel path
-    	file_data: this.state.fileData
-    }
-    axios.post("http://localhost:3001/uploadFile", requestObj); // {user, file name, file data}
+  	//user_id: userId,
+  	//logged_in: true,
+    formDataObj.append("name", this.state.fileName);
+    formDataObj.append("file", this.state.fileData);
+
+    axios.post("http://localhost:3001/api/uploadFile", formDataObj); // {user, file name, file data}
     //        .then();
 
     // .then()
@@ -58,9 +66,7 @@ class App extends Component {
     return (
       <div>
 
-        <input type="text" style={{ width: "300px" }} placeholder="put file name" onChange={ event => this.setState({fileName: event.target.value}) }/>
-
-        <input type="file" style={{ width: "300px" }} placeholder="upload file" onChange= { event => this.setState({fileData: event.target.files[0]}) } />
+        <input type="file" style={{ width: "300px" }} placeholder="upload file" onChange= {this.handleFileUpload} />
 
         <button id="upload file" onClick={()=>{this.uploadFile()}}>
           upload file
