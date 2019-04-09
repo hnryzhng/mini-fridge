@@ -66,7 +66,7 @@ class App extends Component {
     return (
       <div>
 
-        <input type="file" style={{ width: "300px" }} placeholder="upload file" onChange= {this.handleFileUpload} />
+        <input type="file" style={{ width: "300px" }} placeholder="upload file" name="filefield" onChange= {this.handleFileUpload} />
 
         <button id="upload file" onClick={()=>{this.uploadFile()}}>
           upload file

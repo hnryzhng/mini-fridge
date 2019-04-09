@@ -25,14 +25,33 @@ app.use(bodyParser.json());
 app.use(cors());
 //app.use(logger("dev"));
 
+// process file upload using multer
+var storage = multer.diskStorage({
+	destination: "./files",	
+	filename: function(req, file, cb) {
+		cb(null, file.fieldname)	// TASK: file name: file id from mongodb 
+	}
+})
+var upload = multer({ storage });
+
+app.post("/uploadFile", upload.single("filefield"), (req, res, next) => {
+	// PROBLEM
+	const file = req.file;
+	//const name = req.name;
+	console.log("file:", file);
+});
+
+/*
 // PROCESS REQUESTS
 router.post('/uploadFile', function(req, res){
-	
+		
 	// receive validated user and file data
-	console.log("file name: ", req.name);
-	console.log("file data: ", req.file);
+	// console.log("file name: ", req.name);
+	// console.log("file data: ", req.file);
 
 });
+*/
+
 
 app.use("/api", router);
 
