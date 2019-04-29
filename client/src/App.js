@@ -23,12 +23,13 @@ class App extends Component {
   }
 
   handleFileUpload = (event) => {
+    event.preventDefault();
     this.setState({fileName: event.target.files[0].name})
     this.setState({fileData: event.target.files[0]});
 
   }
 
-  uploadFile = () => {
+  uploadFile = (event) => {
     // check if file is valid
     // valid: smaller than x size, fewer than y files in user list
     // send object of username, file name, file data to db
@@ -38,19 +39,25 @@ class App extends Component {
     // if logged in, then submit data 
     // isLoggedIn()?
     // const userId = grabUserId();
-    
-    console.log("file name: ", this.state.fileName);
-    console.log("file data: ", this.state.fileData);
+
+
+    // multer + react: https://blog.stvmlbrn.com/2017/12/17/upload-files-using-react-to-node-express-server.html
+    event.preventDefault();
+    const { fileName, fileData } = this.state; 
+
+    console.log("file name: ", fileName);
+    console.log("fileData: ", fileData);
     
     const formDataObj = new FormData();
 
   	//user_id: userId,
   	//logged_in: true,
-    formDataObj.append("name", this.state.fileName);
-    formDataObj.append("file", this.state.fileData);
+    formDataObj.append("name", fileName);
+    formDataObj.append("file", fileData);
 
-    axios.post("http://localhost:3001/api/uploadFile", formDataObj); // {user, file name, file data}
-    //        .then();
+    axios.post("http://localhost:3001/api/uploadFile", formDataObj) // {user, file name, file data}
+            .then(response => console.log("response:", response))
+            .catch((error) => {console.log("error:", error)});
 
     // .then()
     this.setState({fileNamesArray: [...this.state.fileNamesArray, this.state.fileName]}); // set state to change state, use spread operator to create a new array instead of mutating old one
@@ -65,12 +72,17 @@ class App extends Component {
 
     return (
       <div>
+        <form onSubmit={this.uploadFile}>
 
-        <input type="file" style={{ width: "300px" }} placeholder="upload file" name="filefield" onChange= {this.handleFileUpload} />
+          <input type="file" style={{ width: "300px" }} placeholder="upload file" name="fileData" onChange= {this.handleFileUpload} />
 
-        <button id="upload file" onClick={()=>{this.uploadFile()}}>
-          upload file
-        </button>
+          <button type="submit">
+              submit file
+          </button>
+
+        </form>
+
+
         <div id="fileName">
           Filename: {this.state.fileName}
         </div>
