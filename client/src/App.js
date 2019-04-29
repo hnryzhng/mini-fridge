@@ -52,11 +52,11 @@ class App extends Component {
 
   	//user_id: userId,
   	//logged_in: true,
-    formDataObj.append("name", fileName);
-    formDataObj.append("file", fileData);
+    formDataObj.append("fileName", fileName);
+    formDataObj.append("fileData", fileData);
 
     axios.post("http://localhost:3001/api/uploadFile", formDataObj) // {user, file name, file data}
-            .then(response => console.log("response:", response))
+            .then(response => console.log(response))
             .catch((error) => {console.log("error:", error)});
 
     // .then()
@@ -64,8 +64,6 @@ class App extends Component {
     //console.log("files array: ", this.state.fileNamesArray);
 
     // should assign file's unique id to key
-
-
   }
 
   render() {

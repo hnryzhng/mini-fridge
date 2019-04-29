@@ -5,11 +5,13 @@ const logger = require("morgan");
 const cors = require("cors");
 const multer = require("multer");	// package for processing binary data of uploaded files
 
-
+// INSTANTIATE APP 
 const app = express();
 const router = express.Router();
 const api_port  = 3001;
+
 /*
+// ACCESS DATABASE
 const dbRoute = "mongodb+srv://admin:minifridge@cluster0-baqzp.mongodb.net/test?retryWrites=true"
 mongoose.connect(
 	dbRoute,
@@ -20,36 +22,36 @@ let db = mongoose.connection;
 db.once("open", ()=> console.log("connected to database"));
 db.on("error", console.error.bind(console, "db connection error: "));
 */
+
+// LOAD MIDDLEWARE
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(cors());
 //app.use(logger("dev"));
 
+// PROCESS REQUESTS
 // process file upload using multer
 var storage = multer.diskStorage({
 	destination: function(req, file, cb) {
-		cb(null, './files')
+		cb(null, 'files')
 	},	
 	filename: function(req, file, cb) {
 		cb(null, file.fieldname)	// TASK: file name: corresponding file id from mongodb, or create here using UUID then send as response to front-end
 	}
 })
-var upload = multer({ storage: storage });	// storage: storage
+var upload = multer({ storage: storage });
 
 router.post("/uploadFile", upload.single("fileData"), (req, res) => {
 	// for multer, route to router variable instead of app because of "/api" middleware at bottom
 	// PROBLEM
 	const file = req.file;
 	//const name = req.file.filename;
-	console.log("file:", file);
+	//console.log("file:", file);
+	res.send("file response");
 
 });
 
 
-
-
-
-// PROCESS REQUESTS
 /*
 router.post('/uploadFile', function(req, res){	
 
