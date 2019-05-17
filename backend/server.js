@@ -36,6 +36,8 @@ var storage = multer.diskStorage({
 		cb(null, 'files')
 	},	
 	filename: function(req, file, cb) {
+		//change file.fieldname
+		// uuid: https://www.mongodb.com/blog/post/generating-globally-unique-identifiers-for-use-with-mongodb
 		cb(null, file.fieldname)	// TASK: file name: corresponding file id from mongodb, or create here using UUID then send as response to front-end
 	}
 })
@@ -43,7 +45,6 @@ var upload = multer({ storage: storage });
 
 router.post("/uploadFile", upload.single("fileData"), (req, res) => {
 	// for multer, route to router variable instead of app because of "/api" middleware at bottom
-	// PROBLEM
 	const file = req.file;
 	//const name = req.file.filename;
 	//console.log("file:", file);
