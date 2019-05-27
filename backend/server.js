@@ -7,13 +7,15 @@ const multer = require("multer");	// package for processing binary data of uploa
 const uuid = require("uuid-v4");
 const path = require("path");
 
+//const Users = require("./backend/models/users.js");
+const Files = require("./models/files.js");	// does path work?
 
 // INSTANTIATE APP 
 const app = express();
 const router = express.Router();
 const api_port  = 3001;
 
-/*
+
 // ACCESS DATABASE
 const dbRoute = "mongodb+srv://admin:minifridge@cluster0-baqzp.mongodb.net/test?retryWrites=true"
 mongoose.connect(
@@ -24,7 +26,7 @@ mongoose.connect(
 let db = mongoose.connection;
 db.once("open", ()=> console.log("connected to database"));
 db.on("error", console.error.bind(console, "db connection error: "));
-*/
+
 
 // LOAD MIDDLEWARE
 app.use(bodyParser.urlencoded({extended:true}));
@@ -47,8 +49,6 @@ var storage = multer.diskStorage({
 		const newFileName = newID + path.extname(file.originalname);	// use path to grab file extension
 		//console.log("new file name: ", newFileName);
 
-		// TASK: DB add to file collection record (separate module?)
-
 		cb(null, newFileName)
 	}
 })
@@ -58,15 +58,25 @@ router.post("/uploadFile", upload.single("fileData"), (req, res) => {
 	// for multer, route to router variable instead of app because of "/api" middleware at bottom
 	const file = req.file;
 	const filename = req.file.filename;
-	//console.log("file:", file);
-	//console.log("file name:", filename);
+	console.log("file:", file);
+	console.log("file name:", filename);
+
+	// TASK: DB add to file collection record in mongoose
+	const fileRecord = new Files(file);
+	fileRecord.save(function(error){
+		// TASK PRIORITY PROBLEM: CAN'T CONNECT TO CLOUD MONGODB
+		if (error) {
+			return error;
+		};
+		// saved
+		console.log("file record added to db");
+	});
 
 	// TASK: DB add to userfiles/users collection (separate module?)
 	// call userfiles db collection (or combine with users record?)
 	// add file object, includes filename + pretty filename (file.originalname)
 	// verify user is logged in? (or validate elsewhere?) if logged_in from users collection
 	// append req file object to user record
-
 
 	// res.send("file response");
 	res.send({success: true});

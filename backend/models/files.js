@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
-const DataSchema = new Schema(
+const filesSchema = new Schema(
 	{
 		_id: Number,
 		name: String,
@@ -11,4 +11,4 @@ const DataSchema = new Schema(
 	{ timestamps: true }
 );
 
-module.exports = mongoose.model("Files", DataSchema);
+module.exports = mongoose.model("Files", filesSchema);

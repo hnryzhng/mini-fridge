@@ -11,7 +11,9 @@ class App extends Component {
   };
 
   //componentWillMount() {
-    // load list of file names for specific signed in user when List component mounts
+    // TASK: load list of file names for specific signed in user when List component mounts
+    // grab list of pretty file names from user database 
+
   //}
 
   //componentUnmount() {
@@ -56,7 +58,7 @@ class App extends Component {
     formDataObj.append("fileData", fileData);
 
     axios.post("http://localhost:3001/api/uploadFile", formDataObj) // {user, file name, file data}
-            .then(response => console.log("RESPONSE:", response))
+            .then(response => console.log("RESPONSE:", response))	// TASK: if response obj success is true, then add pretty file name to list display (or just retrieve all names from componentWillMount because setState below refreshes component  state?)
             .catch((error) => {console.log("error:", error)});
 
     // .then()
