@@ -56,7 +56,7 @@ class App extends Component {
     formDataObj.append("fileData", fileData);
 
     axios.post("http://localhost:3001/api/uploadFile", formDataObj) // {user, file name, file data}
-            .then(response => console.log(response))
+            .then(response => console.log("RESPONSE:", response))
             .catch((error) => {console.log("error:", error)});
 
     // .then()

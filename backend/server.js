@@ -4,6 +4,9 @@ const bodyParser = require("body-parser");
 const logger = require("morgan");
 const cors = require("cors");
 const multer = require("multer");	// package for processing binary data of uploaded files
+const uuid = require("uuid-v4");
+const path = require("path");
+
 
 // INSTANTIATE APP 
 const app = express();
@@ -36,9 +39,17 @@ var storage = multer.diskStorage({
 		cb(null, 'files')
 	},	
 	filename: function(req, file, cb) {
-		//change file.fieldname
+		// generate unique id at app level
 		// uuid: https://www.mongodb.com/blog/post/generating-globally-unique-identifiers-for-use-with-mongodb
-		cb(null, file.fieldname)	// TASK: file name: corresponding file id from mongodb, or create here using UUID then send as response to front-end
+		const newID = uuid();	// generate new uuid
+		uuid.isUUID(newID);	// validate uuid v4 format
+		//console.log("new file UUID: ", newID);
+		const newFileName = newID + path.extname(file.originalname);	// use path to grab file extension
+		//console.log("new file name: ", newFileName);
+
+		// TASK: DB add to file collection record (separate module?)
+
+		cb(null, newFileName)
 	}
 })
 var upload = multer({ storage: storage });
@@ -46,12 +57,30 @@ var upload = multer({ storage: storage });
 router.post("/uploadFile", upload.single("fileData"), (req, res) => {
 	// for multer, route to router variable instead of app because of "/api" middleware at bottom
 	const file = req.file;
-	//const name = req.file.filename;
+	const filename = req.file.filename;
 	//console.log("file:", file);
-	res.send("file response");
+	//console.log("file name:", filename);
+
+	// TASK: DB add to userfiles/users collection (separate module?)
+	// call userfiles db collection (or combine with users record?)
+	// add file object, includes filename + pretty filename (file.originalname)
+	// verify user is logged in? (or validate elsewhere?) if logged_in from users collection
+	// append req file object to user record
+
+
+	// res.send("file response");
+	res.send({success: true});
 
 });
+	
 
+/*
+router.get("/getFile", ()=> {
+	// get file from database  
+	
+
+}))
+*/
 
 /*
 router.post('/uploadFile', function(req, res){	
