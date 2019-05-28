@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const usersSchema = new Schema(
 	{ 
-		_id: Number,
+		//_id: Number,	// is auto-generated
 		user: String,
 		password: String
 		logged_in: Boolean,

@@ -17,15 +17,29 @@ const api_port  = 3001;
 
 
 // ACCESS DATABASE
-const dbRoute = "mongodb+srv://admin:minifridge@cluster0-baqzp.mongodb.net/test?retryWrites=true"
+/*
+const MongoClient = require("mongodb").MongoClient;
+const uri = "mongodb+srv://admin:HkoB3WcGJvwjcdvH@cluster0-baqzp.mongodb.net/test?retryWrites=true";
+const client = new MongoClient(uri, { useNewUrlParser: true });
+client.connect(err => {
+  //const collection = client.d	b("test").collection("devices");
+  // perform actions on the collection object
+  console.log("connected to mongodb!");
+
+  client.close();
+});
+
+*/
+// MongoDB Atlas for Node 2.2.12 or later; don't connect using VPN
+const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
 mongoose.connect(
 	dbRoute,
 	{useNewUrlParser: true}
 );
 
-let db = mongoose.connection;
-db.once("open", ()=> console.log("connected to database"));
+var db = mongoose.connection;
 db.on("error", console.error.bind(console, "db connection error: "));
+//db.once("open", ()=> console.log("connected to database"));
 
 
 // LOAD MIDDLEWARE
@@ -57,19 +71,36 @@ var upload = multer({ storage: storage });
 router.post("/uploadFile", upload.single("fileData"), (req, res) => {
 	// for multer, route to router variable instead of app because of "/api" middleware at bottom
 	const file = req.file;
-	const filename = req.file.filename;
+	const filename = file.filename;
 	console.log("file:", file);
+	console.log("file object type:", typeof file);
 	console.log("file name:", filename);
 
-	// TASK: DB add to file collection record in mongoose
-	const fileRecord = new Files(file);
-	fileRecord.save(function(error){
-		// TASK PRIORITY PROBLEM: CAN'T CONNECT TO CLOUD MONGODB
-		if (error) {
-			return error;
-		};
-		// saved
-		console.log("file record added to db");
+
+	// connect to db 
+	const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
+	mongoose.connect(
+		dbRoute,
+		{useNewUrlParser: true}
+	);
+
+	var db = mongoose.connection;
+	db.on("error", console.error.bind(console, "db connection error: "));
+
+	// insert file object containing meta-data into db
+	db.once("open", function() {
+
+		// TASK: change File schema to match with multer file object?
+
+		console.log("connected to database in route uploadFile");
+
+		const fileRecord = new Files(file);
+		console.log("fileRecord:", fileRecord);
+		fileRecord.save(function(err, doc){
+			if (err) return console.error(err);
+			// saved
+			console.log("file record added to db:", doc);
+		});
 	});
 
 	// TASK: DB add to userfiles/users collection (separate module?)
@@ -85,12 +116,20 @@ router.post("/uploadFile", upload.single("fileData"), (req, res) => {
 	
 
 /*
-router.get("/getFile", ()=> {
-	// get file from database  
+router.get("/getFiles", ()=> {
+	// get files for particular user from database 
+	// loads list of files on front-end
 	
 
-}))
+});
+
+router.get("/downloadFile", ()=> {
+	
+});
+
 */
+
+
 
 /*
 router.post('/uploadFile', function(req, res){	
