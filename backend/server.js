@@ -7,7 +7,7 @@ const multer = require("multer");	// package for processing binary data of uploa
 const uuid = require("uuid-v4");
 const path = require("path");
 
-//const Users = require("./models/users.js");
+const Users = require("./models/users.js");
 const Files = require("./models/files.js");	// does path work?
 
 // INSTANTIATE APP 	
@@ -30,6 +30,7 @@ client.connect(err => {
 });
 
 */
+/*
 // MongoDB Atlas for Node 2.2.12 or later; don't connect using VPN
 const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
 mongoose.connect(
@@ -40,7 +41,7 @@ mongoose.connect(
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "db connection error: "));
 //db.once("open", ()=> console.log("connected to database"));
-
+*/
 
 // LOAD MIDDLEWARE
 app.use(bodyParser.urlencoded({extended:true}));
@@ -113,6 +114,7 @@ router.post("/uploadFile", upload.single("fileData"), (req, res) => {
 
 	// res.send("file response");
 	res.send({success: true});
+	return
 
 });
 	
@@ -125,11 +127,96 @@ router.get("/signIn", (req, res) => {
 	// console.log("sign in username", username);
 
 	// if username, pass credentials exist in user collection, then send success true
+	// connect to db 
+	const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
+	mongoose.connect(
+		dbRoute,
+		{useNewUrlParser: true}
+	);
+	var db = mongoose.connection;
 	
+	db.on("error", console.error.bind(console, "db connection error: "));
 
-	// else, send success false 
+	db.once("open", function() {
 
-	res.send({success: true});
+		console.log("connected to database in route signIn");
+
+		Users.findOne({user: username}, function(err, doc) {
+			if (err) {
+				console.log("error accessing user: ", err);
+			}
+
+			if (doc) {
+				// PROBLEM: error - cannot set headers after they are sent
+				console.log("user found");
+				res.send({success: true});
+				return	// return after sending response stops execution of following responses
+			} else {
+				console.log("user not found");
+				res.send({success: false});
+				return
+			}
+		})
+			
+
+	});
+
+	// if user is not registered
+	res.send({success: false});
+	return
+
+});
+
+router.get("/register", (req, res) => {
+	const username = req.query.user;	
+
+	// open db connection
+	const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
+	mongoose.connect(
+		dbRoute,
+		{useNewUrlParser: true}
+	);
+	var db = mongoose.connection;
+	
+	db.on("error", console.error.bind(console, "db connection error: "));
+
+	db.once("open", function() {
+
+		console.log("connected to database in route register");
+
+		Users.findOne({user: username}, function(err, doc){
+			
+			if (err) {
+				console.log("user record access error: ", err);
+			};
+
+			// if can't find, then save record
+			if (!doc) {
+
+				const userObj = {
+							user: username,
+							password: null,
+							logged_in: false
+						}		
+				const userRecord = new Users(userObj);
+
+				userRecord.save(function(e, d){
+					if (e) {
+						console.log("error: ", e)
+					};
+					console.log("added new user to db:", d.user);
+				})
+				res.send({success: true});
+				return
+			} else {
+				console.log("user already exists");
+				res.send({success: false});
+				return
+			};
+		});
+	});
+
+
 
 });
 

@@ -6,6 +6,8 @@ class App extends Component {
   state = {
     usernameInput: null,
     passwordInput: null,
+    newUserInput: null,
+    newPasswordInput: null,
     user: null,
     loggedIn: null,
     fileName: null,
@@ -79,6 +81,34 @@ class App extends Component {
   }
 
 
+  register = (event) => {
+    event.preventDefault();
+
+    const username = this.state.newUserInput;
+    console.log("new username input:", username);
+
+    axios.get("http://localhost:3001/api/register", {
+          params: {
+            user: username
+          }
+        })
+        .then(response => response.data)
+        .then(data => {
+          if (data.success === true) {
+            console.log("new user registered!");
+            // log in after registration
+            this.setState({user: username})
+            this.setState({loggedIn: true})
+            console.log("set state user:", this.state.user);
+            console.log("set state logged in status:", this.state.loggedIn);
+          } else {
+            console.log("registration failed");
+          }
+        })
+        .catch(error => console.log("registration error:", error));
+
+  }
+
   signIn = (event) => {
   	event.preventDefault();
 
@@ -92,6 +122,7 @@ class App extends Component {
   			})
   			.then(response => response.data)
   			.then(data => {
+          console.log("data obj:", data);
   				if (data.success === true) {
   					// change state 
   					this.setState({user: username})
@@ -140,6 +171,18 @@ class App extends Component {
         	<button type="submit">
         		SIGN IN 
         	</button>
+        </form>
+
+
+
+        <form onSubmit={this.register}>
+
+          <input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({newUserInput: event.target.value})} />
+
+
+          <button type="submit">
+            REGISTER 
+          </button>
         </form>
 
       </div>
