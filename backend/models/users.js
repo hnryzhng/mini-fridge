@@ -5,7 +5,7 @@ const usersSchema = new Schema(
 	{ 
 		//_id: Number,	// is auto-generated
 		user: String,
-		password: String
+		password: String,
 		logged_in: Boolean,
 		file_ids: Array,	// list of file ids
 		file_transactions: [{	// record of interactions with file
@@ -15,5 +15,5 @@ const usersSchema = new Schema(
 		}]
 	}
 );
-s
-module.exports = mongoose.model("Users", usersSchema);
+
+module.exports = mongoose.model("Users", usersSchema, "users");	// third param is collection name

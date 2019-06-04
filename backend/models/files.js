@@ -4,8 +4,14 @@ const Schema = mongoose.Schema;
 const filesSchema = new Schema(
 	{
 		//_id: Number,	// is auto-generated
-		name: String,
-		data: String,	// PROBLEM: include data, or store in directory with id as file name?
+		fieldname: String,
+		originalname: String,
+		encoding: String,
+		mimetype: String,
+		destination: String,
+		filename: String,
+		path: String,
+		size: Number,
 		active: Boolean	// active or inactive: accessed by a user or not
 	},
 	{ timestamps: true }
@@ -26,4 +32,4 @@ sample object generated when uploading file to multer
 }
 */
 
-module.exports = mongoose.model("Files", filesSchema);
+module.exports = mongoose.model("Files", filesSchema, "files");	// third param: db collection

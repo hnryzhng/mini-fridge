@@ -7,10 +7,10 @@ const multer = require("multer");	// package for processing binary data of uploa
 const uuid = require("uuid-v4");
 const path = require("path");
 
-//const Users = require("./backend/models/users.js");
+//const Users = require("./models/users.js");
 const Files = require("./models/files.js");	// does path work?
 
-// INSTANTIATE APP 
+// INSTANTIATE APP 	
 const app = express();
 const router = express.Router();
 const api_port  = 3001;
@@ -104,21 +104,69 @@ router.post("/uploadFile", upload.single("fileData"), (req, res) => {
 	});
 
 	// TASK: DB add to userfiles/users collection (separate module?)
-	// call userfiles db collection (or combine with users record?)
+	// query user in userfiles db collection (or combine with users record?)
 	// add file object, includes filename + pretty filename (file.originalname)
 	// verify user is logged in? (or validate elsewhere?) if logged_in from users collection
 	// append req file object to user record
+
+	// query user in collection, then insert file id or file object
 
 	// res.send("file response");
 	res.send({success: true});
 
 });
 	
+router.get("/signIn", (req, res) => {
+	//if (err) {
+	//	console.log("sign in error: ", err);
+	//};
+
+	const username = req.query.user;
+	// console.log("sign in username", username);
+
+	// if username, pass credentials exist in user collection, then send success true
+	
+
+	// else, send success false 
+
+	res.send({success: true});
+
+});
 
 /*
-router.get("/getFiles", ()=> {
+router.get("/getFiles", (err, req, res)=> {
 	// get files for particular user from database 
 	// loads list of files on front-end
+
+	if (err) {
+		console.log("error:", err);
+	};
+
+
+	// connect to db 
+	const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
+	mongoose.connect(
+		dbRoute,
+		{useNewUrlParser: true}
+	);
+
+	var db = mongoose.connection;
+	db.on("error", console.error.bind(console, "db connection error: "));
+
+	// 	query file object containing meta-data into db
+	db.once("open", function() {
+
+		console.log("connected to database in route getFiles");
+
+		// create instance of model?
+		const users = new Users();
+
+		// TASK: retrieve file ids [or pretty names from file objects] of user record's files ref array
+		users.find({}).then()	//
+
+
+	});
+
 	
 
 });

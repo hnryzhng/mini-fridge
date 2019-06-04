@@ -4,7 +4,10 @@ import axios from 'axios';
 class App extends Component {
 
   state = {
+    usernameInput: null,
+    passwordInput: null,
     user: null,
+    loggedIn: null,
     fileName: null,
     fileData: null,
     fileNamesArray: []
@@ -12,11 +15,19 @@ class App extends Component {
 
   //componentWillMount() {
     // TASK: load list of file names for specific signed in user when List component mounts
-    // grab list of pretty file names from user database 
+    // grab list of pretty file names from user record
+    /*
+    axios.get("http://localhost:3001/api/uploadFile")
+    		.then((response) => {
 
+    			this.setState(fileNamesArray: ...//response);
+    		})
+    		.catch((error) => {console.log("error: ", error)};
+	*/
   //}
 
   //componentUnmount() {
+  	// clear data?
   //}
 
   storeFile = (event) => {
@@ -28,7 +39,6 @@ class App extends Component {
     event.preventDefault();
     this.setState({fileName: event.target.files[0].name})
     this.setState({fileData: event.target.files[0]});
-
   }
 
   uploadFile = (event) => {
@@ -57,9 +67,9 @@ class App extends Component {
     formDataObj.append("fileName", fileName);
     formDataObj.append("fileData", fileData);
 
-    axios.post("http://localhost:3001/api/uploadFile", formDataObj) // {user, file name, file data}
+    axios.post("http://localhost:3001/api/uploadFile", formDataObj) // TASK: {user, file name, file data}; send username data as well
             .then(response => console.log("RESPONSE:", response))	// TASK: if response obj success is true, then add pretty file name to list display (or just retrieve all names from componentWillMount because setState below refreshes component  state?)
-            .catch((error) => {console.log("error:", error)});
+            .catch((error) => {console.log("upload file error:", error)});
 
     // .then()
     this.setState({fileNamesArray: [...this.state.fileNamesArray, this.state.fileName]}); // set state to change state, use spread operator to create a new array instead of mutating old one
@@ -67,6 +77,36 @@ class App extends Component {
 
     // should assign file's unique id to key
   }
+
+
+  signIn = (event) => {
+  	event.preventDefault();
+
+  	const username = this.state.usernameInput;
+  	console.log("submitted username: ", username);
+
+  	axios.get("http://localhost:3001/api/signIn/", {
+  				params: { 
+  					user: username
+  				} 
+  			})
+  			.then(response => response.data)
+  			.then(data => {
+  				if (data.success === true) {
+  					// change state 
+  					this.setState({user: username})
+  					this.setState({loggedIn: true})
+            console.log("set state user:", this.state.user);
+            console.log("set state logged in status:", this.state.loggedIn);
+  				} else {
+            // user is not registered
+            // display message
+            console.log("you are not a registered user");
+          };
+  			})
+  			.catch(error => console.log("sign in error:", error));
+  }
+
 
   render() {
 
@@ -91,6 +131,16 @@ class App extends Component {
           <List fileNamesArray={this.state.fileNamesArray} />  
         </div>
 
+
+        <form onSubmit={this.signIn}>
+
+        	<input type="text" style={{ width: "300px" }} placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
+
+
+        	<button type="submit">
+        		SIGN IN 
+        	</button>
+        </form>
 
       </div>
     );
