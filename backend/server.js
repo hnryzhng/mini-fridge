@@ -31,7 +31,7 @@ client.connect(err => {
 
 */
 /*
-// MongoDB Atlas for Node 2.2.12 or later; don't connect using VPN
+// MongoDB Atlas for Node 2.2.12 or later; can connect using VPN, but must whitelist IP of current connection
 const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
 mongoose.connect(
 	dbRoute,
@@ -140,7 +140,7 @@ router.get("/signIn", (req, res) => {
 	db.once("open", function() {
 
 		console.log("connected to database in route signIn");
-
+		
 		Users.findOne({user: username}, function(err, doc) {
 			if (err) {
 				console.log("error accessing user: ", err);
@@ -149,14 +149,15 @@ router.get("/signIn", (req, res) => {
 			if (doc) {
 				// PROBLEM: error - cannot set headers after they are sent
 				console.log("user found");
-				res.send({success: true});
+				res.json({success: true});
 				return	// return after sending response stops execution of following responses
 			} else {
 				console.log("user not found");
-				res.send({success: false});
+				res.json({success: false});
 				return
 			}
 		})
+		
 			
 
 	});
