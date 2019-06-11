@@ -9,27 +9,37 @@ class App extends Component {
     newUserInput: null,
     newPasswordInput: null,
     user: null,
-    loggedIn: null,
+    userID: null,	// TASK: how do I keep this hidden?
+    loggedIn: false,
     fileName: null,
     fileData: null,
     fileNamesArray: []
   };
 
   //componentWillMount() {
-    // TASK: load list of file names for specific signed in user when List component mounts
-    // grab list of pretty file names from user record
-    /*
-    axios.get("http://localhost:3001/api/uploadFile")
-    		.then((response) => {
+  	// call once before initial render of component
 
-    			this.setState(fileNamesArray: ...//response);
-    		})
-    		.catch((error) => {console.log("error: ", error)};
+  	// TASK BOOKMARK
+  	// separate user and list pages, then proceed with calling array of file names
+
+    // TASK: load list of file names for specific signed in user when List component mounts
+    // validate if logged in
+    // grab list of pretty file names from fileNamesArray
+    /*
+    axios.get("http://localhost:3001/api/getFiles")
+			.then(response => response.data)
+			.then(data => {
+				
+				this.setState({fileNamesArray: data.fileNamesArray}, console.log("list of file names on initial render:", filesNamesArray));
+				
+			})
+			.catch(err => "error: could not retrieve files names array upon initial render");
+
 	*/
   //}
 
   //componentUnmount() {
-  	// clear data?
+  	// TASK: clear data?
   //}
 
   storeFile = (event) => {
@@ -57,27 +67,45 @@ class App extends Component {
 
     // multer + react: https://blog.stvmlbrn.com/2017/12/17/upload-files-using-react-to-node-express-server.html
     event.preventDefault();
-    const { fileName, fileData } = this.state; 
 
+
+	const { user, loggedIn, fileName, fileData } = this.state; 
+
+    console.log("user: ", user);
+    console.log("loggedIn: ", loggedIn);
     console.log("file name: ", fileName);
     console.log("fileData: ", fileData);
-    
-    const formDataObj = new FormData();
+	    
+    // TASK: validate log in status (this.state.loggedIn)
+    // proceed only if user is not null and is logged in
+    // put on separate pages and deliver through express?
+	if (loggedIn) {
 
-  	//user_id: userId,
-  	//logged_in: true,
-    formDataObj.append("fileName", fileName);
-    formDataObj.append("fileData", fileData);
+	    // instantiate react form object to hold file data
+	    const formDataObj = new FormData();
 
-    axios.post("http://localhost:3001/api/uploadFile", formDataObj) // TASK: {user, file name, file data}; send username data as well
-            .then(response => console.log("RESPONSE:", response))	// TASK: if response obj success is true, then add pretty file name to list display (or just retrieve all names from componentWillMount because setState below refreshes component  state?)
-            .catch((error) => {console.log("upload file error:", error)});
+	  	// TASK: logged_in: true,
+	  	formDataObj.append("user", user);
+	    formDataObj.append("fileName", fileName);
+	    formDataObj.append("fileData", fileData);
 
-    // .then()
-    this.setState({fileNamesArray: [...this.state.fileNamesArray, this.state.fileName]}); // set state to change state, use spread operator to create a new array instead of mutating old one
-    //console.log("files array: ", this.state.fileNamesArray);
+	    axios.post("http://localhost:3001/api/uploadFile", formDataObj)
+	            .then(response => response.data)	// TASK: if response obj success is true, then add pretty file name to list display (or just retrieve all names from componentWillMount because setState below refreshes component  state?)
+	            .then(data => {
+	            	if (data.success) {
+	            		this.setState({fileNamesArray: [...this.state.fileNamesArray, this.state.fileName]}); // use spread operator to create a new array instead of mutating old one
+	            	} else {
+	            		console.log("trouble uploading your file");
+	            	}
+	            })
+	            .catch(error => console.log("upload file error:", error));
 
-    // should assign file's unique id to key
+	} else {
+		console.log("you must be logged in to upload file");
+	}
+
+
+
   }
 
 
@@ -92,11 +120,12 @@ class App extends Component {
         })
         .then(response => response.data)
         .then(data => {
-          if (data.success === true) {
+          if (data.success) {
             console.log("new user registered!");
             // log in after registration
             this.setState({user: username})
             this.setState({loggedIn: true})
+            // this.setState({fileNamesArray: data.file})
             console.log("set state user:", this.state.user);
             console.log("set state logged in status:", this.state.loggedIn);
           } else {
@@ -120,12 +149,14 @@ class App extends Component {
   			.then(response => response.data)
   			.then(data => {
           		//console.log("data obj:", data);
-  				if (data.success === true) {
+  				if (data.success) {
   					// change app state 
   					this.setState({user: username})
   					this.setState({loggedIn: true})
+  					// this.setState({fileNamesArray: data.file})
             		console.log("set state user:", this.state.user);
             		console.log("set state logged in status:", this.state.loggedIn);
+            		console.log("set state user's files:", this.state.fileNamesArray);
   				} else {
             		// user is not registered
             		// display message
@@ -134,6 +165,17 @@ class App extends Component {
   			})
   			.catch(error => console.log("sign in error:", error));
   			
+
+  }
+
+  handleSignOut = async () => {
+  	
+  	this.setState({ user: null });
+  	this.setState({ loggedIn: false });
+  	
+  	console.log("signed out user state:", this.state.user);
+  	console.log("signed out log in state:", this.state.loggedIn);
+
 
   }
 
@@ -171,6 +213,10 @@ class App extends Component {
         		SIGN IN 
         	</button>
         </form>
+
+        <p onClick={this.handleSignOut}>
+        	SIGN OUT 
+        </p>
 
 
 

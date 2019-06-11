@@ -10,6 +10,6 @@ test.js
 // sign in fail: "userx was not found"
 
 // test retrieving user files
-// user1: user1word.doc, user1pdf.pdf
-// user2: user2word.doc, user2pdf.pdf, user2excel.xls
+// user1: user1doc.doc, user1pdf.pdf
+// user2: user2doc.doc, user2pdf.pdf, user2xls.xls
 // user3: []

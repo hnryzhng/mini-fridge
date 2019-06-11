@@ -70,29 +70,20 @@ var storage = multer.diskStorage({
 		cb(null, newFileName)
 	}
 })
-var upload = multer({ storage: storage });
 
-router.post("/uploadFile", upload.single("fileData"), (req, res) => {
-	// for multer, route to router variable instead of app because of "/api" middleware at bottom
-	const file = req.file;
-	const filename = file.filename;
-	console.log("file:", file);
-	console.log("file object type:", typeof file);
-	console.log("file name:", filename);
+router.post("/uploadFile", (req, res) => {
 
+	var upload = multer({ storage: storage }).single("fileData");	// fieldname of front-end component is 'fileData'
 
-	// connect to db 
-	const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
-	mongoose.connect(
-		dbRoute,
-		{useNewUrlParser: true}
-	);
-
-	var db = mongoose.connection;
-	db.on("error", console.error.bind(console, "db connection error: "));
-
-	// insert file object containing meta-data into db
-	db.once("open", function() {
+	upload(req, res, function(err) {
+		// for multer, route to router variable instead of app because of "/api" middleware at bottom
+		const file = req.file;
+		const filename = file.filename;
+		const username = req.body.user;
+		console.log("user:", username);
+		console.log("file:", file);
+		console.log("file object type:", typeof file);
+		console.log("file name:", filename);
 
 		// TASK: change File schema to match with multer file object?
 
@@ -100,24 +91,43 @@ router.post("/uploadFile", upload.single("fileData"), (req, res) => {
 
 		const fileRecord = new Files(file);
 		console.log("fileRecord:", fileRecord);
-		fileRecord.save(function(err, doc){
-			if (err) return console.error(err);
-			// saved
-			console.log("file record added to db:", doc);
-		});
+		fileRecord
+			.save()
+			.then(fileDoc => {
+				console.log("file record added to db:", fileDoc);
+
+				Users
+					.findOne({user: username})
+					.then(userDoc => {
+						const userFileIdsArray = userDoc.file_ids
+						userFileIdsArray.push(fileDoc.id);
+						//TASK: userDoc.file_transactions
+						console.log(`file id ${fileDoc.id} saved to user ${userDoc.user}`)
+						
+						res.json({ success: true });
+
+					})
+					.catch(err => console.log("error finding user to save file:", err));
+
+			})
+			.catch(error => console.log("error saving file to db:", error));
+		
+
+
+		//});
+
+		// TASK: DB add to userfiles/users collection (separate module?)
+		// query user in userfiles db collection (or combine with users record?)
+		// add file object, includes filename + pretty filename (file.originalname)
+		// verify user is logged in? (or validate elsewhere?) if logged_in from users collection
+		// append req file object to user record
+
+		// query user in collection, then insert file id or file object
+
+		// res.send("file response");
+		//res.send({success: true});
+		//return
 	});
-
-	// TASK: DB add to userfiles/users collection (separate module?)
-	// query user in userfiles db collection (or combine with users record?)
-	// add file object, includes filename + pretty filename (file.originalname)
-	// verify user is logged in? (or validate elsewhere?) if logged_in from users collection
-	// append req file object to user record
-
-	// query user in collection, then insert file id or file object
-
-	// res.send("file response");
-	res.send({success: true});
-	return
 
 });
 	
@@ -168,7 +178,10 @@ router.post("/signIn", (req, res) => {
 			console.log("login user found: ", doc.user);
 			// TASK: also send files of particular user
 			// retrieve file ids [or pretty names from file objects] of user record's files ref array
-			res.json({success: true});
+			const resObj = {
+				success: true
+			}
+			res.json(resObj);
 		} else {
 			console.log("login user not found")
 			res.json({success: false});
@@ -180,17 +193,20 @@ router.post("/signIn", (req, res) => {
 
 /*
 
-router.get("/getFiles", (err, req, res)=> {
+router.get("/getFiles", (req, res)=> {
 	// get files for particular user from database 
 	// loads list of files on front-end
 
+	// TASK BOOKMARK: separate user and list pages, then proceed with calling array of file names
+
 	console.log("connected to database in route getFiles");
 
-	// create instance of model?
-	const users = new Users();
+	// retrieve array of file ids from user
 
-	// TASK: retrieve file ids [or pretty names from file objects] of user record's files ref array
-	users.find({}).then()	//
+	// map each file id to file name
+
+	// send array of files names to front-end
+
 
 
 	});
