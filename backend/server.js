@@ -30,18 +30,21 @@ client.connect(err => {
 });
 
 */
-/*
+
 // MongoDB Atlas for Node 2.2.12 or later; can connect using VPN, but must whitelist IP of current connection
 const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
-mongoose.connect(
-	dbRoute,
-	{useNewUrlParser: true}
-);
+mongoose
+	.connect(
+		dbRoute,
+		{useNewUrlParser: true}
+	)
+	.then(() => console.log("connected to MongoDB database"))
+	.catch((err) => console.log("error connecting to MongoDB:", err));
 
-var db = mongoose.connection;
-db.on("error", console.error.bind(console, "db connection error: "));
+//var db = mongoose.connection;
+//db.on("error", console.error.bind(console, "db connection error: "));
 //db.once("open", ()=> console.log("connected to database"));
-*/
+
 
 // LOAD MIDDLEWARE
 app.use(bodyParser.urlencoded({extended:true}));
@@ -118,139 +121,76 @@ router.post("/uploadFile", upload.single("fileData"), (req, res) => {
 
 });
 	
-router.get("/signIn", (req, res) => {
-	//if (err) {
-	//	console.log("sign in error: ", err);
-	//};
 
-	const username = req.query.user;
-	// console.log("sign in username", username);
+router.post("/register", (req, res) => {
 
-	// if username, pass credentials exist in user collection, then send success true
-	// connect to db 
-	const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
-	mongoose.connect(
-		dbRoute,
-		{useNewUrlParser: true}
-	);
-	var db = mongoose.connection;
-	
-	db.on("error", console.error.bind(console, "db connection error: "));
+	const username = req.body.user;
+	console.log("register route")
+	console.log("register user:", username);
 
-	db.once("open", function() {
+	Users.findOne({ user: username }).then(doc => {
+		if (doc) {
+			return res.status(400).json({user: "there is already a user with this username"});
+		} else {		
+			// add user if existing user record not found
+			const userObj = {
+						user: username,
+						password: null,
+						logged_in: false
+					}		
+			const userRecord = new Users(userObj);
 
-		console.log("connected to database in route signIn");
-		
-		Users.findOne({user: username}, function(err, doc) {
-			if (err) {
-				console.log("error accessing user: ", err);
-			}
-
-			if (doc) {
-				// PROBLEM: error - cannot set headers after they are sent
-				console.log("user found");
-				res.json({success: true});
-				return	// return after sending response stops execution of following responses
-			} else {
-				console.log("user not found");
-				res.json({success: false});
-				return
-			}
-		})
-		
-			
-
-	});
-
-	// if user is not registered
-	res.send({success: false});
-	return
-
-});
-
-router.get("/register", (req, res) => {
-	const username = req.query.user;	
-
-	// open db connection
-	const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
-	mongoose.connect(
-		dbRoute,
-		{useNewUrlParser: true}
-	);
-	var db = mongoose.connection;
-	
-	db.on("error", console.error.bind(console, "db connection error: "));
-
-	db.once("open", function() {
-
-		console.log("connected to database in route register");
-
-		Users.findOne({user: username}, function(err, doc){
-			
-			if (err) {
-				console.log("user record access error: ", err);
-			};
-
-			// if can't find, then save record
-			if (!doc) {
-
-				const userObj = {
-							user: username,
-							password: null,
-							logged_in: false
-						}		
-				const userRecord = new Users(userObj);
-
-				userRecord.save(function(e, d){
-					if (e) {
-						console.log("error: ", e)
-					};
-					console.log("added new user to db:", d.user);
+			userRecord
+				.save()
+				.then((d) => {
+					console.log("new user added to database:", d)
+					res.json({success: true});
 				})
-				res.send({success: true});
-				return
-			} else {
-				console.log("user already exists");
-				res.send({success: false});
-				return
-			};
-		});
+				.catch(err => {
+					console.log("could not save user:", err)
+					res.json({success: false});
+				});
+		}
+
 	});
 
 
-
 });
+
+router.post("/signIn", (req, res) => {
+
+	const username = req.body.user;
+	console.log("sign in route");
+	console.log("user attempting to sign in:", username);
+
+	Users.findOne({ user: username }).then(doc => {
+		if (doc) {
+			console.log("login user found: ", doc.user);
+			// TASK: also send files of particular user
+			// retrieve file ids [or pretty names from file objects] of user record's files ref array
+			res.json({success: true});
+		} else {
+			console.log("login user not found")
+			res.json({success: false});
+		}
+
+	});
+});
+
 
 /*
+
 router.get("/getFiles", (err, req, res)=> {
 	// get files for particular user from database 
 	// loads list of files on front-end
 
-	if (err) {
-		console.log("error:", err);
-	};
+	console.log("connected to database in route getFiles");
 
+	// create instance of model?
+	const users = new Users();
 
-	// connect to db 
-	const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
-	mongoose.connect(
-		dbRoute,
-		{useNewUrlParser: true}
-	);
-
-	var db = mongoose.connection;
-	db.on("error", console.error.bind(console, "db connection error: "));
-
-	// 	query file object containing meta-data into db
-	db.once("open", function() {
-
-		console.log("connected to database in route getFiles");
-
-		// create instance of model?
-		const users = new Users();
-
-		// TASK: retrieve file ids [or pretty names from file objects] of user record's files ref array
-		users.find({}).then()	//
+	// TASK: retrieve file ids [or pretty names from file objects] of user record's files ref array
+	users.find({}).then()	//
 
 
 	});

@@ -87,10 +87,8 @@ class App extends Component {
     const username = this.state.newUserInput;
     console.log("new username input:", username);
 
-    axios.get("http://localhost:3001/api/register", {
-          params: {
+    axios.post("http://localhost:3001/api/register", {
             user: username
-          }
         })
         .then(response => response.data)
         .then(data => {
@@ -105,7 +103,7 @@ class App extends Component {
             console.log("registration failed");
           }
         })
-        .catch(error => console.log("registration error:", error));
+        .catch(err => console.log("registration error:", err));
 
   }
 
@@ -115,27 +113,28 @@ class App extends Component {
   	const username = this.state.usernameInput;
   	console.log("submitted username: ", username);
 
-  	axios.get("http://localhost:3001/api/signIn/", {
-  				params: { 
-  					user: username
-  				} 
+	
+  	axios.post("http://localhost:3001/api/signIn/", { 
+  				user: username
   			})
   			.then(response => response.data)
   			.then(data => {
-          console.log("data obj:", data);
+          		//console.log("data obj:", data);
   				if (data.success === true) {
-  					// change state 
+  					// change app state 
   					this.setState({user: username})
   					this.setState({loggedIn: true})
-            console.log("set state user:", this.state.user);
-            console.log("set state logged in status:", this.state.loggedIn);
+            		console.log("set state user:", this.state.user);
+            		console.log("set state logged in status:", this.state.loggedIn);
   				} else {
-            // user is not registered
-            // display message
-            console.log("you are not a registered user");
-          };
+            		// user is not registered
+            		// display message
+            		console.log("you are not a registered user");
+          		};
   			})
   			.catch(error => console.log("sign in error:", error));
+  			
+
   }
 
 
