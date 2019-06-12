@@ -19,9 +19,6 @@ class App extends Component {
   //componentWillMount() {
   	// call once before initial render of component
 
-  	// TASK BOOKMARK
-  	// separate user and list pages, then proceed with calling array of file names
-
     // TASK: load list of file names for specific signed in user when List component mounts
     // validate if logged in
     // grab list of pretty file names from fileNamesArray
@@ -182,18 +179,21 @@ class App extends Component {
 
   render() {
 
+  	// conditionally show upload file field only if logged in
+  	const isLoggedIn = this.state.loggedIn;
+  	let uploadFileField;
+
+  	if (isLoggedIn) {
+  		uploadFileField = <UploadFileForm />;
+
+  	} else {
+  		uploadFileField = null;
+  	}
+
     return (
       <div>
-        <form onSubmit={this.uploadFile}>
-
-          <input type="file" style={{ width: "300px" }} placeholder="upload file" name="fileData" onChange= {this.handleFileUpload} />
-
-          <button type="submit">
-              submit file
-          </button>
-
-        </form>
-
+        
+        {uploadFileField}
 
         <div id="fileName">
           Filename: {this.state.fileName}
@@ -233,6 +233,22 @@ class App extends Component {
       </div>
     );
   }
+}
+
+class UploadFileForm extends Component {
+	render() {
+		return(
+			<form onSubmit={this.uploadFile}>
+
+	          <input type="file" style={{ width: "300px" }} placeholder="upload file" name="fileData" onChange= {this.handleFileUpload} />
+
+	          <button type="submit">
+	              submit file
+	          </button>
+
+	        </form>
+	    )
+	}
 }
 
 class List extends Component {
