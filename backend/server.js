@@ -96,11 +96,17 @@ router.post("/uploadFile", (req, res) => {
 			.then(fileDoc => {
 				console.log("file record added to db:", fileDoc);
 
+				// add file id and file name to user record
 				Users
 					.findOne({user: username})
 					.then(userDoc => {
-						const userFileIdsArray = userDoc.file_ids
-						userFileIdsArray.push(fileDoc.id);
+
+						const fileRecord = {
+							file_id: fileDoc.id,
+							file_name: fileDoc.originalname
+						}
+
+						userDoc.file_ids.push(fileRecord);
 						//TASK: userDoc.file_transactions
 						console.log(`file id ${fileDoc.id} saved to user ${userDoc.user}`)
 						
@@ -173,14 +179,22 @@ router.post("/signIn", (req, res) => {
 	console.log("sign in route");
 	console.log("user attempting to sign in:", username);
 
-	Users.findOne({ user: username }).then(doc => {
-		if (doc) {
-			console.log("login user found: ", doc.user);
+	Users.findOne({ user: username }).then(userDoc => {
+		if (userDoc) {
+			console.log("login user found: ", userDoc.user);
 			// TASK: also send files of particular user
-			// retrieve file ids [or pretty names from file objects] of user record's files ref array
+			// retrieve file names of user record's files ref array
+
+			const fileidsArray = userDoc.file_ids;	// TASK: change user model to filereferencesArray
+
+			const fArray = fileidsArray.map( fileRecord => fileRecord.file_name );	// extract file name from each file record and add to array
+			console.log(`array of ${username} file names:`, fArray);
+
 			const resObj = {
-				success: true
+				success: true,
+				fileNamesArray: fArray
 			}
+
 			res.json(resObj);
 		} else {
 			console.log("login user not found")
@@ -197,11 +211,23 @@ router.get("/getFiles", (req, res)=> {
 	// get files for particular user from database 
 	// loads list of files on front-end
 
-	// TASK BOOKMARK: separate user and list pages, then proceed with calling array of file names
-
 	console.log("connected to database in route getFiles");
 
+	const user = req.query.user;
+
 	// retrieve array of file ids from user
+	Users
+		.findOne({user: user})
+		.then(userDoc => {
+			const fileidsArray = userDoc.file_ids;
+
+			const resArray = fileidsArray.map( fileRecord => return fileRecord.file_name )	// extract file name from each file record and add to array
+			console.log(`array of ${user} file names:`, resArray);
+			//req.json({resArray})
+
+
+		})
+		.catch(err => console.log(`array of file ids for ${user} could not be found`));
 
 	// map each file id to file name
 

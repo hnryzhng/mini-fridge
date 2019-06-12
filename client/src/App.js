@@ -23,7 +23,7 @@ class App extends Component {
     // validate if logged in
     // grab list of pretty file names from fileNamesArray
     /*
-    axios.get("http://localhost:3001/api/getFiles")
+    axios.get("http://localhost:3001/api/getFiles", {user: user})
 			.then(response => response.data)
 			.then(data => {
 				
@@ -150,10 +150,10 @@ class App extends Component {
   					// change app state 
   					this.setState({user: username})
   					this.setState({loggedIn: true})
-  					// this.setState({fileNamesArray: data.file})
+  					this.setState({fileNamesArray: data.fileNamesArray})
             		console.log("set state user:", this.state.user);
             		console.log("set state logged in status:", this.state.loggedIn);
-            		console.log("set state user's files:", this.state.fileNamesArray);
+            		console.log("set state user's file names:", this.state.fileNamesArray);
   				} else {
             		// user is not registered
             		// display message
@@ -184,7 +184,7 @@ class App extends Component {
   	let uploadFileField;
 
   	if (isLoggedIn) {
-  		uploadFileField = <UploadFileForm />;
+  		uploadFileField = <UploadFileForm handleFileUpload={this.handleFileUpload} />;
 
   	} else {
   		uploadFileField = null;
@@ -240,7 +240,8 @@ class UploadFileForm extends Component {
 		return(
 			<form onSubmit={this.uploadFile}>
 
-	          <input type="file" style={{ width: "300px" }} placeholder="upload file" name="fileData" onChange= {this.handleFileUpload} />
+				{// TASK BOOKMARK: pass prop value to parent so whole app doesn't re-render when submitting file upload?}
+	          <input type="file" style={{ width: "300px" }} placeholder="upload file" name="fileData" onChange= {this.props.handleFileUpload} />
 
 	          <button type="submit">
 	              submit file
@@ -252,14 +253,18 @@ class UploadFileForm extends Component {
 }
 
 class List extends Component {
-  render() {
-    let list = this.props.fileNamesArray.map((file,index)=>{
-      return <Item key={index} fileName={file} />
-    });
 
-    return <ul>{list}</ul>; 
-    
-  }
+	// componentWillMount() // should load from this.state.fileNamesArray upon initial render? 
+	// componentDidUpdate
+
+	render() {
+		let list = this.props.fileNamesArray.map((file,index)=>{
+		  return <Item key={index} fileName={file} />
+		});
+
+		return <ul>{list}</ul>; 
+
+  	}
 
 }
 
