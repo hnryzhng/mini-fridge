@@ -17,26 +17,10 @@ class App extends Component {
   };
 
   //componentWillMount() {
-  	// call once before initial render of component
-
-    // TASK: load list of file names for specific signed in user when List component mounts
-    // validate if logged in
-    // grab list of pretty file names from fileNamesArray
-    /*
-    axios.get("http://localhost:3001/api/getFiles", {user: user})
-			.then(response => response.data)
-			.then(data => {
-				
-				this.setState({fileNamesArray: data.fileNamesArray}, console.log("list of file names on initial render:", filesNamesArray));
-				
-			})
-			.catch(err => "error: could not retrieve files names array upon initial render");
-
-	*/
   //}
 
   //componentUnmount() {
-  	// TASK: clear data?
+    //TASK: clear data upon sign out?
   //}
 
   storeFile = (event) => {
@@ -66,17 +50,14 @@ class App extends Component {
     event.preventDefault();
 
 
-	const { user, loggedIn, fileName, fileData } = this.state; 
+    const { user, loggedIn, fileName, fileData } = this.state; 
 
     console.log("user: ", user);
     console.log("loggedIn: ", loggedIn);
     console.log("file name: ", fileName);
     console.log("fileData: ", fileData);
 	    
-    // TASK: validate log in status (this.state.loggedIn)
-    // proceed only if user is not null and is logged in
-    // put on separate pages and deliver through express?
-	if (loggedIn) {
+    if (loggedIn) {
 
 	    // instantiate react form object to hold file data
 	    const formDataObj = new FormData();
@@ -92,17 +73,14 @@ class App extends Component {
 	            	if (data.success) {
 	            		this.setState({fileNamesArray: [...this.state.fileNamesArray, this.state.fileName]}); // use spread operator to create a new array instead of mutating old one
 	            	} else {
-	            		console.log("trouble uploading your file");
+	            		console.log("error: trouble uploading your file");
 	            	}
 	            })
 	            .catch(error => console.log("upload file error:", error));
 
-	} else {
-		console.log("you must be logged in to upload file");
-	}
-
-
-
+    } else {
+		  console.log("you must be logged in to upload file");
+    }
   }
 
 
@@ -184,7 +162,7 @@ class App extends Component {
   	let uploadFileField;
 
   	if (isLoggedIn) {
-  		uploadFileField = <UploadFileForm handleFileUpload={this.handleFileUpload} />;
+  		uploadFileField = <UploadFileForm uploadFile={this.uploadFile} handleFileUpload={this.handleFileUpload} />;
 
   	} else {
   		uploadFileField = null;
@@ -238,24 +216,20 @@ class App extends Component {
 class UploadFileForm extends Component {
 	render() {
 		return(
-			<form onSubmit={this.uploadFile}>
+        <form onSubmit={this.props.uploadFile}>
 
-				{// TASK BOOKMARK: pass prop value to parent so whole app doesn't re-render when submitting file upload?}
-	          <input type="file" style={{ width: "300px" }} placeholder="upload file" name="fileData" onChange= {this.props.handleFileUpload} />
+          <input type="file" style={{ width: "300px" }} placeholder="upload file" name="fileData" onChange={this.props.handleFileUpload} />
 
-	          <button type="submit">
-	              submit file
-	          </button>
+          <button type="submit">
+              submit file
+          </button>
 
-	        </form>
+        </form>
 	    )
 	}
 }
 
 class List extends Component {
-
-	// componentWillMount() // should load from this.state.fileNamesArray upon initial render? 
-	// componentDidUpdate
 
 	render() {
 		let list = this.props.fileNamesArray.map((file,index)=>{

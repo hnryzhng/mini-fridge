@@ -17,20 +17,6 @@ const api_port  = 3001;
 
 
 // ACCESS DATABASE
-/*
-const MongoClient = require("mongodb").MongoClient;
-const uri = "mongodb+srv://admin:HkoB3WcGJvwjcdvH@cluster0-baqzp.mongodb.net/test?retryWrites=true";
-const client = new MongoClient(uri, { useNewUrlParser: true });
-client.connect(err => {
-  //const collection = client.d	b("test").collection("devices");
-  // perform actions on the collection object
-  console.log("connected to mongodb!");
-
-  client.close();
-});
-
-*/
-
 // MongoDB Atlas for Node 2.2.12 or later; can connect using VPN, but must whitelist IP of current connection
 const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
 mongoose
@@ -108,7 +94,12 @@ router.post("/uploadFile", (req, res) => {
 
 						userDoc.file_ids.push(fileRecord);
 						//TASK: userDoc.file_transactions
-						console.log(`file id ${fileDoc.id} saved to user ${userDoc.user}`)
+						
+						console.log(`${userDoc.user}'s user record: `, userDoc);
+
+						userDoc
+							.save()
+							.then(console.log(`file id ${fileDoc.id} saved to user ${userDoc.user}`));
 						
 						res.json({ success: true });
 
@@ -175,6 +166,9 @@ router.post("/register", (req, res) => {
 
 router.post("/signIn", (req, res) => {
 
+
+	// TASK BOOKMARK: add password, credential validation
+
 	const username = req.body.user;
 	console.log("sign in route");
 	console.log("user attempting to sign in:", username);
@@ -182,6 +176,7 @@ router.post("/signIn", (req, res) => {
 	Users.findOne({ user: username }).then(userDoc => {
 		if (userDoc) {
 			console.log("login user found: ", userDoc.user);
+			console.log("user record:", userDoc);
 			// TASK: also send files of particular user
 			// retrieve file names of user record's files ref array
 
