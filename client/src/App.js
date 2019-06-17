@@ -95,6 +95,8 @@ class App extends Component {
     console.log("new password input:", newP);
     console.log("new password confirm input:", newPC);
 
+    // TASK: encode password before sending
+
     axios.post("http://localhost:3001/api/register", {
             user: username,
             password: newP,
@@ -124,6 +126,7 @@ class App extends Component {
   	const username = this.state.usernameInput;
   	console.log("submitted username: ", username);
 
+    // TASK: encode password before sending
 	
   	axios.post("http://localhost:3001/api/signIn/", { 
   				user: username

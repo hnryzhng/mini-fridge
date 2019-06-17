@@ -197,39 +197,84 @@ router.post("/register", (req, res) => {
 
 	});
 
-
 });
+
+// @route POST api/login
+// @desc User sign in, return token
+// @access Public
 
 router.post("/signIn", (req, res) => {
 
 
 	// TASK BOOKMARK: add password, credential validation
+	// PROBLEM: must password input be hashed in front end?
+
 
 	const username = req.body.user;
+	const password = req.body.password;
+
 	console.log("sign in route");
 	console.log("user attempting to sign in:", username);
+	console.log("user password input:", password);
+
 
 	Users.findOne({ user: username }).then(userDoc => {
-		if (userDoc) {
+		if (!userDoc) {
+			console.log("login user not found")
+			res.status(400).json({ error: "User is not found"});
+			
+		} else {
+
 			console.log("login user found: ", userDoc.user);
 			console.log("user record:", userDoc);
-			// TASK: also send files of particular user
-			// retrieve file names of user record's files ref array
 
-			const fileidsArray = userDoc.file_ids;	// TASK: change user model to filereferencesArray
+			// validate password
+			bcrypt.compare(password, userDoc.password).then(isMatch => {
+				if (isMatch) {
+					// retrieve file names of user record's files ref array
+					// send file names 
+					const fileidsArray = userDoc.file_ids;	// TASK: change user model to filereferencesArray
 
-			const fArray = fileidsArray.map( fileRecord => fileRecord.file_name );	// extract file name from each file record and add to array
-			console.log(`array of ${username} file names:`, fArray);
+					const fArray = fileidsArray.map( fileRecord => fileRecord.file_name );	// extract file name from each file record and add to array
+					console.log(`array of ${username} file names:`, fArray);
 
-			const resObj = {
-				success: true,
-				fileNamesArray: fArray
-			}
+					// create payload for found user
+					const payload = {
+						id: userDoc.id,
+						name: userDoc.user
+					}
 
-			res.json(resObj);
-		} else {
-			console.log("login user not found")
-			res.json({success: false});
+					// response: send sign token, file names array
+					jwt.sign(
+						payload,
+						keys.secretOrKey,
+						{
+							expiresIn: 604800	// 7 days in seconds
+						},
+						(err, token) => {
+							// send response of token and file names array
+							res.json({
+								success: true,
+								fileNAmeArray: fArray,
+								token: "Bearer " + token
+							});
+						}
+					); 
+
+				} else {
+					// if password input does not match that of userDoc
+					return res
+							.status(400)
+							.json({
+								success: false,
+								error: "password incorrect"
+							});
+				}
+			})
+
+
+
+
 		}
 
 	});
