@@ -7,8 +7,18 @@ const multer = require("multer");	// package for processing binary data of uploa
 const uuid = require("uuid-v4");
 const path = require("path");
 
+// load models for db schema
 const Users = require("./models/users.js");
-const Files = require("./models/files.js");	// does path work?
+const Files = require("./models/files.js");
+
+// load modules and packages for user authentication
+const validateRegisterInput = require("./validation/register.js");
+const validateLoginInput = require("./validation/login.js");
+
+const bcrypt = require("bcryptjs");	// password encryption
+const jwt = require("jsonwebtoken");	// validating endpoint transmissions 
+const keys  = require("./config/keys.js");	// holds keys
+
 
 // INSTANTIATE APP 	
 const app = express();
@@ -18,7 +28,7 @@ const api_port  = 3001;
 
 // ACCESS DATABASE
 // MongoDB Atlas for Node 2.2.12 or later; can connect using VPN, but must whitelist IP of current connection
-const dbRoute = "mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
+const dbRoute = require("./config/keys.js").mongoURI;	//"mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
 mongoose
 	.connect(
 		dbRoute,
@@ -128,12 +138,26 @@ router.post("/uploadFile", (req, res) => {
 
 });
 	
-
+// @route POST api/register
+// @desc Register user
+// @access Public
 router.post("/register", (req, res) => {
 
+	// print out user inputs
 	const username = req.body.user;
+	const password = req.body.password;
+	const passwordConfirm = req.body.passwordConfirm;
 	console.log("register route")
 	console.log("register user:", username);
+	console.log("register raw password:", password);
+	console.log("register raw password confirm:", passwordConfirm);
+
+	// validate user inputs
+	const { errors, isValid } = validateRegisterInput(req.body)	// validates user, password, passwordConfirm
+
+	if (!isValid) {
+		return res.status(400).json(errors);
+	}
 
 	Users.findOne({ user: username }).then(doc => {
 		if (doc) {
@@ -142,21 +166,33 @@ router.post("/register", (req, res) => {
 			// add user if existing user record not found
 			const userObj = {
 						user: username,
-						password: null,
-						logged_in: false
+						password: password
 					}		
 			const userRecord = new Users(userObj);
 
-			userRecord
-				.save()
-				.then((d) => {
-					console.log("new user added to database:", d)
-					res.json({success: true});
-				})
-				.catch(err => {
-					console.log("could not save user:", err)
-					res.json({success: false});
+
+			// hash password
+			bcrypt.genSalt(10, (err, salt) => {
+				bcrypt.hash(userRecord.password, salt, (err, hash) => {
+					if (err) throw err;
+					userRecord.password = hash;
+					console.log("user's hashed password:", hash);
+
+					// save user record in db
+					userRecord
+						.save()
+						.then(d => {
+							console.log("new user added to database:", d)
+							res.json({ success: true });
+						})
+						.catch(err => {
+							console.log("could not save user:", err)
+							res.json({ success: false });
+						});
+
 				});
+			});
+
 		}
 
 	});

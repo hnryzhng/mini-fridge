@@ -8,6 +8,7 @@ class App extends Component {
     passwordInput: null,
     newUserInput: null,
     newPasswordInput: null,
+    newPasswordConfirmInput: null,
     user: null,
     userID: null,	// TASK: how do I keep this hidden?
     loggedIn: false,
@@ -88,21 +89,27 @@ class App extends Component {
     event.preventDefault();
 
     const username = this.state.newUserInput;
+    const newP = this.state.newPasswordInput;
+    const newPC = this.state.newPasswordConfirmInput;
     console.log("new username input:", username);
+    console.log("new password input:", newP);
+    console.log("new password confirm input:", newPC);
 
     axios.post("http://localhost:3001/api/register", {
-            user: username
+            user: username,
+            password: newP,
+            passwordConfirm: newPC
         })
         .then(response => response.data)
         .then(data => {
           if (data.success) {
             console.log("new user registered!");
             // log in after registration
-            this.setState({user: username})
-            this.setState({loggedIn: true})
-            // this.setState({fileNamesArray: data.file})
-            console.log("set state user:", this.state.user);
-            console.log("set state logged in status:", this.state.loggedIn);
+            this.setState({user: username}, console.log("set state user", this.state.user));
+            this.setState({newPasswordInput: newP}, console.log("set new pass input", this.state.newPasswordInput));
+            this.setState({newPasswordConfirmInput: newPC}, console.log("set new pass confirm input", this.state.newPasswordConfirmInput));
+            this.setState({loggedIn: true}, console.log("logged in status", this.state.loggedIn));
+
           } else {
             console.log("registration failed");
           }
@@ -198,11 +205,11 @@ class App extends Component {
 
 
 
-        <form onSubmit={this.register}>
+        <form style={{ border: "1px solid blue"}} onSubmit={this.register}>
 
           <input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({newUserInput: event.target.value})} />
-
-
+          <input type="text" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({newPasswordInput: event.target.value})} />
+          <input type="text" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({newPasswordConfirmInput: event.target.value})} />
           <button type="submit">
             REGISTER 
           </button>
