@@ -161,7 +161,7 @@ router.post("/register", (req, res) => {
 
 	Users.findOne({ user: username }).then(doc => {
 		if (doc) {
-			return res.status(400).json({user: "there is already a user with this username"});
+			return res.status(400).json({error: "there is already a user with this username"});
 		} else {		
 			// add user if existing user record not found
 			const userObj = {
@@ -187,7 +187,10 @@ router.post("/register", (req, res) => {
 						})
 						.catch(err => {
 							console.log("could not save user:", err)
-							res.json({ success: false });
+							res.json({ 
+								success: false,
+								error: err
+							});
 						});
 
 				});
@@ -203,12 +206,10 @@ router.post("/register", (req, res) => {
 // @desc User sign in, return token
 // @access Public
 
-router.post("/signIn", (req, res) => {
+router.post("/login", (req, res) => {
 
 
 	// TASK BOOKMARK: add password, credential validation
-	// PROBLEM: must password input be hashed in front end?
-
 
 	const username = req.body.user;
 	const password = req.body.password;
@@ -221,23 +222,29 @@ router.post("/signIn", (req, res) => {
 	Users.findOne({ user: username }).then(userDoc => {
 		if (!userDoc) {
 			console.log("login user not found")
-			res.status(400).json({ error: "User is not found"});
+			res
+				//.status(400)
+				.json({ error: "User is not found"});
 			
 		} else {
 
-			console.log("login user found: ", userDoc.user);
-			console.log("user record:", userDoc);
 
 			// validate password
 			bcrypt.compare(password, userDoc.password).then(isMatch => {
 				if (isMatch) {
 					// retrieve file names of user record's files ref array
 					// send file names 
-					const fileidsArray = userDoc.file_ids;	// TASK: change user model to filereferencesArray
-
-					const fArray = fileidsArray.map( fileRecord => fileRecord.file_name );	// extract file name from each file record and add to array
+					const fileidsArray = userDoc.file_ids;	// TASK: change field in user model to filereferencesArray
+					const fArray = fileidsArray.map( fileRecord => fileRecord.file_name );	// extract file name from each file record into new array
+					console.log("login user record:", userDoc);
 					console.log(`array of ${username} file names:`, fArray);
 
+					res.json({
+						success: true,
+						fileNamesArray: fArray
+					});
+
+					/*
 					// create payload for found user
 					const payload = {
 						id: userDoc.id,
@@ -255,16 +262,17 @@ router.post("/signIn", (req, res) => {
 							// send response of token and file names array
 							res.json({
 								success: true,
-								fileNAmeArray: fArray,
+								fileNamesArray: fArray,
 								token: "Bearer " + token
 							});
 						}
 					); 
+					*/
 
 				} else {
 					// if password input does not match that of userDoc
 					return res
-							.status(400)
+							//.status(400)
 							.json({
 								success: false,
 								error: "password incorrect"

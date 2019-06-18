@@ -5,9 +5,10 @@ test.js
 // ensure two of the same files do not share same filename in files folder after uploading
 
 
-// test register and sign in 
+// test register and sign in (complete process of registering, signing in)
 // register userx, sign in: "userx successfully registered"
 // sign in fail: "userx was not found"
+// login fail if password or username is incorrect
 
 // test retrieving user files
 // user1: user1doc.doc, user1pdf.pdf

@@ -31,8 +31,10 @@ class App extends Component {
 
   handleFileUpload = (event) => {
     event.preventDefault();
-    this.setState({fileName: event.target.files[0].name})
-    this.setState({fileData: event.target.files[0]});
+    if (event) {
+      this.setState({fileName: event.target.files[0].name})
+      this.setState({fileData: event.target.files[0]});
+    }
   }
 
   uploadFile = (event) => {
@@ -95,8 +97,6 @@ class App extends Component {
     console.log("new password input:", newP);
     console.log("new password confirm input:", newPC);
 
-    // TASK: encode password before sending
-
     axios.post("http://localhost:3001/api/register", {
             user: username,
             password: newP,
@@ -112,24 +112,26 @@ class App extends Component {
             this.setState({newPasswordConfirmInput: newPC}, console.log("set new pass confirm input", this.state.newPasswordConfirmInput));
             this.setState({loggedIn: true}, console.log("logged in status", this.state.loggedIn));
 
-          } else {
+          } else {      
             console.log("registration failed");
+            console.log(data.error);
           }
         })
         .catch(err => console.log("registration error:", err));
 
   }
 
-  signIn = (event) => {
+  login = (event) => {
   	event.preventDefault();
 
   	const username = this.state.usernameInput;
+    const password = this.state.passwordInput;
   	console.log("submitted username: ", username);
-
-    // TASK: encode password before sending
+    console.log("submitted password: ", password);
 	
-  	axios.post("http://localhost:3001/api/signIn/", { 
-  				user: username
+  	axios.post("http://localhost:3001/api/login/", { 
+  				user: username,
+          password: password
   			})
   			.then(response => response.data)
   			.then(data => {
@@ -139,14 +141,14 @@ class App extends Component {
   					this.setState({user: username})
   					this.setState({loggedIn: true})
   					this.setState({fileNamesArray: data.fileNamesArray})
-            		console.log("set state user:", this.state.user);
-            		console.log("set state logged in status:", this.state.loggedIn);
-            		console.log("set state user's file names:", this.state.fileNamesArray);
+        		console.log("set state user:", this.state.user);
+        		console.log("set state logged in status:", this.state.loggedIn);
+        		console.log("set state user's file names:", this.state.fileNamesArray);
   				} else {
-            		// user is not registered
-            		// display message
-            		console.log("you are not a registered user");
-          		};
+          		// user is not registered
+          		// display message
+          		console.log(data.error);
+        	};
   			})
   			.catch(error => console.log("sign in error:", error));
   			
@@ -157,6 +159,7 @@ class App extends Component {
   	
   	this.setState({ user: null });
   	this.setState({ loggedIn: false });
+    this.setState({ fileNamesArray: [] });
   	
   	console.log("signed out user state:", this.state.user);
   	console.log("signed out log in state:", this.state.loggedIn);
@@ -192,10 +195,10 @@ class App extends Component {
         </div>
 
 
-        <form onSubmit={this.signIn}>
+        <form onSubmit={this.login}>
 
         	<input type="text" style={{ width: "300px" }} placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
-
+          <input type="text" style={{ width: "300px" }} placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
 
         	<button type="submit">
         		SIGN IN 
