@@ -12,8 +12,8 @@ const filesSchema = new Schema(
 		filename: String,
 		path: String,
 		size: Number,
-		active: Boolean	// active or inactive: accessed by a user or not
-		isDeleted: {
+		active: Boolean,	// active or inactive: accessed by a user or not
+		is_deleted: {
 			type: Boolean,
 			default: false
 		}

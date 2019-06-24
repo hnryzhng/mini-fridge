@@ -261,20 +261,22 @@ router.get("/deleteFile", (req, res) => {
 			.then(console.log(`file id ${fileDoc.id} deleted for user ${userDoc.user}`));
 		
 		// delete hard file from files directory
+		// BOOKMARK
 		// PROBLEM: potentially remove record first from files collection before deleting hard file?
 		// can grab path info from request, but only if I send full file record object to front end for fileRecordsArray
+		// OR just keep hard copy in dir, and just shallow delete from file record
 		Files.findOne({_id: fileId}).then( fileDoc => {
 
 			unlinkAsync(fileDoc.path);
 			console.log(`hard copy of ${fileDoc._id} has been deleted from files directory`);
 
 			// shallow delete record from files collection?
-			fileDoc.isDeleted = true
+			fileDoc.is_deleted = true
 
 			// save updated file record to files collection
 			fileDoc
 				.save()
-				.then(console.log("${fileDoc._id} has been shallow deleted"));
+				.then(console.log("${fileDoc._id} has been shallow deleted"))
 				.catch(console.log("updated ${fileDoc._id} with shallow delete could not be saved"))
 
 		});

@@ -97,6 +97,20 @@ class App extends Component {
     }
   }
 
+  deleteFile = (fId) => {
+
+  	// send delete request
+  	/*
+  	axios.get("http://localhost:3001/api/deleteFile", {user: this.state.user, fileId: fId})	
+  		.then(response => response.data)
+  		.then(data => {
+  			if (data.success) {
+  				// delete relevant file item component
+  			}
+  		})
+  		.catch(error => console.log("file delete error:", error));
+	*/
+  };
 
   register = (event) => {
     event.preventDefault();
@@ -142,7 +156,7 @@ class App extends Component {
 	
   	axios.post("http://localhost:3001/api/login/", { 
   				user: username,
-          password: password
+          		password: password
   			})
   			.then(response => response.data)
   			.then(data => {
@@ -156,10 +170,10 @@ class App extends Component {
         			console.log("set state logged in status:", this.state.loggedIn);
         			console.log("set state user's file records:", this.state.fileRecordsArray);
   				} else {
-          		// user is not registered
-          		// display message
-          		console.log(data.error);
-        	};
+          			// user is not registered
+          			// display message
+          			console.log(data.error);
+        		};
   			})
   			.catch(error => console.log("sign in error:", error));
   			
@@ -269,7 +283,11 @@ class List extends Component {
 class Item extends Component {
   render() {
     return(
-      <li id={this.props.fileId} >{this.props.fileName}</li>
+    	<div>
+    		<li id={ this.props.fileId } > { this.props.fileName } </li>
+    		<p onClick={ this.deleteFile(this.props.fileId) }> DELETE </p>
+    		<p> DOWNLOAD </p>
+    	</div>
     )
   }
 }
