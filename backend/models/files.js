@@ -13,6 +13,10 @@ const filesSchema = new Schema(
 		path: String,
 		size: Number,
 		active: Boolean	// active or inactive: accessed by a user or not
+		isDeleted: {
+			type: Boolean,
+			default: false
+		}
 	},
 	{ timestamps: true }
 );

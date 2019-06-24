@@ -111,7 +111,7 @@ router.post("/uploadFile", (req, res) => {
 					// delete file already uploaded to "/file" dir
 					// https://stackoverflow.com/questions/49099744/nodejs-multer-diskstorage-to-delete-file-after-saving-to-disk
 					unlinkAsync(file.path);
-					console.log("deleted file from files directory")
+					console.log(`deleted ${fileRecord._id} from files directory`)
 
 					res.json({success: false});
 					return	// terminates this function
@@ -219,7 +219,89 @@ router.post("/uploadFile", (req, res) => {
 	});	// closing parenthesis to upload()
 
 });
-	
+
+router.get("/deleteFile", (req, res) => {
+	// retrieve user and file collections based on request's user and file id
+	// add to user's transaction history
+
+	const username = req.query.user;
+	const fileId = req.query.fileId;
+
+	Users.findOne({user: username}).then( userDoc => {
+		if (!userDoc) {
+			console.log("user not found");
+			res.status(400).json({ error: "User not found" });
+			return
+		}
+
+		// delete record in file records of specified file id
+		const fileRecordsArray = userDoc.file_records;
+
+		for (var i=0; i < fileRecordsArray.length; i++) {
+			const fileRecord = fileRecordsArray[i];
+			if (fileId === fileRecord.file_id) {
+				fileRecordsArray.splice(i, 1);
+				userDoc.file_records = fileRecordsArray;	// replaced doc's file records with spliced array 
+				console.log("updated user file records:", userDoc.file_records)
+			}
+		}
+
+		// add transaction indicating delete of file
+		// userDoc.file_transactions.push();
+		const fileTransaction = {
+			file_id: fileId,
+			action: "DELETE"
+		};
+
+		userDoc.file_transactions.push(fileTransaction);
+		console.log(`updated user file transactions: {userDoc.file_transactions}`)
+
+		userDoc
+			.save()
+			.then(console.log(`file id ${fileDoc.id} deleted for user ${userDoc.user}`));
+		
+		// delete hard file from files directory
+		// PROBLEM: potentially remove record first from files collection before deleting hard file?
+		// can grab path info from request, but only if I send full file record object to front end for fileRecordsArray
+		Files.findOne({_id: fileId}).then( fileDoc => {
+
+			unlinkAsync(fileDoc.path);
+			console.log(`hard copy of ${fileDoc._id} has been deleted from files directory`);
+
+			// shallow delete record from files collection?
+			fileDoc.isDeleted = true
+
+			// save updated file record to files collection
+			fileDoc
+				.save()
+				.then(console.log("${fileDoc._id} has been shallow deleted"));
+				.catch(console.log("updated ${fileDoc._id} with shallow delete could not be saved"))
+
+		});
+
+		// delete file record with file id in file collection
+		/*
+		Files.findOneAndRemove({_id: fileId}, err => {
+			if (!err) {
+	 			console.log(`${fileId} record has been deleted from files collection`);
+			} else {
+				console.log(`${fileId} record could not be deleted due to error: ${err}`);
+				res.json({ success: false });
+			}
+
+		});
+		*/
+
+
+		// send success to front-end
+		res.json({ success: true });
+
+	});
+
+
+
+});
+
 // @route POST api/register
 // @desc Register user
 // @access Public
@@ -425,18 +507,6 @@ router.get("/downloadFile", ()=> {
 
 */
 
-
-
-/*
-router.post('/uploadFile', function(req, res){	
-
-	console.log("request", req.body);
-	// receive validated user and file data
-	// console.log("file name: ", req.name);
-	// console.log("file data: ", req.file);
-
-});
-*/
 
 app.use("/api", router);
 
