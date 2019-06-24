@@ -16,10 +16,13 @@ const userSchema = new Schema(
 			type: Boolean,
 			default: false
 		},
-		file_ids: Array,	// list of file ids
-		file_transactions: [{	// record of interactions with file
+		file_records: [{
 				file_id: String,
-				action: String,	// download, upload, delete, edit
+				file_name: String
+		}],
+		file_transactions: [{	// record of interactions with a file
+				file_id: String,
+				action: String,	// actions: DOWNLOAD, UPLOAD, DELETE, EDIT
 				timestamp: {
 					type: Date,
 					default: Date.now

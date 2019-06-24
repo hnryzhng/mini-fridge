@@ -7,6 +7,10 @@ const multer = require("multer");	// package for processing binary data of uploa
 const uuid = require("uuid-v4");
 const path = require("path");
 
+const fs = require("fs");
+const { promisify } = require("util");	// converts callback based fn to promise-based one for async control flow 
+const unlinkAsync = promisify(fs.unlink);	// convert fs unlink method to a function that yields Promise for async control 
+
 // load models for db schema
 const Users = require("./models/users.js");
 const Files = require("./models/files.js");
@@ -69,8 +73,14 @@ var storage = multer.diskStorage({
 
 router.post("/uploadFile", (req, res) => {
 
-	var upload = multer({ storage: storage }).single("fileData");	// fieldname of front-end component is 'fileData'
+	
+	// uploads file first
+	// accesses user record to see if x files or under
+	// saves info in file and user collections
 
+
+	var upload = multer({ storage: storage }).single("fileData");	// fieldname of front-end component is 'fileData'
+	
 	upload(req, res, function(err) {
 		// for multer, route to router variable instead of app because of "/api" middleware at bottom
 		const file = req.file;
@@ -84,6 +94,72 @@ router.post("/uploadFile", (req, res) => {
 		// TASK: change File schema to match with multer file object?
 
 		console.log("connected to database in route uploadFile");
+
+		Users
+			.findOne({user: username})
+			.then(userDoc => {
+
+				// create file object
+				const fileRecord = new Files(file);
+				console.log("fileRecord:", fileRecord);
+
+				// file validation: users have no more than numFiles
+				const numFiles = 5;
+				if (userDoc.file_records.length >= numFiles) {
+					console.log(`${userDoc.user} has 5 files already`);
+					
+					// delete file already uploaded to "/file" dir
+					// https://stackoverflow.com/questions/49099744/nodejs-multer-diskstorage-to-delete-file-after-saving-to-disk
+					unlinkAsync(file.path);
+					console.log("deleted file from files directory")
+
+					res.json({success: false});
+					return	// terminates this function
+				}
+				
+				// proceed with saving file info to file and user collections
+				fileRecord
+					.save()
+					.then(fileDoc => {
+						console.log("file record added to db:", fileDoc);
+
+						// save file info to user collection
+						const fileRecord = {
+							file_id: fileDoc.id,
+							file_name: fileDoc.originalname
+						}
+
+						// save file transaction record to user collection
+						const fileTransaction = {
+							file_id: fileDoc.id,
+							action: "UPLOAD"
+						}
+
+						userDoc.file_records.push(fileRecord);
+						userDoc.file_transactions.push(fileTransaction);
+						
+						console.log(`${userDoc.user}'s user record: `, userDoc);
+
+						userDoc
+							.save()
+							.then(console.log(`file id ${fileDoc.id} saved to user ${userDoc.user}`));
+						
+						res.json({ success: true });
+
+					})
+					.catch(error => console.log("error saving file to db:", error))
+
+
+			})
+			.catch( err => console.log("error finding user to save file:", err));
+
+		
+
+		/*
+
+		// uploads file first
+		// saves info in file and user collections
+		// no file validation to see if user has under x files
 
 		const fileRecord = new Files(file);
 		console.log("fileRecord:", fileRecord);
@@ -102,8 +178,13 @@ router.post("/uploadFile", (req, res) => {
 							file_name: fileDoc.originalname
 						}
 
-						userDoc.file_ids.push(fileRecord);
-						//TASK: userDoc.file_transactions
+						const fileTransaction = {
+							file_id: fileDoc.id,
+							action: "UPLOAD"
+						}
+
+						userDoc.file_records.push(fileRecord);
+						userDoc.file_transactions.push(fileTransaction);
 						
 						console.log(`${userDoc.user}'s user record: `, userDoc);
 
@@ -118,7 +199,7 @@ router.post("/uploadFile", (req, res) => {
 
 			})
 			.catch(error => console.log("error saving file to db:", error));
-		
+		*/
 
 
 		//});
@@ -134,7 +215,8 @@ router.post("/uploadFile", (req, res) => {
 		// res.send("file response");
 		//res.send({success: true});
 		//return
-	});
+	
+	});	// closing parenthesis to upload()
 
 });
 	
@@ -161,6 +243,7 @@ router.post("/register", (req, res) => {
 
 	Users.findOne({ user: username }).then(doc => {
 		if (doc) {
+			console.log("there is already a user with this username");
 			return res.status(400).json({error: "there is already a user with this username"});
 		} else {		
 			// add user if existing user record not found
@@ -234,14 +317,25 @@ router.post("/login", (req, res) => {
 				if (isMatch) {
 					// retrieve file names of user record's files ref array
 					// send file names 
-					const fileidsArray = userDoc.file_ids;	// TASK: change field in user model to filereferencesArray
-					const fArray = fileidsArray.map( fileRecord => fileRecord.file_name );	// extract file name from each file record into new array
+					// TASK: perhaps send an object of a file's name and id, so that it can be uniquely identified from front-end especially for deleting and downloading 
+					const fileRecordsArray = userDoc.file_records;
+					// extract file name and id from each file record into new array of records
+					const fArray = fileRecordsArray.map( (fileRecord) => { 
+														
+														const fileObj = { 
+															fileName: fileRecord.file_name,
+															fileId: fileRecord.file_id
+														}
+
+														return fileObj;
+
+													});	
 					console.log("login user record:", userDoc);
-					console.log(`array of ${username} file names:`, fArray);
+					console.log(`array of ${username} file records:`, fArray);
 
 					res.json({
 						success: true,
-						fileNamesArray: fArray
+						fileRecordsArray: fArray
 					});
 
 					/*
@@ -303,7 +397,7 @@ router.get("/getFiles", (req, res)=> {
 	Users
 		.findOne({user: user})
 		.then(userDoc => {
-			const fileidsArray = userDoc.file_ids;
+			const fileidsArray = userDoc.file_records;
 
 			const resArray = fileidsArray.map( fileRecord => return fileRecord.file_name )	// extract file name from each file record and add to array
 			console.log(`array of ${user} file names:`, resArray);
@@ -347,6 +441,3 @@ router.post('/uploadFile', function(req, res){
 app.use("/api", router);
 
 app.listen(api_port, () => console.log(`Listening to ${api_port}`));
-
-
-

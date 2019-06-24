@@ -14,7 +14,7 @@ class App extends Component {
     loggedIn: false,
     fileName: null,
     fileData: null,
-    fileNamesArray: []
+    fileRecordsArray: []
   };
 
   //componentWillMount() {
@@ -34,20 +34,14 @@ class App extends Component {
     if (event) {
       this.setState({fileName: event.target.files[0].name})
       this.setState({fileData: event.target.files[0]});
+      console.log(`${this.state.fileName} is ready to be submitted: ${this.state.fileData}`);
     }
   }
 
   uploadFile = (event) => {
-    // check if file is valid
-    // valid: smaller than x size, fewer than y files in user list
-    // send object of username, file name, file data to db
-    // only show file in front end if post was successful
 
-    // user log-in authentication (maybe have page of validation)
-    // if logged in, then submit data 
-    // isLoggedIn()?
-    // const userId = grabUserId();
-
+	// upload only if logged in 
+	// file size < 50 kb (frontend), num of files <= 5 per user (backend)
 
     // multer + react: https://blog.stvmlbrn.com/2017/12/17/upload-files-using-react-to-node-express-server.html
     event.preventDefault();
@@ -59,27 +53,44 @@ class App extends Component {
     console.log("loggedIn: ", loggedIn);
     console.log("file name: ", fileName);
     console.log("fileData: ", fileData);
+
+    // check for file data upon submitting
+    if (!fileData) {
+    	console.log("please add a file before submitting");
+    	alert("please add a file before submitting");
+    	return // return to terminate function
+    }
 	    
+	// allow upload only if logged in
     if (loggedIn) {
 
-	    // instantiate react form object to hold file data
-	    const formDataObj = new FormData();
+    	// file validation: file size < 50 kb
+    	const fileSize = fileData.size;
+    	const fileSizeLimit = 50000;	// bytes; fileSizeLimit/1000 = kilobytes
 
-	  	// TASK: logged_in: true,
-	  	formDataObj.append("user", user);
-	    formDataObj.append("fileName", fileName);
-	    formDataObj.append("fileData", fileData);
+    	if (fileSize < fileSizeLimit) {
+		    // instantiate react form object to hold file data
+		    const formDataObj = new FormData();
 
-	    axios.post("http://localhost:3001/api/uploadFile", formDataObj)
-	            .then(response => response.data)	// TASK: if response obj success is true, then add pretty file name to list display (or just retrieve all names from componentWillMount because setState below refreshes component  state?)
-	            .then(data => {
-	            	if (data.success) {
-	            		this.setState({fileNamesArray: [...this.state.fileNamesArray, this.state.fileName]}); // use spread operator to create a new array instead of mutating old one
-	            	} else {
-	            		console.log("error: trouble uploading your file");
-	            	}
-	            })
-	            .catch(error => console.log("upload file error:", error));
+		  	// TASK: backend user logged_in: true ? 
+		  	formDataObj.append("user", user);
+		    formDataObj.append("fileName", fileName);
+		    formDataObj.append("fileData", fileData);
+
+		    axios.post("http://localhost:3001/api/uploadFile", formDataObj)
+		            .then(response => response.data)	// TASK: if response obj success is true, then add pretty file name to list display (or just retrieve all names from componentWillMount because setState below refreshes component  state?)
+		            .then(data => {
+		            	if (data.success) {
+		            		this.setState({fileRecordsArray: [...this.state.fileRecordsArray, this.state.fileName]}); // use spread operator to create a new array instead of mutating old one
+		            	} else {
+		            		console.log("error: trouble uploading your file");
+		            	}
+		            })
+		            .catch(error => console.log("upload file error:", error));
+		} else {
+			console.log(`the size of ${fileName} is too large at ${fileSize}; max size is ${fileSizeLimit} bytes`);
+			alert(`the size of ${fileName} is too large at ${fileSize/1000} kilobytes; max size is ${fileSizeLimit/1000} kilobytes`);
+		}
 
     } else {
 		  console.log("you must be logged in to upload file");
@@ -140,10 +151,10 @@ class App extends Component {
   					// change app state 
   					this.setState({user: username})
   					this.setState({loggedIn: true})
-  					this.setState({fileNamesArray: data.fileNamesArray})
-        		console.log("set state user:", this.state.user);
-        		console.log("set state logged in status:", this.state.loggedIn);
-        		console.log("set state user's file names:", this.state.fileNamesArray);
+  					this.setState({fileRecordsArray: data.fileRecordsArray})
+        			console.log("set state user:", this.state.user);
+        			console.log("set state logged in status:", this.state.loggedIn);
+        			console.log("set state user's file records:", this.state.fileRecordsArray);
   				} else {
           		// user is not registered
           		// display message
@@ -159,7 +170,7 @@ class App extends Component {
   	
   	this.setState({ user: null });
   	this.setState({ loggedIn: false });
-    this.setState({ fileNamesArray: [] });
+    this.setState({ fileRecordsArray: [] });
   	
   	console.log("signed out user state:", this.state.user);
   	console.log("signed out log in state:", this.state.loggedIn);
@@ -191,7 +202,7 @@ class App extends Component {
         </div>
 
         <div id="listContainer" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
-          <List fileNamesArray={this.state.fileNamesArray} />  
+          <List fileRecordsArray={this.state.fileRecordsArray} />  
         </div>
 
 
@@ -245,8 +256,8 @@ class UploadFileForm extends Component {
 class List extends Component {
 
 	render() {
-		let list = this.props.fileNamesArray.map((file,index)=>{
-		  return <Item key={index} fileName={file} />
+		let list = this.props.fileRecordsArray.map((file,index)=>{
+		  return <Item key={index} fileName={file.fileName} fileId={file.fileId} />
 		});
 
 		return <ul>{list}</ul>; 
@@ -258,7 +269,7 @@ class List extends Component {
 class Item extends Component {
   render() {
     return(
-      <li>{this.props.fileName}</li>
+      <li id={this.props.fileId} >{this.props.fileName}</li>
     )
   }
 }
