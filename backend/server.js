@@ -227,6 +227,10 @@ router.get("/deleteFile", (req, res) => {
 	const username = req.query.user;
 	const fileId = req.query.fileId;
 
+	console.log("delete request user:", username);
+	console.log("delete request fileId:", fileId);
+
+	/*
 	Users.findOne({user: username}).then( userDoc => {
 		if (!userDoc) {
 			console.log("user not found");
@@ -282,23 +286,24 @@ router.get("/deleteFile", (req, res) => {
 		});
 
 		// delete file record with file id in file collection
-		/*
-		Files.findOneAndRemove({_id: fileId}, err => {
-			if (!err) {
-	 			console.log(`${fileId} record has been deleted from files collection`);
-			} else {
-				console.log(`${fileId} record could not be deleted due to error: ${err}`);
-				res.json({ success: false });
-			}
+		
+		//Files.findOneAndRemove({_id: fileId}, err => {
+		//	if (!err) {
+	 	//		console.log(`${fileId} record has been deleted from files collection`);
+		//	} else {
+		//		console.log(`${fileId} record could not be deleted due to error: ${err}`);
+		//		res.json({ success: false });
+		//	}
 
-		});
-		*/
+		//});
+		
 
 
 		// send success to front-end
 		res.json({ success: true });
 
 	});
+	*/
 
 
 

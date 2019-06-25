@@ -97,21 +97,6 @@ class App extends Component {
     }
   }
 
-  deleteFile = (fId) => {
-
-  	// send delete request
-  	/*
-  	axios.get("http://localhost:3001/api/deleteFile", {user: this.state.user, fileId: fId})	
-  		.then(response => response.data)
-  		.then(data => {
-  			if (data.success) {
-  				// delete relevant file item component
-  			}
-  		})
-  		.catch(error => console.log("file delete error:", error));
-	*/
-  };
-
   register = (event) => {
     event.preventDefault();
 
@@ -180,7 +165,7 @@ class App extends Component {
 
   }
 
-  handleSignOut = async () => {
+  handleSignOut = () => {
   	
   	this.setState({ user: null });
   	this.setState({ loggedIn: false });
@@ -216,7 +201,7 @@ class App extends Component {
         </div>
 
         <div id="listContainer" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
-          <List fileRecordsArray={this.state.fileRecordsArray} />  
+          <List fileRecordsArray={ this.state.fileRecordsArray } user={ this.state.user } />  
         </div>
 
 
@@ -271,7 +256,7 @@ class List extends Component {
 
 	render() {
 		let list = this.props.fileRecordsArray.map((file,index)=>{
-		  return <Item key={index} fileName={file.fileName} fileId={file.fileId} />
+		  return <Item key={index} fileName={file.fileName} fileId={file.fileId} user={this.props.user} />
 		});
 
 		return <ul>{list}</ul>; 
@@ -281,16 +266,41 @@ class List extends Component {
 }
 
 class Item extends Component {
+
   render() {
+    
+    const user = this.props.user;
+    const fileId = this.props.fileId;
+    
     return(
     	<div>
-    		<li id={ this.props.fileId } > { this.props.fileName } </li>
-    		<p onClick={ this.deleteFile(this.props.fileId) }> DELETE </p>
-    		<p> DOWNLOAD </p>
+    		<li id={ fileId } > { this.props.fileName } </li>
+    		<p onClick={ () => { del(user, fileId) } }> DELETE </p>
     	</div>
     )
   }
 }
+
+
+// delete file request 
+function del(user, fId) {
+  console.log("standalone delete function:", user, ",", fId);
+  axios.get("http://localhost:3001/api/deleteFile", {
+          params: {
+            user: user, 
+            fileId: fId
+          }
+        })
+        .then(response => response.data)
+        .then(data => {
+          if (data.success) {
+            console.log("file has been deleted on the backend");
+          }
+        })
+        .catch(err => console.log("error with delete request:", err));
+}
+
+
 
 
 export default App;
