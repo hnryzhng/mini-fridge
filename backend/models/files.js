@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const filesSchema = new Schema(
 	{
 		//_id: Number,	// is auto-generated
+		file_id: String,
 		fieldname: String,
 		originalname: String,
 		encoding: String,

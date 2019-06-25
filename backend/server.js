@@ -84,12 +84,12 @@ router.post("/uploadFile", (req, res) => {
 	upload(req, res, function(err) {
 		// for multer, route to router variable instead of app because of "/api" middleware at bottom
 		const file = req.file;
-		const filename = file.filename;
+		const fileId = path.basename(file.filename, path.extname(file.filename));	// grabs file id from path of hard copy
 		const username = req.body.user;
 		console.log("user:", username);
 		console.log("file:", file);
 		console.log("file object type:", typeof file);
-		console.log("file name:", filename);
+		console.log("file id:", fileId);
 
 		// TASK: change File schema to match with multer file object?
 
@@ -99,7 +99,8 @@ router.post("/uploadFile", (req, res) => {
 			.findOne({user: username})
 			.then(userDoc => {
 
-				// create file object
+				// create file object for db
+				file.file_id = fileId;	// add file id to record
 				const fileRecord = new Files(file);
 				console.log("fileRecord:", fileRecord);
 
@@ -117,6 +118,7 @@ router.post("/uploadFile", (req, res) => {
 					return	// terminates this function
 				}
 				
+				// TASK: specify fileRecord._id to be fileId
 				// proceed with saving file info to file and user collections
 				fileRecord
 					.save()
@@ -125,13 +127,13 @@ router.post("/uploadFile", (req, res) => {
 
 						// save file info to user collection
 						const fileRecord = {
-							file_id: fileDoc.id,
+							file_id: fileId,
 							file_name: fileDoc.originalname
 						}
 
 						// save file transaction record to user collection
 						const fileTransaction = {
-							file_id: fileDoc.id,
+							file_id: fileId,
 							action: "UPLOAD"
 						}
 
@@ -142,7 +144,7 @@ router.post("/uploadFile", (req, res) => {
 
 						userDoc
 							.save()
-							.then(console.log(`file id ${fileDoc.id} saved to user ${userDoc.user}`));
+							.then(console.log(`file id ${fileId} saved to user ${userDoc.user}`));
 						
 						res.json({ success: true });
 
@@ -230,7 +232,7 @@ router.get("/deleteFile", (req, res) => {
 	console.log("delete request user:", username);
 	console.log("delete request fileId:", fileId);
 
-	/*
+	// TASK BOOKMARK: also in front-end, file cannot be deleted right after upload
 	Users.findOne({user: username}).then( userDoc => {
 		if (!userDoc) {
 			console.log("user not found");
@@ -241,6 +243,7 @@ router.get("/deleteFile", (req, res) => {
 		// delete record in file records of specified file id
 		const fileRecordsArray = userDoc.file_records;
 
+		// loop through to find and delete record of file
 		for (var i=0; i < fileRecordsArray.length; i++) {
 			const fileRecord = fileRecordsArray[i];
 			if (fileId === fileRecord.file_id) {
@@ -258,7 +261,7 @@ router.get("/deleteFile", (req, res) => {
 		};
 
 		userDoc.file_transactions.push(fileTransaction);
-		console.log(`updated user file transactions: {userDoc.file_transactions}`)
+		console.log(`updated user file transactions: ${userDoc.file_transactions}`)
 
 		userDoc
 			.save()
@@ -269,7 +272,7 @@ router.get("/deleteFile", (req, res) => {
 		// PROBLEM: potentially remove record first from files collection before deleting hard file?
 		// can grab path info from request, but only if I send full file record object to front end for fileRecordsArray
 		// OR just keep hard copy in dir, and just shallow delete from file record
-		Files.findOne({_id: fileId}).then( fileDoc => {
+		Files.findOne({file_id: fileId}).then( fileDoc => {
 
 			unlinkAsync(fileDoc.path);
 			console.log(`hard copy of ${fileDoc._id} has been deleted from files directory`);
@@ -283,7 +286,8 @@ router.get("/deleteFile", (req, res) => {
 				.then(console.log("${fileDoc._id} has been shallow deleted"))
 				.catch(console.log("updated ${fileDoc._id} with shallow delete could not be saved"))
 
-		});
+		})
+		.then(err => console.log(`${user} record could not be found`));
 
 		// delete file record with file id in file collection
 		
@@ -303,7 +307,6 @@ router.get("/deleteFile", (req, res) => {
 		res.json({ success: true });
 
 	});
-	*/
 
 
 
