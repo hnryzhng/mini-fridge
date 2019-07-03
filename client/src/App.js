@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import download from 'downloadjs';
 
 class App extends Component {
 
@@ -276,6 +277,7 @@ class Item extends Component {
     	<div>
     		<li id={ fileId } > { this.props.fileName } </li>
     		<p onClick={ () => { del(user, fileId) } }> DELETE </p>
+        <p onClick={ () => { dLoad(user, fileId) } }> DOWNLOAD </p>
     	</div>
     )
   }
@@ -295,12 +297,23 @@ function del(user, fId) {
         .then(data => {
           if (data.success) {
             console.log("file has been deleted on the backend");
+            // this.setState() // set state of files array
           }
         })
         .catch(err => console.log("error with delete request:", err));
 }
 
+// download file request
+async function dLoad(user, fId) {
+	console.log("standalone download function:", user, ",", fId);
+	
+  const reqUrl = `http://localhost:3001/api/downloadFile?user=${user}&fileId=${fId}`;
 
+  const response = await fetch(reqUrl);
+  const blob = response.blob(); // TASK BOOKMARK: how do I get content from blob, and send file name with extension from backend 
+  download(blob, fId + ".docx");  // downloadjs library
+	
+}
 
 
 export default App;

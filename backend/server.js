@@ -126,7 +126,7 @@ router.post("/uploadFile", (req, res) => {
 						console.log("file record added to db:", fileDoc);
 
 						// save file info to user collection
-						const fileRecord = {
+						const fileRec = {
 							file_id: fileId,
 							file_name: fileDoc.originalname
 						}
@@ -137,7 +137,7 @@ router.post("/uploadFile", (req, res) => {
 							action: "UPLOAD"
 						}
 
-						userDoc.file_records.push(fileRecord);
+						userDoc.file_records.push(fileRec);
 						userDoc.file_transactions.push(fileTransaction);
 						
 						console.log(`${userDoc.user}'s user record: `, userDoc);
@@ -232,7 +232,7 @@ router.get("/deleteFile", (req, res) => {
 	console.log("delete request user:", username);
 	console.log("delete request fileId:", fileId);
 
-	// TASK BOOKMARK: also in front-end, file cannot be deleted right after upload
+	// TASK BOOKMARK: also in front-end, file cannot be deleted right after upload, maybe async problem where file item component shows up before delete component is rendered 
 	Users.findOne({user: username}).then( userDoc => {
 		if (!userDoc) {
 			console.log("user not found");
@@ -244,6 +244,7 @@ router.get("/deleteFile", (req, res) => {
 		const fileRecordsArray = userDoc.file_records;
 
 		// loop through to find and delete record of file
+		// TASK: change to object for faster retrieval? 
 		for (var i=0; i < fileRecordsArray.length; i++) {
 			const fileRecord = fileRecordsArray[i];
 			if (fileId === fileRecord.file_id) {
@@ -265,7 +266,8 @@ router.get("/deleteFile", (req, res) => {
 
 		userDoc
 			.save()
-			.then(console.log(`file id ${fileDoc.id} deleted for user ${userDoc.user}`));
+			.then(console.log(`file id ${fileDoc.id} deleted for user ${userDoc.user}`))
+			.catch(err => console.log("user doc could not be saved after updating file transaction:", err));
 		
 		// delete hard file from files directory
 		// BOOKMARK
@@ -287,7 +289,8 @@ router.get("/deleteFile", (req, res) => {
 				.catch(console.log("updated ${fileDoc._id} with shallow delete could not be saved"))
 
 		})
-		.then(err => console.log(`${user} record could not be found`));
+		.then(() => res.json({ success: true }))
+		.catch(err => console.log(`${user} file could not be found`));
 
 		// delete file record with file id in file collection
 		
@@ -301,14 +304,73 @@ router.get("/deleteFile", (req, res) => {
 
 		//});
 		
+	})
+	.catch(err => console.log("user could not be found in db", err));
 
 
-		// send success to front-end
-		res.json({ success: true });
 
-	});
+});
 
 
+router.get("/downloadFile", (req, res)=> {
+	
+	const username = req.query.user;
+	const fileId = req.query.fileId;
+
+	console.log("download file for user: ", username);
+	console.log("download file for file id:", fileId);
+	console.log("file id type:", typeof fileId);
+
+	Users.findOne({user: username}).then(userDoc => {
+		if (!userDoc) {
+			console.log("user not found");
+			res.status(400).json({ error: "User not found" });
+			return
+		}
+
+		// validate that file id is in user record
+		// TASK: maybe change array into object for faster retrieval?
+		const fileRecordsArray = userDoc.file_records;
+		const hasRecord = false;
+		// loop through to verify that file belongs to user
+		for (var i=0; i < fileRecordsArray.length; i++) {
+			const fileRecord = fileRecordsArray[i];
+			if (fileId === fileRecord.file_id) {
+				//hasRecord = true;
+				
+				// retrieve record in file records of specified file id
+				Files.findOne({file_id: fileId}).then( fileDoc => {
+
+					// send file for download
+					res.download(fileDoc.path, (err) => {
+						if (err) {
+							console.log("error sending file for download at path:", fileDoc.path);
+						} else {
+							// add transaction history upon successful download
+							const fileTransaction = {
+								file_id: fileId,
+								action: "DOWNLOAD"
+							}
+							userDoc.file_transactions.push(fileTransaction);
+							console.log(`${userDoc.user} transactions: ${userDoc.file_transactions}`)
+						}
+
+					});
+
+				})
+				.catch(err => console.log("file could not be found in db"));
+			}
+		}
+
+		//if (hasRecord) {
+				
+		//}
+
+	})
+	.catch(err => "User could not be found in database");  
+
+
+	
 
 });
 
@@ -511,9 +573,6 @@ router.get("/getFiles", (req, res)=> {
 
 });
 
-router.get("/downloadFile", ()=> {
-	
-});
 
 */
 
