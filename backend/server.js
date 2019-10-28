@@ -146,7 +146,14 @@ router.post("/uploadFile", (req, res) => {
 							.save()
 							.then(console.log(`file id ${fileId} saved to user ${userDoc.user}`));
 						
-						res.json({ success: true });
+						// BOOKMARK, send file name and file id as well
+						var responseObj = {
+							success: true,
+							file_name: fileRec.file_name,
+							file_id: fileRec.file_id
+						}
+						
+						res.json(responseObj);
 
 					})
 					.catch(error => console.log("error saving file to db:", error))

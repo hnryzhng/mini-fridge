@@ -82,7 +82,8 @@ class App extends Component {
 		            .then(response => response.data)	// TASK: if response obj success is true, then add pretty file name to list display (or just retrieve all names from componentWillMount because setState below refreshes component  state?)
 		            .then(data => {
 		            	if (data.success) {
-		            		this.setState({fileRecordsArray: [...this.state.fileRecordsArray, this.state.fileName]}); // use spread operator to create a new array instead of mutating old one
+                    console.log("data:", data);
+		            		this.setState({fileRecordsArray: [...this.state.fileRecordsArray, {fileName: data.file_name, fileId: data.file_id}]}); // use spread operator to create a new array instead of mutating old one
 		            	} else {
 		            		console.log("error: trouble uploading your file");
 		            	}
