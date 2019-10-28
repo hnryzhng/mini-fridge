@@ -146,7 +146,6 @@ router.post("/uploadFile", (req, res) => {
 							.save()
 							.then(console.log(`file id ${fileId} saved to user ${userDoc.user}`));
 						
-						// BOOKMARK, send file name and file id as well
 						var responseObj = {
 							success: true,
 							file_name: fileRec.file_name,
@@ -239,7 +238,6 @@ router.get("/deleteFile", (req, res) => {
 	console.log("delete request user:", username);
 	console.log("delete request fileId:", fileId);
 
-	// TASK BOOKMARK: also in front-end, file cannot be deleted right after upload, maybe async problem where file item component shows up before delete component is rendered 
 	Users.findOne({user: username}).then( userDoc => {
 		if (!userDoc) {
 			console.log("user not found");
@@ -277,10 +275,7 @@ router.get("/deleteFile", (req, res) => {
 			.catch(err => console.log("user doc could not be saved after updating file transaction:", err));
 		
 		// delete hard file from files directory
-		// BOOKMARK
-		// PROBLEM: possibly remove record first from files collection before deleting hard file?
-		// can grab path info from request, but only if I send full file record object to front end for fileRecordsArray
-		// OR just keep hard copy in dir, and just shallow delete from file record
+		// shallow delete from user records
 		Files.findOne({file_id: fileId}).then( fileDoc => {
 
 			console.log("fileDoc:", fileDoc);
@@ -324,6 +319,11 @@ router.get("/deleteFile", (req, res) => {
 
 router.get("/downloadFile", (req, res)=> {
 	
+	// BOOKMARK TASK
+
+	// BOOKMARK: security vulnerabilities
+	// https://github.com/hnryzhng/mini-fridge/network/alerts
+
 	const username = req.query.user;
 	const fileId = req.query.fileId;
 
