@@ -273,18 +273,19 @@ router.get("/deleteFile", (req, res) => {
 
 		userDoc
 			.save()
-			.then(console.log(`file id ${fileDoc.id} deleted for user ${userDoc.user}`))
+			.then(console.log(`file id ${fileId} deleted from user record ${userDoc.user}`))
 			.catch(err => console.log("user doc could not be saved after updating file transaction:", err));
 		
 		// delete hard file from files directory
 		// BOOKMARK
-		// PROBLEM: potentially remove record first from files collection before deleting hard file?
+		// PROBLEM: possibly remove record first from files collection before deleting hard file?
 		// can grab path info from request, but only if I send full file record object to front end for fileRecordsArray
 		// OR just keep hard copy in dir, and just shallow delete from file record
 		Files.findOne({file_id: fileId}).then( fileDoc => {
 
+			console.log("fileDoc:", fileDoc);
 			unlinkAsync(fileDoc.path);
-			console.log(`hard copy of ${fileDoc._id} has been deleted from files directory`);
+			console.log(`hard copy of ${fileDoc.file_id} has been deleted from files directory`);
 
 			// shallow delete record from files collection?
 			fileDoc.is_deleted = true
@@ -292,12 +293,14 @@ router.get("/deleteFile", (req, res) => {
 			// save updated file record to files collection
 			fileDoc
 				.save()
-				.then(console.log("${fileDoc._id} has been shallow deleted"))
-				.catch(console.log("updated ${fileDoc._id} with shallow delete could not be saved"))
+				.then(console.log(`${fileDoc.file_id} has been shallow deleted`))
+				.catch(console.log(`updated ${fileDoc.file_id} with shallow delete could not be saved`))
+
+			res.json({ success: true, file_id: fileDoc.file_id});
 
 		})
-		.then(() => res.json({ success: true }))
-		.catch(err => console.log(`${user} file could not be found`));
+		.then(() => res.json({ success: true, file_id: fileDoc.file_id }))
+		.catch(err => console.log(`${username} file could not be found`));
 
 		// delete file record with file id in file collection
 		

@@ -179,6 +179,39 @@ class App extends Component {
 
   }
 
+  del = (user, fId) => {
+    console.log("standalone delete function:", user, ",", fId);
+    axios.get("http://localhost:3001/api/deleteFile", {
+            params: {
+              user: user, 
+              fileId: fId
+            }
+          })
+          .then(response => response.data)
+          .then(data => {
+            if (data.success) {
+              console.log("file has been deleted on the backend");
+              console.log("data:", data);
+              // find file in fileRecordsArray using data.file_id, then remove
+              var oldArray = this.state.fileRecordsArray; // BOOKMARK: delete method needs to set state of the parent? redux?
+              var newArray = oldArray.filter(function(record) {
+                if (record.fileId !== data.file_id) {
+                  return record;
+                }
+              });
+              console.log("newArray:", newArray);
+              //for (var i; i< oldArray.length; i++) {
+              //  var currentRecord = oldArray[i]
+              //  if (currentRecord.fileId == data.file_id) {
+
+              //  }
+              //};
+
+              this.setState({fileRecordsArray: newArray}) // set state of files array
+            }
+          })
+            .catch(err => console.log("error with delete request:", err));
+  }
 
   render() {
 
@@ -203,7 +236,7 @@ class App extends Component {
         </div>
 
         <div id="listContainer" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
-          <List fileRecordsArray={ this.state.fileRecordsArray } user={ this.state.user } />  
+          <List fileRecordsArray={ this.state.fileRecordsArray } user={ this.state.user } del= { this.del }/>  
         </div>
 
 
@@ -258,7 +291,7 @@ class List extends Component {
 
 	render() {
 		let list = this.props.fileRecordsArray.map((file,index)=>{
-		  return <Item key={index} fileName={file.fileName} fileId={file.fileId} user={this.props.user} />
+		  return <Item key={index} fileName={file.fileName} fileId={file.fileId} user={this.props.user} del={this.props.del} />
 		});
 
 		return <ul>{list}</ul>; 
@@ -277,14 +310,14 @@ class Item extends Component {
     return(
     	<div>
     		<li id={ fileId } > { this.props.fileName } </li>
-    		<p onClick={ () => { del(user, fileId) } }> DELETE </p>
+    		<p onClick={ () => { this.props.del(user, fileId) } }> DELETE </p>
         <p onClick={ () => { dLoad(user, fileId) } }> DOWNLOAD </p>
     	</div>
     )
   }
 }
 
-
+/**
 // delete file request 
 function del(user, fId) {
   console.log("standalone delete function:", user, ",", fId);
@@ -298,11 +331,28 @@ function del(user, fId) {
         .then(data => {
           if (data.success) {
             console.log("file has been deleted on the backend");
-            // this.setState() // set state of files array
+            console.log("data:", data);
+            // find file in fileRecordsArray using data.file_id, then remove
+            var oldArray = this.state.fileRecordsArray; // BOOKMARK: delete method needs to set state of the parent? redux?
+            var newArray = oldArray.filter(function(record) {
+              if (record.fileId !== data.file_id) {
+                return record;
+              }
+            });
+            console.log("newArray:", newArray);
+            //for (var i; i< oldArray.length; i++) {
+            //  var currentRecord = oldArray[i]
+            //  if (currentRecord.fileId == data.file_id) {
+
+            //  }
+            //};
+
+            this.setState({fileRecordsArray: newArray}) // set state of files array
           }
         })
-        .catch(err => console.log("error with delete request:", err));
+          .catch(err => console.log("error with delete request:", err));
 }
+**/
 
 // download file request
 async function dLoad(user, fId) {
@@ -315,6 +365,5 @@ async function dLoad(user, fId) {
   download(blob, fId + ".docx");  // downloadjs library
 	
 }
-
 
 export default App;
