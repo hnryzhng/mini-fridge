@@ -361,15 +361,17 @@ async function dLoad(user, fId) {
 	const reqUrl = `http://localhost:3001/api/downloadFile?user=${user}&fileId=${fId}`;
 
 	axios(reqUrl, {
-		method: 'GET',
-		responseType: 'blob'	// request response to be in Blob format
+		method: 'GET'
 	})
-	.then(response => {
-		console.log('Blob response:', response.data);
+	.then(response => response.data)
+	.then(data => {
+		console.log('response payload:', data.payload);
 		
+		// BOOKMARK: only works with doc and xls files so far
 		const file = new Blob(
-			[response.data],	// response data
-			{type: 'application/word'})	// MIME type ; response.data.type
+			[data.payload],	// response data
+			{type: data.mime_type})	// MIME type stored in data.mime_type
+
 
 		download(file);
 		

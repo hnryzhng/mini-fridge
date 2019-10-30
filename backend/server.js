@@ -362,15 +362,16 @@ router.get("/downloadFile", (req, res)=> {
 					});
 
 					readable.on("end", () => {
-						console.log("response string to be served:", dataStr);
+						// console.log("response string to be served:", dataStr);
 						// console.log("file extension:", fileDoc.path);
 						// console.log("mime type", mime.lookup(fileDoc.path));
-						//let responseObj = {
-						//	payload: new Blob(dataStr),	// send Blob of complete data string
-						//	mime_type: mime.lookup(fileDoc.path),	// send mime-type based on file extension
-						//}
+
+						var responseObj = {
+							payload: dataStr,	// send binary of complete data string
+							mime_type: mime.lookup(fileDoc.path)	// send mime-type based on file extension
+						}
 						
-						res.end(dataStr); 
+						res.json(responseObj); 
 					});
 
 					readable.on("error", (err) => {
