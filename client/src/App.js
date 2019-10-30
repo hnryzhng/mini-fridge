@@ -369,7 +369,7 @@ async function dLoad(user, fId) {
 		
 		const file = new Blob(
 			[response.data],	// response data
-			{type: response.data.mime_type})	// MIME type ; response.data.type
+			{type: 'application/word'})	// MIME type ; response.data.type
 
 		download(file);
 		

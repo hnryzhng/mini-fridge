@@ -10,6 +10,7 @@ const path = require("path");
 const fs = require("fs");
 const { promisify } = require("util");	// converts callback based fn to promise-based one for async control flow 
 const unlinkAsync = promisify(fs.unlink);	// convert fs unlink method to a function that yields Promise for async control 
+const mime = require("mime-types");
 
 // load models for db schema
 const Users = require("./models/users.js");
@@ -353,16 +354,23 @@ router.get("/downloadFile", (req, res)=> {
 
 					// serve file for download using stream
 					var readable = fs.createReadStream(fileDoc.path);	// create read stream from file src dir
-					var responseData = "";
+					var dataStr = "";
 
 					readable.on("data", (chunk) => {
-						responseData += chunk.toString();	// chunk string 
+						dataStr += chunk.toString();	// add chunk to response string 
 						// res.write(chunk);	// send chunk in response
 					});
 
 					readable.on("end", () => {
-						console.log("response data to be served:", responseData);
-						res.end(responseData);	// send complete string of data chunks 
+						console.log("response string to be served:", dataStr);
+						// console.log("file extension:", fileDoc.path);
+						// console.log("mime type", mime.lookup(fileDoc.path));
+						//let responseObj = {
+						//	payload: new Blob(dataStr),	// send Blob of complete data string
+						//	mime_type: mime.lookup(fileDoc.path),	// send mime-type based on file extension
+						//}
+						
+						res.end(dataStr); 
 					});
 
 					readable.on("error", (err) => {
