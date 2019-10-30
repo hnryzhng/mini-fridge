@@ -358,12 +358,31 @@ function del(user, fId) {
 async function dLoad(user, fId) {
 	console.log("standalone download function:", user, ",", fId);
 	
-  const reqUrl = `http://localhost:3001/api/downloadFile?user=${user}&fileId=${fId}`;
+	const reqUrl = `http://localhost:3001/api/downloadFile?user=${user}&fileId=${fId}`;
 
-  const response = await fetch(reqUrl);
-  const blob = response.blob(); // TASK BOOKMARK: how do I get content from blob, and send file name with extension from backend 
-  download(blob, fId + ".docx");  // downloadjs library
-	
+	axios(reqUrl, {
+		method: 'GET',
+		responseType: 'blob'	// request response to be in Blob format
+	})
+	.then(response => {
+		console.log('Blob response:', response.data);
+		
+		const file = new Blob(
+			[response.data],	// response data
+			{type: response.data.mime_type})	// MIME type ; response.data.type
+
+		download(file);
+		
+	})
+	.catch(error => {
+		console.log('download error:', error);
+	});
+
+	/**
+	const response = await fetch(reqUrl);
+	const blob = response.blob(); // TASK BOOKMARK: how do I get content from blob, and send file name with extension from backend 
+	download(blob, fId + ".docx");  // downloadjs library
+	**/
 }
 
 export default App;

@@ -351,7 +351,25 @@ router.get("/downloadFile", (req, res)=> {
 				// retrieve record in file records of specified file id
 				Files.findOne({file_id: fileId}).then( fileDoc => {
 
-					// send file for download
+					// serve file for download using stream
+					var readable = fs.createReadStream(fileDoc.path);	// create read stream from file src dir
+					var responseData = "";
+
+					readable.on("data", (chunk) => {
+						responseData += chunk.toString();	// chunk string 
+						// res.write(chunk);	// send chunk in response
+					});
+
+					readable.on("end", () => {
+						console.log("response data to be served:", responseData);
+						res.end(responseData);	// send complete string of data chunks 
+					});
+
+					readable.on("error", (err) => {
+						res.end({ success: false, error: err })
+					});
+
+					/**
 					res.download(fileDoc.path, (err) => {
 						if (err) {
 							console.log("error sending file for download at path:", fileDoc.path);
@@ -366,6 +384,7 @@ router.get("/downloadFile", (req, res)=> {
 						}
 
 					});
+					**/
 
 				})
 				.catch(err => console.log("file could not be found in db"));
