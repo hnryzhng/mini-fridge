@@ -371,6 +371,8 @@ async function dLoad(user, fId) {
     var blob = new Blob([response.data], {type: response.headers['content-type']});
     console.log("Blob file:", blob);
 
+    // BOOKMARK: why are some files deleted when I click DOWNLOAD? maybe async error on backend for deleting files
+    
     download(blob)
 
     const fileURL = URL.createObjectURL(blob);
