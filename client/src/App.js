@@ -360,13 +360,52 @@ async function dLoad(user, fId) {
 	
 	const reqUrl = `http://localhost:3001/api/downloadFile?user=${user}&fileId=${fId}`;
 
+  axios(reqUrl, {
+    method: 'GET',
+    responseType: 'arraybuffer' // array buffers can also handle pdf, images
+
+  })
+  .then((response) => {
+    console.log("response content:", response)
+
+    var blob = new Blob([response.data], {type: response.headers['content-type']});
+    console.log("Blob file:", blob);
+
+    download(blob)
+
+    const fileURL = URL.createObjectURL(blob);
+    // console.log("file URL:", fileURL);
+    window.open(fileURL); 
+  })
+  //.then(data => {
+  //  console.log("response data:", data)
+
+    //const file = new Blob([data]);
+
+    //download(file);
+
+    /**
+    const file = new Blob(
+      [data.payload], // response data
+      {type: 'image/jpeg'})
+
+
+    download(file);
+    **/
+    
+  //})
+  .catch(error => {
+    console.log('download error:', error);
+  });
+
+  /**
 	axios(reqUrl, {
 		method: 'GET'
 	})
 	.then(response => response.data)
 	.then(data => {
 		console.log('response payload:', data.payload);
-		
+		console.log('response mime-type:', data.mime_type);
 		// BOOKMARK: only works with doc and xls files so far
 		const file = new Blob(
 			[data.payload],	// response data
@@ -379,12 +418,8 @@ async function dLoad(user, fId) {
 	.catch(error => {
 		console.log('download error:', error);
 	});
+  **/
 
-	/**
-	const response = await fetch(reqUrl);
-	const blob = response.blob(); // TASK BOOKMARK: how do I get content from blob, and send file name with extension from backend 
-	download(blob, fId + ".docx");  // downloadjs library
-	**/
 }
 
 export default App;

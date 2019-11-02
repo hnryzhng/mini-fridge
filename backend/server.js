@@ -354,15 +354,28 @@ router.get("/downloadFile", (req, res)=> {
 
 					// serve file for download using stream
 					var readable = fs.createReadStream(fileDoc.path);	// create read stream from file src dir
-					var dataStr = "";
+					var mimeType = mime.lookup(fileDoc.path);
+					console.log("MIME-type: ", mimeType);
 
+					readable.on("open", () => {
+						res.set('Content-Type', mimeType);
+						readable.pipe(res);
+					})
+
+					readable.on("error", (err) => {
+						res.end({ success: false, error: err });
+					})
+
+					/**
+					only works for serving doc and xls files
+					var dataStr = "";
 					readable.on("data", (chunk) => {
 						dataStr += chunk.toString();	// add chunk to response string 
 						// res.write(chunk);	// send chunk in response
 					});
 
 					readable.on("end", () => {
-						// console.log("response string to be served:", dataStr);
+						console.log("response string to be served:", dataStr);
 						// console.log("file extension:", fileDoc.path);
 						// console.log("mime type", mime.lookup(fileDoc.path));
 
@@ -371,12 +384,13 @@ router.get("/downloadFile", (req, res)=> {
 							mime_type: mime.lookup(fileDoc.path)	// send mime-type based on file extension
 						}
 						
-						res.json(responseObj); 
+						res.json(dataStr); 
 					});
 
 					readable.on("error", (err) => {
 						res.end({ success: false, error: err })
 					});
+					**/
 
 					/**
 					res.download(fileDoc.path, (err) => {
