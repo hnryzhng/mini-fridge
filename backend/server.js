@@ -17,7 +17,7 @@ const Users = require("./models/users.js");
 const Files = require("./models/files.js");
 
 // load modules and packages for user authentication
-const validateRegisterInput = require("./validation/register.js");
+const validateRegisterInput = require(path.join(__dirname, "/validation/register.js");
 const validateLoginInput = require("./validation/login.js");
 
 const bcrypt = require("bcryptjs");	// password encryption
@@ -28,19 +28,20 @@ const keys  = require("./config/keys.js");	// holds keys
 // INSTANTIATE APP 	
 const app = express();
 const router = express.Router();
-const api_port  = 3001;
+const api_port  = process.env.PORT || 3001;
 
 // SERVE FRONT-END SCRIPTS FOR HEROKU 
-app.use(express.static(path.join(__dirname, "../client/build")));	// Adds the react production build to serve react requests
+app.use(express.static(path.join(__dirname, "/../client/build")));	// Adds the react production build to serve react requests
 
 app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname + "../client/build/index.html"));
+	res.sendFile(path.join(__dirname, "/../client/build/index.html"));
 });
 
 
 // ACCESS DATABASE
 // MongoDB Atlas for Node 2.2.12 or later; can connect using VPN, but must whitelist IP of current connection
-const dbRoute = require("./config/keys.js").mongoURI;	//"mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
+// const dbRoute = require(path.join(__dirname, "/config/keys.js").mongoURI;	//"mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
+const dbRoute = process.env.MONGOLAB_URI;
 mongoose
 	.connect(
 		dbRoute,
@@ -233,18 +234,6 @@ router.get("/deleteFile", (req, res) => {
 		.then(() => res.json({ success: true, file_id: fileDoc.file_id }))
 		.catch(err => console.log(`${username} file could not be found`));
 
-		// delete file record with file id in file collection
-		
-		//Files.findOneAndRemove({_id: fileId}, err => {
-		//	if (!err) {
-	 	//		console.log(`${fileId} record has been deleted from files collection`);
-		//	} else {
-		//		console.log(`${fileId} record could not be deleted due to error: ${err}`);
-		//		res.json({ success: false });
-		//	}
-
-		//});
-		
 	})
 	.catch(err => console.log("user could not be found in db", err));
 
@@ -343,10 +332,6 @@ router.get("/downloadFile", (req, res)=> {
 				.catch(err => console.log("file could not be found in db"));
 			}
 		}
-
-		//if (hasRecord) {
-				
-		//}
 
 	})
 	.catch(err => "User could not be found in database");  
@@ -520,6 +505,7 @@ router.post("/login", (req, res) => {
 
 
 /*
+// for when components mount in front-end?
 
 router.get("/getFiles", (req, res)=> {
 	// get files for particular user from database 
