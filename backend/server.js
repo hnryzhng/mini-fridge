@@ -30,6 +30,13 @@ const app = express();
 const router = express.Router();
 const api_port  = 3001;
 
+// SERVE FRONT-END SCRIPTS FOR HEROKU 
+app.use(express.static(path.join(__dirname, "../client/build")));	// Adds the react production build to serve react requests
+
+app.get("*", (req, res) => {
+	res.sendFile(path.join(__dirname + "../client/build/index.html"));
+});
+
 
 // ACCESS DATABASE
 // MongoDB Atlas for Node 2.2.12 or later; can connect using VPN, but must whitelist IP of current connection
@@ -157,7 +164,7 @@ router.post("/uploadFile", (req, res) => {
 });
 
 router.get("/deleteFile", (req, res) => {
-	
+
 	// retrieve user and file collections based on request's user and file id
 	// add to user's transaction history
 
@@ -248,11 +255,6 @@ router.get("/deleteFile", (req, res) => {
 
 router.get("/downloadFile", (req, res)=> {
 	
-	// BOOKMARK TASK
-
-	// BOOKMARK: security vulnerabilities
-	// https://github.com/hnryzhng/mini-fridge/network/alerts
-
 	const username = req.query.user;
 	const fileId = req.query.fileId;
 
