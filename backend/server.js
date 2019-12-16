@@ -43,9 +43,10 @@ app.get("*", (req, res) => {
 // store files in MongoDB so I don't have to have a "files" folder; store it in the files record by changing mongoose schema
 // Google: "store files in mongodb database"
 
+// TASK
+// CREATE NEW DATABASE WITH NEW ACCESS URL AND HIDDEN KEY without GITHUB RECORD
 
 // ACCESS DATABASE
-// const dbRoute = require(path.join(__dirname, "/config/keys.js").mongoURI;	//"mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
 const dbRoute = process.env.MONGOLAB_URI;
 mongoose
 	.connect(
