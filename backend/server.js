@@ -32,12 +32,14 @@ const app = express();
 const router = express.Router();
 const api_port  = process.env.PORT || 3001;
 
-// SERVE FRONT-END SCRIPTS FOR HEROKU 
-app.use(express.static(path.join(__dirname, "/../client/build")));	// Adds the react production build to serve react requests
+/*
+// SERVE FRONT-END SCRIPTS FOR HEROKU BUILD 
+app.use(express.static(path.join(__dirname, "/../", "client", "build")));	// Adds the react production build to serve react requests
 
 app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname, "/../client/build/index.html"));
+	res.sendFile(path.join(__dirname, "/../", "client", "build", "index.html"));
 });
+*/
 
 // TASK BOOKMARK
 // store files in MongoDB so I don't have to have a "files" folder; store it in the files record by changing mongoose schema
