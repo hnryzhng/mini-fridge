@@ -317,43 +317,6 @@ class Item extends Component {
   }
 }
 
-/**
-// delete file request 
-function del(user, fId) {
-  console.log("standalone delete function:", user, ",", fId);
-  axios.get("http://localhost:3001/api/deleteFile", {
-          params: {
-            user: user, 
-            fileId: fId
-          }
-        })
-        .then(response => response.data)
-        .then(data => {
-          if (data.success) {
-            console.log("file has been deleted on the backend");
-            console.log("data:", data);
-            // find file in fileRecordsArray using data.file_id, then remove
-            var oldArray = this.state.fileRecordsArray; // BOOKMARK: delete method needs to set state of the parent? redux?
-            var newArray = oldArray.filter(function(record) {
-              if (record.fileId !== data.file_id) {
-                return record;
-              }
-            });
-            console.log("newArray:", newArray);
-            //for (var i; i< oldArray.length; i++) {
-            //  var currentRecord = oldArray[i]
-            //  if (currentRecord.fileId == data.file_id) {
-
-            //  }
-            //};
-
-            this.setState({fileRecordsArray: newArray}) // set state of files array
-          }
-        })
-          .catch(err => console.log("error with delete request:", err));
-}
-**/
-
 // download file request
 async function dLoad(user, fId) {
 	console.log("standalone download function:", user, ",", fId);
@@ -370,8 +333,6 @@ async function dLoad(user, fId) {
 
     var blob = new Blob([response.data], {type: response.headers['content-type']});
     console.log("Blob file:", blob);
-
-    // BOOKMARK: why are some files deleted when I click DOWNLOAD? maybe async error on backend for deleting files
     
     download(blob)
 
@@ -379,23 +340,6 @@ async function dLoad(user, fId) {
     // console.log("file URL:", fileURL);
     window.open(fileURL); 
   })
-  //.then(data => {
-  //  console.log("response data:", data)
-
-    //const file = new Blob([data]);
-
-    //download(file);
-
-    /**
-    const file = new Blob(
-      [data.payload], // response data
-      {type: 'image/jpeg'})
-
-
-    download(file);
-    **/
-    
-  //})
   .catch(error => {
     console.log('download error:', error);
   });

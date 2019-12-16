@@ -42,16 +42,10 @@ mongoose
 	.then(() => console.log("connected to MongoDB database"))
 	.catch((err) => console.log("error connecting to MongoDB:", err));
 
-//var db = mongoose.connection;
-//db.on("error", console.error.bind(console, "db connection error: "));
-//db.once("open", ()=> console.log("connected to database"));
-
-
 // LOAD MIDDLEWARE
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(cors());
-//app.use(logger("dev"));
 
 // PROCESS REQUESTS
 // process file upload using multer
@@ -73,12 +67,10 @@ var storage = multer.diskStorage({
 })
 
 router.post("/uploadFile", (req, res) => {
-
 	
 	// uploads file first
 	// accesses user record to see if x files or under
 	// saves info in file and user collections
-
 
 	var upload = multer({ storage: storage }).single("fileData");	// fieldname of front-end component is 'fileData'
 	
@@ -91,8 +83,6 @@ router.post("/uploadFile", (req, res) => {
 		console.log("file:", file);
 		console.log("file object type:", typeof file);
 		console.log("file id:", fileId);
-
-		// TASK: change File schema to match with multer file object?
 
 		console.log("connected to database in route uploadFile");
 
@@ -161,75 +151,13 @@ router.post("/uploadFile", (req, res) => {
 
 			})
 			.catch( err => console.log("error finding user to save file:", err));
-
-		
-
-		/*
-
-		// uploads file first
-		// saves info in file and user collections
-		// no file validation to see if user has under x files
-
-		const fileRecord = new Files(file);
-		console.log("fileRecord:", fileRecord);
-		fileRecord
-			.save()
-			.then(fileDoc => {
-				console.log("file record added to db:", fileDoc);
-
-				// add file id and file name to user record
-				Users
-					.findOne({user: username})
-					.then(userDoc => {
-
-						const fileRecord = {
-							file_id: fileDoc.id,
-							file_name: fileDoc.originalname
-						}
-
-						const fileTransaction = {
-							file_id: fileDoc.id,
-							action: "UPLOAD"
-						}
-
-						userDoc.file_records.push(fileRecord);
-						userDoc.file_transactions.push(fileTransaction);
-						
-						console.log(`${userDoc.user}'s user record: `, userDoc);
-
-						userDoc
-							.save()
-							.then(console.log(`file id ${fileDoc.id} saved to user ${userDoc.user}`));
-						
-						res.json({ success: true });
-
-					})
-					.catch(err => console.log("error finding user to save file:", err));
-
-			})
-			.catch(error => console.log("error saving file to db:", error));
-		*/
-
-
-		//});
-
-		// TASK: DB add to userfiles/users collection (separate module?)
-		// query user in userfiles db collection (or combine with users record?)
-		// add file object, includes filename + pretty filename (file.originalname)
-		// verify user is logged in? (or validate elsewhere?) if logged_in from users collection
-		// append req file object to user record
-
-		// query user in collection, then insert file id or file object
-
-		// res.send("file response");
-		//res.send({success: true});
-		//return
 	
-	});	// closing parenthesis to upload()
+	});
 
 });
 
 router.get("/deleteFile", (req, res) => {
+	
 	// retrieve user and file collections based on request's user and file id
 	// add to user's transaction history
 
