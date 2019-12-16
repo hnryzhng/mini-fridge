@@ -17,13 +17,15 @@ const Users = require("./models/users.js");
 const Files = require("./models/files.js");
 
 // load modules and packages for user authentication
-const validateRegisterInput = require(path.join(__dirname, "/validation/register.js");
-const validateLoginInput = require("./validation/login.js");
+const validateRegisterInput = require(path.join(__dirname, "/validation/register.js"));
+const validateLoginInput = require(path.join(__dirname, "/validation/login.js"));
 
 const bcrypt = require("bcryptjs");	// password encryption
 const jwt = require("jsonwebtoken");	// validating endpoint transmissions 
-const keys  = require("./config/keys.js");	// holds keys
+const keys  = require(path.join(__dirname, "/config/keys.js"));	// holds keys
 
+// load environment variables
+require("dotenv").config();
 
 // INSTANTIATE APP 	
 const app = express();
@@ -39,7 +41,6 @@ app.get("*", (req, res) => {
 
 
 // ACCESS DATABASE
-// MongoDB Atlas for Node 2.2.12 or later; can connect using VPN, but must whitelist IP of current connection
 // const dbRoute = require(path.join(__dirname, "/config/keys.js").mongoURI;	//"mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
 const dbRoute = process.env.MONGOLAB_URI;
 mongoose
