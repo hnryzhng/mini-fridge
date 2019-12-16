@@ -39,6 +39,10 @@ app.get("*", (req, res) => {
 	res.sendFile(path.join(__dirname, "/../client/build/index.html"));
 });
 
+// TASK BOOKMARK
+// store files in MongoDB so I don't have to have a "files" folder; store it in the files record by changing mongoose schema
+// Google: "store files in mongodb database"
+
 
 // ACCESS DATABASE
 // const dbRoute = require(path.join(__dirname, "/config/keys.js").mongoURI;	//"mongodb://admin:HkoB3WcGJvwjcdvH@cluster0-shard-00-00-baqzp.mongodb.net:27017,cluster0-shard-00-01-baqzp.mongodb.net:27017,cluster0-shard-00-02-baqzp.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true"
@@ -46,8 +50,10 @@ const dbRoute = process.env.MONGOLAB_URI;
 mongoose
 	.connect(
 		dbRoute,
-		{useNewUrlParser: true},
-		{useUnifiedTopology: true}
+		{
+			useNewUrlParser: true,
+			useUnifiedTopology: true
+		}
 	)
 	.then(() => console.log("connected to MongoDB database"))
 	.catch((err) => console.log("error connecting to MongoDB:", err));
