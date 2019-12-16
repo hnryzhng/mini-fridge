@@ -46,7 +46,8 @@ const dbRoute = process.env.MONGOLAB_URI;
 mongoose
 	.connect(
 		dbRoute,
-		{useNewUrlParser: true}
+		{useNewUrlParser: true},
+		{useUnifiedTopology: true}
 	)
 	.then(() => console.log("connected to MongoDB database"))
 	.catch((err) => console.log("error connecting to MongoDB:", err));
