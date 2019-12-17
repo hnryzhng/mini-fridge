@@ -27,6 +27,7 @@ const keys  = require(path.join(__dirname, "/config/keys.js"));	// holds keys
 // GRIDFS
 let GridFsStorage = require("multer-gridfs-storage");
 let Grid = require("gridfs-stream");
+let methodOverride = require("method-override");
 
 // load environment variables
 require("dotenv").config();
@@ -70,58 +71,57 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(cors());
 
+app.use(methodOverride('_method'));
 
-
-// GRIDFS
-// https://blog.zairza.in/uploading-files-images-to-mongodb-using-gridfs-c16f4eba777
+// GFS
+let gfs;
 let conn = mongoose.connection;
-console.log("mongoose connection:", conn);
+conn.on('connected', () => {
+	// initialize stream from GFS to mongodb
+	gfs = Grid(conn.db, mongoose.mongo);
+	gfs.collection('uploads');
+});
 
-Grid.mongo = mongoose.mongo;
-let gfs = Grid(conn.db);
+const storage = new GridFsStorage({
+	url: dbRoute,
+	file: (req, file) => {
 
-let storage = GridFsStorage({
-	gfs: gfs,
-
-	filename: (req, file, cb) => {
-		const date = Date.now();
-		// generate unique id at app level
-		// uuid: https://www.mongodb.com/blog/post/generating-globally-unique-identifiers-for-use-with-mongodb
+		// define file id
 		const newID = uuid();	// generate new uuid
 		uuid.isUUID(newID);	// validate uuid v4 format
 		//console.log("new file UUID: ", newID);
-		const newFileName = newID + path.extname(file.originalname);	// use path to grab file extension
-		//console.log("new file name: ", newFileName);
+		const fileId = newID; 
+		console.log("gridfs storage file id", fileId);
 
-		cb(null, newFileName);
-	},
 
-	root: "userFiles"	// stores in GridFS collection name
-
+		// file info record to be saved
+		return new Promise((resolve, reject) => {
+			const fileInfo = {
+				filename: fileId,
+				bucketName: 'uploads'
+			};
+			resolve(fileInfo);
+		})
+	}
 })
 
-const upload = multer({
-	storage: storage
-}).single('file');
 
-router.post("/uploadFile", (req, res) => {
 
-	upload(req, res, (err) => {
+const upload = multer({ storage }).single('fileData');	// name of file input field is 'fileData'
+
+router.post("/uploadFileGridFS", upload, (req, res) => {
+
+	upload(req, res, function(err) {
 		if (err) {
 			console.log("GridFS file upload error");
 		}
 
-		console.log("gridfs upload file request object: ", req);
-		console.log("gridfs upload file request body: ", req.body);
-		
+		// console.log("gridfs upload file request object: ", req);
 
-		/*
-		const file = req.file;
-		const fileId = path.basename(file.filename, path.extname(file.filename));	// grabs file id from path of hard copy
+		const fileId = req.filename;	// filename in gfs doc is file id
 		const username = req.body.user;
+		// console.log("req body", req.body);
 		console.log("user:", username);
-		console.log("file:", file);
-		console.log("file object type:", typeof file);
 		console.log("file id:", fileId);
 
 		console.log("connected to database in route uploadFile");
@@ -192,8 +192,109 @@ router.post("/uploadFile", (req, res) => {
 			})
 			.catch( err => console.log("error finding user to save file:", err));
 	
-	*/
+	
 	});
+
+});
+
+router.get("/downloadFileGridFS", (req, res)=> {
+	
+	const username = req.query.user;
+	const fileId = req.query.fileId;
+
+	console.log("download file for user: ", username);
+	console.log("download file for file id:", fileId);
+	console.log("file id type:", typeof fileId);
+
+	Users.findOne({user: username}).then(userDoc => {
+		if (!userDoc) {
+			console.log("user not found");
+			res.status(400).json({ error: "User not found" });
+			return
+		}
+
+		// validate that file id is in user record
+		// TASK: maybe change array into object for faster retrieval?
+		const fileRecordsArray = userDoc.file_records;
+		const hasRecord = false;
+		// loop through to verify that file belongs to user
+		for (var i=0; i < fileRecordsArray.length; i++) {
+			const fileRecord = fileRecordsArray[i];
+			if (fileId === fileRecord.file_id) {
+				//hasRecord = true;
+				
+				// retrieve record in file records of specified file id
+				gfs.files.findOne({file_id: fileId}).then( fileDoc => {
+
+					console.log("fileDoc:", fileDoc);
+
+					// serve file for download using stream
+					var readable = fs.createReadStream(fileDoc.path);	// create read stream from file src dir
+					var mimeType = mime.lookup(fileDoc.path);
+					console.log("MIME-type: ", mimeType);
+
+					readable.on("open", () => {
+						res.set('Content-Type', mimeType);
+						readable.pipe(res);
+					})
+
+					readable.on("error", (err) => {
+						res.end({ success: false, error: err });
+					})
+
+					/**
+					only works for serving doc and xls files
+					var dataStr = "";
+					readable.on("data", (chunk) => {
+						dataStr += chunk.toString();	// add chunk to response string 
+						// res.write(chunk);	// send chunk in response
+					});
+
+					readable.on("end", () => {
+						console.log("response string to be served:", dataStr);
+						// console.log("file extension:", fileDoc.path);
+						// console.log("mime type", mime.lookup(fileDoc.path));
+
+						var responseObj = {
+							payload: dataStr,	// send binary of complete data string
+							mime_type: mime.lookup(fileDoc.path)	// send mime-type based on file extension
+						}
+						
+						res.json(dataStr); 
+					});
+
+					readable.on("error", (err) => {
+						res.end({ success: false, error: err })
+					});
+					**/
+
+					/**
+					res.download(fileDoc.path, (err) => {
+						if (err) {
+							console.log("error sending file for download at path:", fileDoc.path);
+						} else {
+							// add transaction history upon successful download
+							const fileTransaction = {
+								file_id: fileId,
+								action: "DOWNLOAD"
+							}
+							userDoc.file_transactions.push(fileTransaction);
+							console.log(`${userDoc.user} transactions: ${userDoc.file_transactions}`)
+						}
+
+					});
+					**/
+
+				})
+				.catch(err => console.log("file could not be found in db"));
+			}
+		}
+
+	})
+	.catch(err => "User could not be found in database");  
+
+
+	
 
 });
 
@@ -217,6 +318,8 @@ var storage = multer.diskStorage({
 		cb(null, newFileName)
 	}
 })
+
+*/
 
 
 router.post("/uploadFile", (req, res) => {
@@ -293,7 +396,7 @@ router.post("/uploadFile", (req, res) => {
 						userDoc.file_records.push(fileRec);
 						userDoc.file_transactions.push(fileTransaction);
 						
-						console.log(`${userDoc.user}'s user record: `, userDoc);
+						// console.log(`${userDoc.user}'s user record: `, userDoc);
 
 						userDoc
 							.save()
@@ -317,7 +420,7 @@ router.post("/uploadFile", (req, res) => {
 	});
 
 });
-*/
+
 
 router.get("/deleteFile", (req, res) => {
 

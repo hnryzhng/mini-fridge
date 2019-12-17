@@ -19,6 +19,7 @@
     "gridfs-stream": "^1.1.1",
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.5.1",
+    "method-override": "^3.0.0",
     "mime-types": "^2.1.24",
     "mongoose": "^5.8.1",
     "morgan": "^1.9.1",
