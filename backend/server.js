@@ -24,6 +24,10 @@ const bcrypt = require("bcryptjs");	// password encryption
 const jwt = require("jsonwebtoken");	// validating endpoint transmissions 
 const keys  = require(path.join(__dirname, "/config/keys.js"));	// holds keys
 
+// GRIDFS
+let GridFsStorage = require("multer-gridfs-storage");
+let Grid = require("gridfs-stream");
+
 // load environment variables
 require("dotenv").config();
 
@@ -41,12 +45,12 @@ app.get("*", (req, res) => {
 });
 */
 
-// TASK BOOKMARK
-// store files in MongoDB so I don't have to have a "files" folder; store it in the files record by changing mongoose schema
-// Google: "store files in mongodb database"
 
 // TASK
 // CREATE NEW DATABASE WITH NEW ACCESS URL AND HIDDEN KEY without GITHUB RECORD
+
+// TASK 
+
 
 // ACCESS DATABASE
 const dbRoute = process.env.MONGOLAB_URI;
@@ -66,8 +70,137 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(cors());
 
+
+
+// GRIDFS
+// https://blog.zairza.in/uploading-files-images-to-mongodb-using-gridfs-c16f4eba777
+let conn = mongoose.connection;
+console.log("mongoose connection:", conn);
+
+Grid.mongo = mongoose.mongo;
+let gfs = Grid(conn.db);
+
+let storage = GridFsStorage({
+	gfs: gfs,
+
+	filename: (req, file, cb) => {
+		const date = Date.now();
+		// generate unique id at app level
+		// uuid: https://www.mongodb.com/blog/post/generating-globally-unique-identifiers-for-use-with-mongodb
+		const newID = uuid();	// generate new uuid
+		uuid.isUUID(newID);	// validate uuid v4 format
+		//console.log("new file UUID: ", newID);
+		const newFileName = newID + path.extname(file.originalname);	// use path to grab file extension
+		//console.log("new file name: ", newFileName);
+
+		cb(null, newFileName);
+	},
+
+	root: "userFiles"	// stores in GridFS collection name
+
+})
+
+const upload = multer({
+	storage: storage
+}).single('file');
+
+router.post("/uploadFile", (req, res) => {
+
+	upload(req, res, (err) => {
+		if (err) {
+			console.log("GridFS file upload error");
+		}
+
+		console.log("gridfs upload file request object: ", req);
+		console.log("gridfs upload file request body: ", req.body);
+		
+
+		/*
+		const file = req.file;
+		const fileId = path.basename(file.filename, path.extname(file.filename));	// grabs file id from path of hard copy
+		const username = req.body.user;
+		console.log("user:", username);
+		console.log("file:", file);
+		console.log("file object type:", typeof file);
+		console.log("file id:", fileId);
+
+		console.log("connected to database in route uploadFile");
+
+		Users
+			.findOne({user: username})
+			.then(userDoc => {
+
+				// create file object for db
+				file.file_id = fileId;	// add file id to record
+				const fileRecord = new Files(file);
+				console.log("fileRecord:", fileRecord);
+
+				// file validation: users have no more than numFiles
+				const numFiles = 5;
+				if (userDoc.file_records.length >= numFiles) {
+					console.log(`${userDoc.user} has 5 files already`);
+					
+					// delete file already uploaded to "/file" dir
+					// https://stackoverflow.com/questions/49099744/nodejs-multer-diskstorage-to-delete-file-after-saving-to-disk
+					unlinkAsync(file.path);
+					console.log(`deleted ${fileRecord._id} from files directory`)
+
+					res.json({success: false});
+					return	// terminates this function
+				}
+				
+				// TASK: specify fileRecord._id to be fileId
+				// proceed with saving file info to file and user collections
+				fileRecord
+					.save()
+					.then(fileDoc => {
+						console.log("file record added to db:", fileDoc);
+
+						// save file info to user collection
+						const fileRec = {
+							file_id: fileId,
+							file_name: fileDoc.originalname
+						}
+
+						// save file transaction record to user collection
+						const fileTransaction = {
+							file_id: fileId,
+							action: "UPLOAD"
+						}
+
+						userDoc.file_records.push(fileRec);
+						userDoc.file_transactions.push(fileTransaction);
+						
+						console.log(`${userDoc.user}'s user record: `, userDoc);
+
+						userDoc
+							.save()
+							.then(console.log(`file id ${fileId} saved to user ${userDoc.user}`));
+						
+						var responseObj = {
+							success: true,
+							file_name: fileRec.file_name,
+							file_id: fileRec.file_id
+						}
+						
+						res.json(responseObj);
+
+					})
+					.catch(error => console.log("error saving file to db:", error))
+
+
+			})
+			.catch( err => console.log("error finding user to save file:", err));
+	
+	*/
+	});
+
+});
+
+
 // PROCESS REQUESTS
 // process file upload using multer
+/*
 var storage = multer.diskStorage({
 	destination: function(req, file, cb) {
 		cb(null, 'files')
@@ -85,12 +218,22 @@ var storage = multer.diskStorage({
 	}
 })
 
+
 router.post("/uploadFile", (req, res) => {
 	
 	// uploads file first
 	// accesses user record to see if x files or under
 	// saves info in file and user collections
 
+	// TASK BOOKMARK
+	// store files in MongoDB so I don't have to have a "files" folder; store it in the files record by changing mongoose schema
+	// Google: "store files in mongodb database"
+
+	// a1. https://medium.com/@parthkamaria/storing-and-retrieving-files-from-mongodb-using-mean-stack-and-gridfs-aebd8b91cf38
+	// a2. https://blog.zairza.in/uploading-files-images-to-mongodb-using-gridfs-c16f4eba777
+	// https://docs.mongodb.com/manual/core/gridfs/
+	// fixing cross-origin access control: https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
+	// for adding small (<16MB) files to mongodb: https://stackoverflow.com/questions/13907509/how-do-i-save-a-file-to-mongodb/13923749
 	var upload = multer({ storage: storage }).single("fileData");	// fieldname of front-end component is 'fileData'
 	
 	upload(req, res, function(err) {
@@ -174,6 +317,7 @@ router.post("/uploadFile", (req, res) => {
 	});
 
 });
+*/
 
 router.get("/deleteFile", (req, res) => {
 
@@ -281,6 +425,8 @@ router.get("/downloadFile", (req, res)=> {
 				
 				// retrieve record in file records of specified file id
 				Files.findOne({file_id: fileId}).then( fileDoc => {
+
+					console.log("fileDoc:", fileDoc);
 
 					// serve file for download using stream
 					var readable = fs.createReadStream(fileDoc.path);	// create read stream from file src dir
