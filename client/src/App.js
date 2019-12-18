@@ -15,8 +15,7 @@ class App extends Component {
     loggedIn: false,
     fileName: null,
     fileData: null,
-    fileRecordsArray: [],
-    isDownloading: false
+    fileRecordsArray: []
   };
 
   //componentWillMount() {
@@ -332,7 +331,6 @@ async function dLoad(user, fId) {
   .then((response) => {
     console.log("response content:", response.data)
 
-    this.setState({ isDownloading: true });
 
     var blob = new Blob([response.data], {type: response.headers['content-type']});
     console.log("Blob file:", blob);
@@ -342,12 +340,6 @@ async function dLoad(user, fId) {
     //const fileURL = URL.createObjectURL(blob);
     // console.log("file URL:", fileURL);
     //window.open(fileURL); 
-  })
-  .then(() => {
-  	
-  	// finished downloading
-  	this.setState({ isDownloading: false });
-  	console.log("finished downloading");
   })
   .catch(error => {
     console.log('download error:', error);

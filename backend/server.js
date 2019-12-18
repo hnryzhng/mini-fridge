@@ -46,12 +46,8 @@ app.get("*", (req, res) => {
 });
 */
 
-
 // TASK
 // CREATE NEW DATABASE WITH NEW ACCESS URL AND HIDDEN KEY without GITHUB RECORD
-
-// TASK 
-
 
 // ACCESS DATABASE
 const dbRoute = process.env.MONGOLAB_URI;
@@ -79,7 +75,7 @@ let conn = mongoose.connection;
 conn.on('connected', () => {
 	// initialize stream from GFS to mongodb
 	gfs = Grid(conn.db, mongoose.mongo);
-	gfs.collection('uploads');
+	gfs.collection('uploads');	// will connect to 'uploads' collection in GridFS
 });
 
 const storage = new GridFsStorage({
@@ -187,127 +183,86 @@ router.get("/downloadFileGridFS", (req, res)=> {
 	console.log("frontend fileId:", fileId);
 	// console.log("file id type:", typeof fileId);
 
-	Users.findOne({user: username}).then(userDoc => {
-		if (!userDoc) {
-			console.log("user not found");
-			res.status(400).json({ error: "User not found" });
-			return
-		}
+	Users.findOne({user: username})
+		.then(userDoc => userDoc.file_records)
+		.then((fileRecordsArray) => {
 
-		// validate that file id is in user record
-		// TASK: maybe change array into object for faster retrieval?
-		const fileRecordsArray = userDoc.file_records;
-		// const hasRecord = false;
+			// validate that file id is in user record
+			// TASK: maybe change array into object for faster retrieval?
+			// const fileRecordsArray = userDoc.file_records;
 
-		// loop through to verify that file belongs to user
-		for (var i=0; i < fileRecordsArray.length; i++) {
-			const fileRecord = fileRecordsArray[i];
-			if (fileId == fileRecord.file_id) {
-
-				console.log("fileId", fileId);
-				console.log("fileRecord.file_id", fileRecord.file_id);
-
-				// BOOKMARK
-				// TASK: file record file id doesn't match gfs file id; check /uploadFile 
-
-
-				//hasRecord = true;
+			// loop through to verify that file belongs to user
+			for (var i=0; i < fileRecordsArray.length; i++) {
+				const fileRecord = fileRecordsArray[i];
 				
-				// retrieve record in file records of specified file id
-				gfs.collection('uploads').files.findOne({"filename": fileId}).then( (err, file) => {
-					// gfs.<bucketName>.files or gfs.<bucketName>.chunks
-					// gfs record 'filename' key contains file id
+				// console.log('--------');
+				console.log("fileId", fileId);
+				console.log("fileId type", typeof fileId);
+				console.log("fileRecord.file_id", fileRecord.file_id);
+				console.log("fileRecord.file_id type", typeof fileRecord.file_id);
+				// console.log('--------');
+				
+				if (fileId == fileRecord.file_id) {
 					
+					// retrieve record in file records of specified file id
+					gfs.files.findOne({ "filename": fileId }, (err, file) => {
 
-					if (!file || file.length === 0) {
-						console.log("file wasn't found in GridFS MongoDB");
-						res.status(404).json({
-							success: false,
-							error: "file could not be found"
+						// console.log("gfs file found");
+
+						if (!file || file.length === 0) {
+							console.log("file wasn't found in GridFS MongoDB");
+							res.status(404).json({
+								success: false,
+								error: "file could not be found"
+							})
+						}
+
+						console.log("gfs file:", file);
+
+						// serve file for download using stream
+						var readable = gfs.createReadStream(file.filename);	// create read stream from gfs filename, or file dir
+						console.log("file.filename", file.filename);
+
+						var mimeType = file.contentType;
+						console.log("MIME-type: ", mimeType);
+
+						readable.on("open", () => {
+							// set response headers
+							res.set({
+								'Accept-Range': 'bytes',
+								'Content-Type': mimeType,
+							});
+							readable.pipe(res);
 						})
-					}
 
-					console.log("gfs file:", file);
+						readable.on("error", (err) => {
+							res.end({ success: false, error: err });
+						})
 
-					// serve file for download using stream
-					var readable = gfs.createReadStream(file.filename);	// create read stream from gfs filename, or file dir
-					console.log("file.filename", file.filename);
-
-					var mimeType = file.contentType;
-					console.log("MIME-type: ", mimeType);
-
-					readable.on("open", () => {
-						res.set({
-							'Accept-Range': 'bytes',
-							'Content-Type': mimeType,
-						});
-						readable.pipe(res);
 					})
+					.catch(err => console.log("file could not be found in db"));
+				} else {
+					console.log("file id not found in user's records")
+					console.log("gfs file id does not equal file record file id");
+					console.log("gfs file id:", fileId);
+					console.log("file record file id:", fileRecord.file_id);
 
-					readable.on("error", (err) => {
-						res.end({ success: false, error: err });
-					})
-
-					/**
-					only works for serving doc and xls files
-					var dataStr = "";
-					readable.on("data", (chunk) => {
-						dataStr += chunk.toString();	// add chunk to response string 
-						// res.write(chunk);	// send chunk in response
-					});
-
-					readable.on("end", () => {
-						console.log("response string to be served:", dataStr);
-						// console.log("file extension:", fileDoc.path);
-						// console.log("mime type", mime.lookup(fileDoc.path));
-
-						var responseObj = {
-							payload: dataStr,	// send binary of complete data string
-							mime_type: mime.lookup(fileDoc.path)	// send mime-type based on file extension
-						}
-						
-						res.json(dataStr); 
-					});
-
-					readable.on("error", (err) => {
-						res.end({ success: false, error: err })
-					});
-					**/
-
-					/**
-					res.download(fileDoc.path, (err) => {
-						if (err) {
-							console.log("error sending file for download at path:", fileDoc.path);
-						} else {
-							// add transaction history upon successful download
-							const fileTransaction = {
-								file_id: fileId,
-								action: "DOWNLOAD"
-							}
-							userDoc.file_transactions.push(fileTransaction);
-							console.log(`${userDoc.user} transactions: ${userDoc.file_transactions}`)
-						}
-
-					});
-					**/
-
-				})
-				.catch(err => console.log("file could not be found in db"));
-			} else {
-				console.log("gfs file id does not equal file record file id");
-				console.log("gfs file id:", fileId);
-				console.log("file record file id:", fileRecord.file_id);
-
+				}
 			}
-		}
+		})
+		.catch(err => () => {
+			console.log("User could not be found in database");
+			res.status(400).json({ error: "User not found" });
+		});  
 
-	})
-	.catch(err => "User could not be found in database");  
-
-
-	
 
 });
+
+router.get("/deleteFileGridFS", (req, res) => {
+	
+});
+
+
 
 
 // PROCESS REQUESTS
@@ -555,49 +510,6 @@ router.get("/downloadFile", (req, res)=> {
 					readable.on("error", (err) => {
 						res.end({ success: false, error: err });
 					})
-
-					/**
-					only works for serving doc and xls files
-					var dataStr = "";
-					readable.on("data", (chunk) => {
-						dataStr += chunk.toString();	// add chunk to response string 
-						// res.write(chunk);	// send chunk in response
-					});
-
-					readable.on("end", () => {
-						console.log("response string to be served:", dataStr);
-						// console.log("file extension:", fileDoc.path);
-						// console.log("mime type", mime.lookup(fileDoc.path));
-
-						var responseObj = {
-							payload: dataStr,	// send binary of complete data string
-							mime_type: mime.lookup(fileDoc.path)	// send mime-type based on file extension
-						}
-						
-						res.json(dataStr); 
-					});
-
-					readable.on("error", (err) => {
-						res.end({ success: false, error: err })
-					});
-					**/
-
-					/**
-					res.download(fileDoc.path, (err) => {
-						if (err) {
-							console.log("error sending file for download at path:", fileDoc.path);
-						} else {
-							// add transaction history upon successful download
-							const fileTransaction = {
-								file_id: fileId,
-								action: "DOWNLOAD"
-							}
-							userDoc.file_transactions.push(fileTransaction);
-							console.log(`${userDoc.user} transactions: ${userDoc.file_transactions}`)
-						}
-
-					});
-					**/
 
 				})
 				.catch(err => console.log("file could not be found in db"));
