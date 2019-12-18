@@ -97,7 +97,7 @@ const storage = new GridFsStorage({
 		// file info record to be saved
 		return new Promise((resolve, reject) => {
 			const fileInfo = {
-				filename: fileId,
+				filename: fileId,	// grid doc 'filename' key contains file id
 				bucketName: 'uploads'
 			};
 			resolve(fileInfo);
@@ -112,6 +112,8 @@ const upload = multer({ storage }).single('fileData');	// name of file input fie
 router.post("/uploadFileGridFS", upload, (req, res) => {
 
 	upload(req, res, function(err) {
+		// request object is record in gfs file collection, bucketName 'uploads'
+
 		if (err) {
 			console.log("GridFS file upload error");
 		}
@@ -130,64 +132,43 @@ router.post("/uploadFileGridFS", upload, (req, res) => {
 			.findOne({user: username})
 			.then(userDoc => {
 
-				// create file object for db
-				file.file_id = fileId;	// add file id to record
-				const fileRecord = new Files(file);
-				console.log("fileRecord:", fileRecord);
-
 				// file validation: users have no more than numFiles
 				const numFiles = 5;
 				if (userDoc.file_records.length >= numFiles) {
 					console.log(`${userDoc.user} has 5 files already`);
 					
-					// delete file already uploaded to "/file" dir
-					// https://stackoverflow.com/questions/49099744/nodejs-multer-diskstorage-to-delete-file-after-saving-to-disk
-					unlinkAsync(file.path);
-					console.log(`deleted ${fileRecord._id} from files directory`)
-
 					res.json({success: false});
 					return	// terminates this function
 				}
 				
-				// TASK: specify fileRecord._id to be fileId
-				// proceed with saving file info to file and user collections
-				fileRecord
+				// save file info to user collection
+				const fileRec = {
+					file_id: fileId,
+					file_name: req.originalname
+				}
+
+				// save file transaction record to user collection
+				const fileTransaction = {
+					file_id: fileId,
+					action: "UPLOAD"
+				}
+
+				userDoc.file_records.push(fileRec);
+				userDoc.file_transactions.push(fileTransaction);
+				
+				console.log(`${userDoc.user}'s user record: `, userDoc);
+
+				userDoc
 					.save()
-					.then(fileDoc => {
-						console.log("file record added to db:", fileDoc);
+					.then(console.log(`file id ${fileId} saved to user ${userDoc.user}`));
+				
+				var responseObj = {
+					success: true,
+					file_name: fileRec.file_name,
+					file_id: fileRec.file_id
+				}
 
-						// save file info to user collection
-						const fileRec = {
-							file_id: fileId,
-							file_name: fileDoc.originalname
-						}
-
-						// save file transaction record to user collection
-						const fileTransaction = {
-							file_id: fileId,
-							action: "UPLOAD"
-						}
-
-						userDoc.file_records.push(fileRec);
-						userDoc.file_transactions.push(fileTransaction);
-						
-						console.log(`${userDoc.user}'s user record: `, userDoc);
-
-						userDoc
-							.save()
-							.then(console.log(`file id ${fileId} saved to user ${userDoc.user}`));
-						
-						var responseObj = {
-							success: true,
-							file_name: fileRec.file_name,
-							file_id: fileRec.file_id
-						}
-						
-						res.json(responseObj);
-
-					})
-					.catch(error => console.log("error saving file to db:", error))
-
+				res.json(responseObj);				
 
 			})
 			.catch( err => console.log("error finding user to save file:", err));
@@ -216,20 +197,28 @@ router.get("/downloadFileGridFS", (req, res)=> {
 		// validate that file id is in user record
 		// TASK: maybe change array into object for faster retrieval?
 		const fileRecordsArray = userDoc.file_records;
-		const hasRecord = false;
+		// const hasRecord = false;
+
 		// loop through to verify that file belongs to user
 		for (var i=0; i < fileRecordsArray.length; i++) {
 			const fileRecord = fileRecordsArray[i];
 			if (fileId === fileRecord.file_id) {
+
+				// BOOKMARK
+				// TASK: file record file id doesn't match gfs file id; check /uploadFile 
+
+
 				//hasRecord = true;
 				
 				// retrieve record in file records of specified file id
-				gfs.files.findOne({file_id: fileId}).then( fileDoc => {
+				gfs.find({"filename": fileId}).then( fileDoc => {
+					// gfs record 'filename' key contains file id
+					
 
 					console.log("fileDoc:", fileDoc);
 
 					// serve file for download using stream
-					var readable = fs.createReadStream(fileDoc.path);	// create read stream from file src dir
+					var readable = gfs.createReadStream(fileDoc.path);	// create read stream from file src dir
 					var mimeType = mime.lookup(fileDoc.path);
 					console.log("MIME-type: ", mimeType);
 
@@ -287,6 +276,11 @@ router.get("/downloadFileGridFS", (req, res)=> {
 
 				})
 				.catch(err => console.log("file could not be found in db"));
+			} else {
+				console.log("gfs file id does not equal file record file id");
+				console.log("gfs file id:", fileId);
+				console.log("file record file id:", fileRecord.file_id);
+
 			}
 		}
 

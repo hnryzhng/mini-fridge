@@ -15,7 +15,8 @@ class App extends Component {
     loggedIn: false,
     fileName: null,
     fileData: null,
-    fileRecordsArray: []
+    fileRecordsArray: [],
+    isDownloading: false
   };
 
   //componentWillMount() {
@@ -201,11 +202,8 @@ class App extends Component {
               var oldArray = this.state.fileRecordsArray;
 
               // returns new array with files not matching id of file to be deleted
-              var newArray = oldArray.filter(function(record) {
-                if (record.fileId !== data.file_id) {
-                  return record;
-                }
-              });
+              var newArray = oldArray.filter(record => record.fileId !== data.file_id)
+
               console.log("newArray:", newArray);
               
               // set new state of fileRecordsArray
@@ -320,11 +318,48 @@ class Item extends Component {
 }
 
 // download file request
+
 async function dLoad(user, fId) {
 	console.log("standalone download function:", user, ",", fId);
 	
 	// const reqUrl = `/api/downloadFile?user=${user}&fileId=${fId}`;
-  const reqUrl = `/api/downloadFileGridFS?user=${user}&fileId=${fId}`;
+  const reqUrl = `http://localhost:3001/api/downloadFileGridFS?user=${user}&fileId=${fId}`;
+
+  axios(reqUrl, {
+    method: 'GET',
+    responseType: 'blob'
+  })
+  .then((response) => {
+    console.log("response content:", response.data)
+
+    this.setState({ isDownloading: true });
+
+    var blob = new Blob([response.data], {type: response.headers['content-type']});
+    console.log("Blob file:", blob);
+    
+    download(blob)
+
+    //const fileURL = URL.createObjectURL(blob);
+    // console.log("file URL:", fileURL);
+    //window.open(fileURL); 
+  })
+  .then(() => {
+  	
+  	// finished downloading
+  	this.setState({ isDownloading: false });
+  	console.log("finished downloading");
+  })
+  .catch(error => {
+    console.log('download error:', error);
+  });
+
+}
+
+async function dLoadFolder(user, fId) {
+	console.log("standalone download function:", user, ",", fId);
+	
+	// const reqUrl = `/api/downloadFile?user=${user}&fileId=${fId}`;
+  const reqUrl = `/api/downloadFile?user=${user}&fileId=${fId}`;
 
   axios(reqUrl, {
     method: 'GET',
