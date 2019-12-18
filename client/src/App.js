@@ -66,9 +66,9 @@ class App extends Component {
 	// allow upload only if logged in
     if (loggedIn) {
 
-    	// file validation: file size < 50 kb
+    	// file validation: file size < 500 kb
     	const fileSize = fileData.size;
-    	const fileSizeLimit = 50000;	// bytes; fileSizeLimit/1000 = kilobytes
+    	const fileSizeLimit = 500000;	// bytes; fileSizeLimit/1000 = kilobytes
 
     	if (fileSize < fileSizeLimit) {
 		    // instantiate react form object to hold file data
@@ -80,7 +80,7 @@ class App extends Component {
 		    formDataObj.append("fileData", fileData);
 
 		    //axios.post("/api/uploadFile", formDataObj)
-    		axios.post("http://localhost:3001/api/uploadFile", formDataObj)
+    		axios.post("http://localhost:3001/api/uploadFileGridFS", formDataObj)
 		            .then(response => response.data)	// TASK: if response obj success is true, then add pretty file name to list display (or just retrieve all names from componentWillMount because setState below refreshes component  state?)
 		            .then(data => {
 		            	if (data.success) {

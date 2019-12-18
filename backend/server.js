@@ -71,7 +71,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(cors());
 
-app.use(methodOverride('_method'));
+// app.use(methodOverride('_method'));
 
 // GFS
 let gfs;
@@ -105,24 +105,24 @@ const storage = new GridFsStorage({
 	}
 })
 
+const upload = multer({ storage });	// name of file input field is 'fileData'
 
+router.post("/uploadFileGridFS", upload.single('fileData'), (req, res) => {
 
-const upload = multer({ storage }).single('fileData');	// name of file input field is 'fileData'
-
-router.post("/uploadFileGridFS", upload, (req, res) => {
-
-	upload(req, res, function(err) {
+	//upload(req, res, function(err) {
 		// request object is record in gfs file collection, bucketName 'uploads'
 
-		if (err) {
-			console.log("GridFS file upload error");
-		}
+		//if (err) {
+		//	console.log("GridFS file upload error");
+		//}
 
 		// console.log("gridfs upload file request object: ", req);
 
-		const fileId = req.filename;	// filename in gfs doc is file id
+		const file = req.file;
+		const fileId = file.filename;	// filename in gfs doc is file id
 		const username = req.body.user;
 		// console.log("req body", req.body);
+		console.log("request obj:", file);
 		console.log("user:", username);
 		console.log("file id:", fileId);
 
@@ -144,7 +144,7 @@ router.post("/uploadFileGridFS", upload, (req, res) => {
 				// save file info to user collection
 				const fileRec = {
 					file_id: fileId,
-					file_name: req.originalname
+					file_name: file.originalname
 				}
 
 				// save file transaction record to user collection
@@ -174,7 +174,7 @@ router.post("/uploadFileGridFS", upload, (req, res) => {
 			.catch( err => console.log("error finding user to save file:", err));
 	
 	
-	});
+	//});
 
 });
 
