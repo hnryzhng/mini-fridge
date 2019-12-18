@@ -183,9 +183,9 @@ router.get("/downloadFileGridFS", (req, res)=> {
 	const username = req.query.user;
 	const fileId = req.query.fileId;
 
-	console.log("download file for user: ", username);
-	console.log("download file for file id:", fileId);
-	console.log("file id type:", typeof fileId);
+	console.log("user: ", username);
+	console.log("frontend fileId:", fileId);
+	// console.log("file id type:", typeof fileId);
 
 	Users.findOne({user: username}).then(userDoc => {
 		if (!userDoc) {
@@ -202,7 +202,10 @@ router.get("/downloadFileGridFS", (req, res)=> {
 		// loop through to verify that file belongs to user
 		for (var i=0; i < fileRecordsArray.length; i++) {
 			const fileRecord = fileRecordsArray[i];
-			if (fileId === fileRecord.file_id) {
+			if (fileId == fileRecord.file_id) {
+
+				console.log("fileId", fileId);
+				console.log("fileRecord.file_id", fileRecord.file_id);
 
 				// BOOKMARK
 				// TASK: file record file id doesn't match gfs file id; check /uploadFile 
@@ -211,19 +214,33 @@ router.get("/downloadFileGridFS", (req, res)=> {
 				//hasRecord = true;
 				
 				// retrieve record in file records of specified file id
-				gfs.find({"filename": fileId}).then( fileDoc => {
+				gfs.collection('uploads').files.findOne({"filename": fileId}).then( (err, file) => {
+					// gfs.<bucketName>.files or gfs.<bucketName>.chunks
 					// gfs record 'filename' key contains file id
 					
 
-					console.log("fileDoc:", fileDoc);
+					if (!file || file.length === 0) {
+						console.log("file wasn't found in GridFS MongoDB");
+						res.status(404).json({
+							success: false,
+							error: "file could not be found"
+						})
+					}
+
+					console.log("gfs file:", file);
 
 					// serve file for download using stream
-					var readable = gfs.createReadStream(fileDoc.path);	// create read stream from file src dir
-					var mimeType = mime.lookup(fileDoc.path);
+					var readable = gfs.createReadStream(file.filename);	// create read stream from gfs filename, or file dir
+					console.log("file.filename", file.filename);
+
+					var mimeType = file.contentType;
 					console.log("MIME-type: ", mimeType);
 
 					readable.on("open", () => {
-						res.set('Content-Type', mimeType);
+						res.set({
+							'Accept-Range': 'bytes',
+							'Content-Type': mimeType,
+						});
 						readable.pipe(res);
 					})
 
