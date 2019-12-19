@@ -55,8 +55,8 @@ mongoose
 	.connect(
 		dbRoute,
 		{
-			useNewUrlParser: true,
-			useUnifiedTopology: true
+			useUnifiedTopology: true,
+			useNewUrlParser: true
 		}
 	)
 	.then(() => console.log("connected to MongoDB database"))
@@ -72,6 +72,7 @@ app.use(cors());
 // GFS
 // TASK
 // DEPRECATION WARNING: USE GRIDSTREAM INSTEAD OF GRIDSTORE
+// https://medium.com/@patrickshaughnessy/front-to-back-file-uploads-using-gridfs-9ddc3fc43b5d
 // https://thecodebarbarian.com/mongodb-gridfs-stream
 // [0] (node:42297) DeprecationWarning: GridStore is deprecated, and will be removed in a future version. Please use GridFSBucket instead
 // [0] (node:42297) DeprecationWarning: collection.ensureIndex is deprecated. Use createIndexes instead.
@@ -82,9 +83,12 @@ let gfs;
 let conn = mongoose.connection;
 conn.on('connected', () => {
 	// initialize stream from GFS to mongodb
-	gfs = Grid(conn.db, mongoose.mongo);
-	gfs.collection('uploads');	// will connect to 'uploads' collection in GridFS
+	gfs = new mongoose.mongo.GridFSBucket(conn.db, {
+		bucketName: 'uploads'
+	});
+	
 });
+
 
 const storage = new GridFsStorage({
 	url: dbRoute,
@@ -110,6 +114,7 @@ const storage = new GridFsStorage({
 })
 
 const upload = multer({ storage });	// name of file input field is 'fileData'
+
 
 router.post("/uploadFileGridFS", upload.single('fileData'), (req, res) => {
 
@@ -186,9 +191,16 @@ router.get("/downloadFileGridFS", (req, res)=> {
 	
 	const username = req.query.user;
 	const fileId = req.query.fileId;
+	const fileName = req.query.fileName;
+
+	const fileExtension = path.extname(fileName);
+	const mimeType = mime.lookup(fileExtension);
 
 	console.log("user: ", username);
 	console.log("frontend fileId:", fileId);
+	console.log("frontend fileName:", fileName);
+	console.log("frontend extension:", fileExtension);
+	console.log("mime-type:", mimeType);
 	// console.log("file id type:", typeof fileId);
 
 	Users.findOne({user: username})
@@ -212,50 +224,40 @@ router.get("/downloadFileGridFS", (req, res)=> {
 				
 				if (fileId == fileRecord.file_id) {
 					
-					// retrieve record in file records of specified file id
-					gfs.files.findOne({ "filename": fileId }, (err, file) => {
-
-						// console.log("gfs file found");
-
-						if (!file || file.length === 0) {
-							console.log("file wasn't found in GridFS MongoDB");
-							res.status(404).json({
-								success: false,
-								error: "file could not be found"
-							})
-						}
-
-						console.log("gfs file:", file);
-
-						// serve file for download using stream
-						var readable = gfs.createReadStream(file.filename);	// create read stream from gfs filename, or file dir
-						console.log("file.filename", file.filename);
-
-						var mimeType = file.contentType;
-						console.log("MIME-type: ", mimeType);
-
-						readable.on("open", () => {
-							// set response headers
-							res.set({
+					// set response header before stream
+					res.set({
 								'Accept-Range': 'bytes',
+								'Content-Disposition': 'attachment; filename=' + fileName,
 								'Content-Type': mimeType,
-							});
-							readable.pipe(res);
-						})
 
-						readable.on("error", (err) => {
-							res.end({ success: false, error: err });
-						})
+					});
 
-					})
-					.catch(err => console.log("file could not be found in db"));
+					// console.log("response object:", res);
+					
+					// define download and fs write streams
+					var gfsDownloadStream = gfs.openDownloadStreamByName(fileId);	// gridfs filename is file ID
+					
+					// alternative: pipe to fs writestream for greater control, but no download prompt on front-end
+					// var writestream = fs.createWriteStream(path.join(__dirname, 'downloaded', fileName));	// output file name 
+					// gfsDownloadStream.pipe(writestream)	// would bypass prompt in front-end
+					
+					gfsDownloadStream.pipe(res);
+
+					gfsDownloadStream.on('finish', () => {
+							console.log('gfs download stream success');
+					});
+
+					gfsDownloadStream.on('error', (err) => {
+							console.log('error with gfs download stream:');
+					});					
+
 				} else {
-					console.log("file id not found in user's records")
 					console.log("gfs file id does not equal file record file id");
-					console.log("gfs file id:", fileId);
-					console.log("file record file id:", fileRecord.file_id);
-
+					console.log("file id not found in user's records")
+					// console.log("gfs file id:", fileId);
+					// console.log("file record file id:", fileRecord.file_id);
 				}
+
 			}
 		})
 		.catch(err => () => {
@@ -304,13 +306,11 @@ router.get("/deleteFileGridFS", (req, res) => {
 				.then( console.log(`file id ${fileId} deleted from user record ${userDoc.user}`))
 				.catch(err => console.log("user doc could not be saved after updates:", err));
 
-
-
 		})
 		.then(() => {
 			// delete from GridFS collection 'uploads'
 
-			gfs.remove({ "filename": fileId })
+			gfs.delete({ "filename": fileId })
 				.then( console.log("file removed from gfs:", fileId) )
 				.catch( err => console.log("error deleting file in GridFS") )
 
@@ -321,7 +321,7 @@ router.get("/deleteFileGridFS", (req, res) => {
 				file_id: fileId,
 			})
 		})
-		.catch( (err) => console.log("could not find user in db") );
+		.catch( (err) => console.log("error with deleting from file record from user doc:", err) );
 
 });
 

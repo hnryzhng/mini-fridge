@@ -305,12 +305,13 @@ class Item extends Component {
     
     const user = this.props.user;
     const fileId = this.props.fileId;
+    const fileName = this.props.fileName;
     
     return(
     	<div>
     		<li id={ fileId } > { this.props.fileName } </li>
     		<p onClick={ () => { this.props.del(user, fileId) } }> DELETE </p>
-        <p onClick={ () => { dLoad(user, fileId) } }> DOWNLOAD </p>
+        <p onClick={ () => { dLoad(user, fileId, fileName) } }> DOWNLOAD </p>
     	</div>
     )
   }
@@ -318,15 +319,14 @@ class Item extends Component {
 
 // download file request
 
-async function dLoad(user, fId) {
-	console.log("standalone download function:", user, ",", fId);
+async function dLoad(user, fId, fName) {
+	console.log("standalone download function:", user, ",", fId, ",", fName);
 	
-	// const reqUrl = `/api/downloadFile?user=${user}&fileId=${fId}`;
-  const reqUrl = `http://localhost:3001/api/downloadFileGridFS?user=${user}&fileId=${fId}`;
+  const reqUrl = `http://localhost:3001/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
 
   axios(reqUrl, {
     method: 'GET',
-    responseType: 'blob'
+    responseType: 'arraybuffer'
   })
   .then((response) => {
     console.log("response content:", response.data)
@@ -337,64 +337,13 @@ async function dLoad(user, fId) {
     
     download(blob)
 
-    //const fileURL = URL.createObjectURL(blob);
+    // const fileURL = URL.createObjectURL(blob);
     // console.log("file URL:", fileURL);
-    //window.open(fileURL); 
+    // window.open(fileURL); 
   })
   .catch(error => {
     console.log('download error:', error);
   });
-
-}
-
-async function dLoadFolder(user, fId) {
-	console.log("standalone download function:", user, ",", fId);
-	
-	// const reqUrl = `/api/downloadFile?user=${user}&fileId=${fId}`;
-  const reqUrl = `/api/downloadFile?user=${user}&fileId=${fId}`;
-
-  axios(reqUrl, {
-    method: 'GET',
-    responseType: 'arraybuffer' // array buffers can also handle pdf, images
-
-  })
-  .then((response) => {
-    console.log("response content:", response)
-
-    var blob = new Blob([response.data], {type: response.headers['content-type']});
-    console.log("Blob file:", blob);
-    
-    download(blob)
-
-    const fileURL = URL.createObjectURL(blob);
-    // console.log("file URL:", fileURL);
-    window.open(fileURL); 
-  })
-  .catch(error => {
-    console.log('download error:', error);
-  });
-
-  /**
-	axios(reqUrl, {
-		method: 'GET'
-	})
-	.then(response => response.data)
-	.then(data => {
-		console.log('response payload:', data.payload);
-		console.log('response mime-type:', data.mime_type);
-		// BOOKMARK: only works with doc and xls files so far
-		const file = new Blob(
-			[data.payload],	// response data
-			{type: data.mime_type})	// MIME type stored in data.mime_type
-
-
-		download(file);
-		
-	})
-	.catch(error => {
-		console.log('download error:', error);
-	});
-  **/
 
 }
 
