@@ -185,7 +185,7 @@ class App extends Component {
     // list item delete 
 
     console.log("standalone delete function:", user, ",", fId);
-    axios.get("http://localhost:3001/api/deleteFile", {
+    axios.get("http://localhost:3001/api/deleteFileGridFS", {
             params: {
               user: user, 
               fileId: fId

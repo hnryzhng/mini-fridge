@@ -70,6 +70,14 @@ app.use(cors());
 // app.use(methodOverride('_method'));
 
 // GFS
+// TASK
+// DEPRECATION WARNING: USE GRIDSTREAM INSTEAD OF GRIDSTORE
+// https://thecodebarbarian.com/mongodb-gridfs-stream
+// [0] (node:42297) DeprecationWarning: GridStore is deprecated, and will be removed in a future version. Please use GridFSBucket instead
+// [0] (node:42297) DeprecationWarning: collection.ensureIndex is deprecated. Use createIndexes instead.
+// [0] (node:42297) DeprecationWarning: collection.remove is deprecated. Use deleteOne, deleteMany, or bulkWrite instead.
+
+
 let gfs;
 let conn = mongoose.connection;
 conn.on('connected', () => {
@@ -259,7 +267,62 @@ router.get("/downloadFileGridFS", (req, res)=> {
 });
 
 router.get("/deleteFileGridFS", (req, res) => {
-	
+
+	const username = req.query.user;
+	const fileId = req.query.fileId;
+	console.log("user:", username);
+	console.log("fileId:", fileId);
+
+	// delete file id from user doc's file records
+	Users.findOne({ user: username })
+		.then( (userDoc) => {
+			const fileRecordsArray = userDoc.file_records;
+			console.log("fileRecordsArray:", fileRecordsArray);
+
+			for (var i=0; i < fileRecordsArray.length; i++) {
+				const fileRecord = fileRecordsArray[i];
+				console.log("fileRecord:", fileRecord);
+				if (fileId == fileRecord.file_id) {
+					fileRecordsArray.splice(i, 1);	// remove record 
+					userDoc.file_records = fileRecordsArray;	// replace with array with removed file reference
+					console.log("updated user file records:", userDoc.file_records);
+				}
+			}
+
+			// add delete record to transaction history 
+			const fileTransaction = {
+				file_id: fileId,
+				action: "DELETE"
+			};
+
+			userDoc.file_transactions.push(fileTransaction);
+			console.log(`updated user file transactions: ${userDoc.file_transactions}`);
+
+			// save update user doc to db
+			userDoc
+				.save()
+				.then( console.log(`file id ${fileId} deleted from user record ${userDoc.user}`))
+				.catch(err => console.log("user doc could not be saved after updates:", err));
+
+
+
+		})
+		.then(() => {
+			// delete from GridFS collection 'uploads'
+
+			gfs.remove({ "filename": fileId })
+				.then( console.log("file removed from gfs:", fileId) )
+				.catch( err => console.log("error deleting file in GridFS") )
+
+		})
+		.then(() => {
+			res.json({
+				success: true,
+				file_id: fileId,
+			})
+		})
+		.catch( (err) => console.log("could not find user in db") );
+
 });
 
 
