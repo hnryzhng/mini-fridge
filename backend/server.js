@@ -27,7 +27,6 @@ const keys  = require(path.join(__dirname, "/config/keys.js"));	// holds keys
 // GRIDFS
 let GridFsStorage = require("multer-gridfs-storage");
 let Grid = require("gridfs-stream");
-let methodOverride = require("method-override");
 
 // load environment variables
 require("dotenv").config();
@@ -67,18 +66,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(cors());
 
-// app.use(methodOverride('_method'));
-
-// GFS
-// TASK
-// DEPRECATION WARNING: USE GRIDSTREAM INSTEAD OF GRIDSTORE
-// https://medium.com/@patrickshaughnessy/front-to-back-file-uploads-using-gridfs-9ddc3fc43b5d
-// https://thecodebarbarian.com/mongodb-gridfs-stream
-// [0] (node:42297) DeprecationWarning: GridStore is deprecated, and will be removed in a future version. Please use GridFSBucket instead
-// [0] (node:42297) DeprecationWarning: collection.ensureIndex is deprecated. Use createIndexes instead.
-// [0] (node:42297) DeprecationWarning: collection.remove is deprecated. Use deleteOne, deleteMany, or bulkWrite instead.
-
-
+// GridFS file storage
 let gfs;
 let conn = mongoose.connection;
 conn.on('connected', () => {
@@ -88,7 +76,6 @@ conn.on('connected', () => {
 	});
 	
 });
-
 
 const storage = new GridFsStorage({
 	url: dbRoute,
@@ -114,7 +101,6 @@ const storage = new GridFsStorage({
 })
 
 const upload = multer({ storage });	// name of file input field is 'fileData'
-
 
 router.post("/uploadFileGridFS", upload.single('fileData'), (req, res) => {
 
