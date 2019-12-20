@@ -43,6 +43,11 @@ app.get("*", (req, res) => {
 	res.sendFile(path.join(__dirname, "/../", "client", "build", "index.html"));
 });
 
+// TASK
+// ADD GRIDFS NOTES
+
+// TASK
+// MODULARIZE ROUTES
 
 // TASK
 // CREATE NEW DATABASE WITH NEW ACCESS URL AND HIDDEN KEY without GITHUB RECORD
