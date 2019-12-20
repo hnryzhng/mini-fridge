@@ -53,8 +53,8 @@ mongoose
 	.connect(
 		dbRoute,
 		{
-			useUnifiedTopology: true,
-			useNewUrlParser: true
+			useNewUrlParser: true,
+			useUnifiedTopology: false
 		}
 	)
 	.then(() => console.log("connected to MongoDB database"))
