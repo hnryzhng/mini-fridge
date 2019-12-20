@@ -260,6 +260,10 @@ router.get("/downloadFileGridFS", (req, res)=> {
 
 router.get("/deleteFileGridFS", (req, res) => {
 
+	// TASK BOOKMARK
+	// cannot delete file in Heroku
+	// mongoURI problem?
+
 	const username = req.query.user;
 	const fileId = req.query.fileId;
 	console.log("user:", username);
