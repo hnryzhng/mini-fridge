@@ -24,12 +24,12 @@ const bcrypt = require("bcryptjs");	// password encryption
 const jwt = require("jsonwebtoken");	// validating endpoint transmissions 
 const keys  = require(path.join(__dirname, "/config/keys.js"));	// holds keys
 
+// load environment variables
+require("dotenv").config();
+
 // GRIDFS
 let GridFsStorage = require("multer-gridfs-storage");
 let Grid = require("gridfs-stream");
-
-// load environment variables
-require("dotenv").config();
 
 // INSTANTIATE APP 	
 const app = express();
