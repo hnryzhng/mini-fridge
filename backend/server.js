@@ -13,8 +13,8 @@ const unlinkAsync = promisify(fs.unlink);	// convert fs unlink method to a funct
 const mime = require("mime-types");
 
 // load models for db schema
-const Users = require(path.join(__dirname, "/models/users.js");
-const Files = require(path.join(__dirname, "/models/files.js");
+const Users = require(path.join(__dirname, "/models/users.js"));
+const Files = require(path.join(__dirname, "/models/files.js"));
 
 // load modules and packages for user authentication
 const validateRegisterInput = require(path.join(__dirname, "/validation/register.js"));
