@@ -13,8 +13,8 @@ const unlinkAsync = promisify(fs.unlink);	// convert fs unlink method to a funct
 const mime = require("mime-types");
 
 // load models for db schema
-const Users = require("./models/users.js");
-const Files = require("./models/files.js");
+const Users = require(path.join(__dirname, "/models/users.js");
+const Files = require(path.join(__dirname, "/models/files.js");
 
 // load modules and packages for user authentication
 const validateRegisterInput = require(path.join(__dirname, "/validation/register.js"));
@@ -36,14 +36,13 @@ const app = express();
 const router = express.Router();
 const api_port  = process.env.PORT || 3001;
 
-/*
 // SERVE FRONT-END SCRIPTS FOR HEROKU BUILD 
 app.use(express.static(path.join(__dirname, "/../", "client", "build")));	// Adds the react production build to serve react requests
 
 app.get("*", (req, res) => {
 	res.sendFile(path.join(__dirname, "/../", "client", "build", "index.html"));
 });
-*/
+
 
 // TASK
 // CREATE NEW DATABASE WITH NEW ACCESS URL AND HIDDEN KEY without GITHUB RECORD

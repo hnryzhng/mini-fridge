@@ -79,7 +79,7 @@ class App extends Component {
 		    formDataObj.append("fileData", fileData);
 
 		    //axios.post("/api/uploadFile", formDataObj)
-    		axios.post("http://localhost:3001/api/uploadFileGridFS", formDataObj)
+    		axios.post("/api/uploadFileGridFS", formDataObj)
 		            .then(response => response.data)	// TASK: if response obj success is true, then add pretty file name to list display (or just retrieve all names from componentWillMount because setState below refreshes component  state?)
 		            .then(data => {
 		            	if (data.success) {
@@ -111,7 +111,7 @@ class App extends Component {
     console.log("new password confirm input:", newPC);
 
     // axios.post("/api/register", {
-    axios.post("http://localhost:3001/api/register", {      
+    axios.post("/api/register", {      
             user: username,
             password: newP,
             passwordConfirm: newPC
@@ -143,7 +143,7 @@ class App extends Component {
   	console.log("submitted username: ", username);
     console.log("submitted password: ", password);
 	
-  	axios.post("http://localhost:3001/api/login", { 
+  	axios.post("/api/login", { 
   				user: username,
           		password: password
   			})
@@ -185,7 +185,7 @@ class App extends Component {
     // list item delete 
 
     console.log("standalone delete function:", user, ",", fId);
-    axios.get("http://localhost:3001/api/deleteFileGridFS", {
+    axios.get("/api/deleteFileGridFS", {
             params: {
               user: user, 
               fileId: fId
@@ -322,7 +322,7 @@ class Item extends Component {
 async function dLoad(user, fId, fName) {
 	console.log("standalone download function:", user, ",", fId, ",", fName);
 	
-  const reqUrl = `http://localhost:3001/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
+  const reqUrl = `/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
 
   axios(reqUrl, {
     method: 'GET',
