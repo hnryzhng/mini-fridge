@@ -172,7 +172,7 @@ router.post("/uploadFileGridFS", upload.single('fileData'), (req, res) => {
 });
 
 router.get("/downloadFileGridFS", (req, res)=> {
-	
+
 	const username = req.query.user;
 	const fileId = req.query.fileId;
 	const fileName = req.query.fileName;
@@ -253,10 +253,6 @@ router.get("/downloadFileGridFS", (req, res)=> {
 });
 
 router.get("/deleteFileGridFS", (req, res) => {
-
-	// TASK BOOKMARK
-	// cannot delete file in Heroku
-	// mongoURI problem?
 
 	const username = req.query.user;
 	const fileId = req.query.fileId;

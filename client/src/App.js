@@ -67,7 +67,7 @@ class App extends Component {
 
     	// file validation: file size < 500 kb
     	const fileSize = fileData.size;
-    	const fileSizeLimit = 50000000;	// bytes; fileSizeLimit/1000 = kilobytes
+    	const fileSizeLimit = 500000;	// bytes; fileSizeLimit/1000 = kilobytes
 
     	if (fileSize < fileSizeLimit) {
 		    // instantiate react form object to hold file data
@@ -320,6 +320,9 @@ class Item extends Component {
 // download file request
 
 async function dLoad(user, fId, fName) {
+  // TASK BOOKMARK
+  // keep name of downloaded file
+
 	console.log("standalone download function:", user, ",", fId, ",", fName);
 	
   const reqUrl = `/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
