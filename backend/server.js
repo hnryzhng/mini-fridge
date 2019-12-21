@@ -238,8 +238,8 @@ router.get("/downloadFileGridFS", (req, res)=> {
 				} else {
 					console.log("gfs file id does not equal file record file id");
 					console.log("file id not found in user's records")
-					// console.log("gfs file id:", fileId);
-					// console.log("file record file id:", fileRecord.file_id);
+					/// console.log("gfs file id:", fileId);
+					/// console.log("file record file id:", fileRecord.file_id);
 				}
 
 			}
