@@ -19,6 +19,7 @@ class App extends Component {
   };
 
   //componentWillMount() {
+    //TASK: get all user files if logged in
   //}
 
   //componentUnmount() {
@@ -110,7 +111,6 @@ class App extends Component {
     console.log("new password input:", newP);
     console.log("new password confirm input:", newPC);
 
-    // axios.post("/api/register", {
     axios.post("/api/register", {      
             user: username,
             password: newP,
