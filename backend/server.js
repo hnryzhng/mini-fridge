@@ -36,12 +36,6 @@ const app = express();
 const router = express.Router();
 const api_port  = process.env.PORT || 3001;
 
-// SERVE FRONT-END SCRIPTS FOR HEROKU BUILD 
-app.use(express.static(path.join(__dirname, "/../", "client", "build")));	// Adds the react production build to serve react requests
-
-app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname, "/../", "client", "build", "index.html"));
-});
 
 // TASK
 // ADD GRIDFS NOTES
@@ -306,15 +300,15 @@ router.get("/deleteFileGridFS", (req, res) => {
 
 			gfs.delete({ "filename": fileId })
 				.then( console.log("file removed from gfs:", fileId) )
-				.catch( err => console.log("error deleting file in GridFS") )
+				.catch( err => console.log("error deleting file in GridFS:", err) );
 
 		})
-		.then(() => {
+		.then(
 			res.json({
 				success: true,
 				file_id: fileId,
 			})
-		})
+		)
 		.catch( (err) => console.log("error with deleting from file record from user doc:", err) );
 
 });
@@ -786,5 +780,13 @@ router.get("/getFiles", (req, res)=> {
 
 
 app.use("/api", router);
+
+// SERVE FRONT-END SCRIPTS FOR HEROKU BUILD 
+app.use(express.static(path.join(__dirname, "/../", "client", "build")));	// Adds the react production build to serve react requests
+
+app.get("*", (req, res) => {
+	res.sendFile(path.join(__dirname, "/../", "client", "build", "index.html"));
+});
+
 
 app.listen(api_port, () => console.log(`Listening to ${api_port}`));
