@@ -67,7 +67,7 @@ class App extends Component {
 
     	// file validation: file size < 500 kb
     	const fileSize = fileData.size;
-    	const fileSizeLimit = 500000;	// bytes; fileSizeLimit/1000 = kilobytes
+    	const fileSizeLimit = 50000000;	// bytes; fileSizeLimit/1000 = kilobytes
 
     	if (fileSize < fileSizeLimit) {
 		    // instantiate react form object to hold file data
