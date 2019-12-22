@@ -28,7 +28,7 @@ const keys  = require(path.join(__dirname, "/config/keys.js"));	// holds keys
 require("dotenv").config();
 
 // ping Heroku
-const pingHeroku = require("ping-heroku.js")
+const pingHeroku = require(path.join(__dirname, "/ping-heroku.js"));
 pingHeroku("https://mini-fridge.herokuapp.com", 900000);	// every 900 seconds, or 15 minutes
 
 // GRIDFS
