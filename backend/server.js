@@ -27,6 +27,10 @@ const keys  = require(path.join(__dirname, "/config/keys.js"));	// holds keys
 // load environment variables
 require("dotenv").config();
 
+// ping Heroku
+const pingHeroku = require("ping-heroku.js")
+pingHeroku("https://mini-fridge.herokuapp.com", 900000);	// every 900 seconds, or 15 minutes
+
 // GRIDFS
 let GridFsStorage = require("multer-gridfs-storage");
 let Grid = require("gridfs-stream");
@@ -36,9 +40,6 @@ const app = express();
 const router = express.Router();
 const api_port  = process.env.PORT || 3001;
 
-
-// TASK
-// ADD GRIDFS NOTES
 
 // TASK
 // MODULARIZE ROUTES
@@ -341,15 +342,6 @@ router.post("/uploadFile", (req, res) => {
 	// accesses user record to see if x files or under
 	// saves info in file and user collections
 
-	// TASK BOOKMARK
-	// store files in MongoDB so I don't have to have a "files" folder; store it in the files record by changing mongoose schema
-	// Google: "store files in mongodb database"
-
-	// a1. https://medium.com/@parthkamaria/storing-and-retrieving-files-from-mongodb-using-mean-stack-and-gridfs-aebd8b91cf38
-	// a2. https://blog.zairza.in/uploading-files-images-to-mongodb-using-gridfs-c16f4eba777
-	// https://docs.mongodb.com/manual/core/gridfs/
-	// fixing cross-origin access control: https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
-	// for adding small (<16MB) files to mongodb: https://stackoverflow.com/questions/13907509/how-do-i-save-a-file-to-mongodb/13923749
 	var upload = multer({ storage: storage }).single("fileData");	// fieldname of front-end component is 'fileData'
 	
 	upload(req, res, function(err) {
