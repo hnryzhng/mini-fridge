@@ -1,5 +1,3 @@
-// TASK BOOKMARK
-// when testing routes, pay attention to localhost and Heroku routes
 
 const chai = require('chai');
 const chaiHttp = require('chai-http');
@@ -13,13 +11,27 @@ const server = require('../backend/server.js');
 
 // TESTS
 
-// test register and sign in (complete process of registering, signing in)
-// register userx, sign in: "userx successfully registered"
-// sign in fail: "userx was not found"
-// login fail if password or username is incorrect
+// TASK BOOKMARK
+// when testing routes, pay attention to localhost and Heroku routes
 
+// TASK: separate React components for individual testing
 
-describe('feature a', function(done) {
+// TUTORIAL: https://www.freecodecamp.org/news/end-to-end-tests-with-selenium-and-docker-the-ultimate-guide/
+
+// upload file
+// can submit file and store with any extension (e.g., doc, docx, xls, xlsx, pdf, txt, ...)
+// cannot submit empty file 
+// ensure two of the same files do not share same filename (originalname) in user file records and gridfs files collection
+// uploaded file shows up in front-end display
+
+// delete file
+// deleted file removed from display
+// deleted file shows up in user transaction history, removed from user file records, removed from gridfs collections files and chunks 
+
+// download file
+// downloaded file has same name as file in db
+
+describe('UPLOAD FILE', function(done) {
 
 	// VARS
 
