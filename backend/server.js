@@ -37,7 +37,7 @@ let Grid = require("gridfs-stream");
 
 // INSTANTIATE APP 	
 const app = express();
-const router = express.Router();
+// const router = express.Router();
 const api_port  = process.env.PORT || 3001;
 
 
@@ -767,7 +767,8 @@ router.get("/getFiles", (req, res)=> {
 */
 
 
-app.use("/api", router);
+// app.use("/api", router);
+app.use("api", require("./routes"));
 
 // SERVE FRONT-END SCRIPTS FOR HEROKU BUILD 
 app.use(express.static(path.join(__dirname, "/../", "client", "build")));	// Adds the react production build to serve react requests
