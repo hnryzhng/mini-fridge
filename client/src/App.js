@@ -232,6 +232,8 @@ class App extends Component {
     return (
       <div>
         
+        <NaviBar />
+
         {uploadFileField}
 
         <div id="fileName">
@@ -271,6 +273,46 @@ class App extends Component {
 
       </div>
     );
+  }
+}
+
+
+class NaviBar extends Component {
+
+  render() {
+    return(
+
+      <div id="navbar" style={{ width: "1000px", height: "50px", backgroundColor: "#000000" }} >
+
+        <Logo />
+
+        <UserLogo />
+
+      </div>
+
+    )
+  }
+
+}
+
+class Logo extends Component {
+  render() {
+    return(
+
+      <div></div>
+
+
+    )
+  }
+}
+
+class UserLogo extends Component {
+  render() {
+    return(
+
+      <div></div>
+
+    )
   }
 }
 
