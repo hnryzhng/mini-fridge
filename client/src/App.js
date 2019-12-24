@@ -33,9 +33,11 @@ class App extends Component {
   handleFileUpload = (event) => {
     event.preventDefault();
     if (event) {
-      this.setState({fileName: event.target.files[0].name})
-      this.setState({fileData: event.target.files[0]});
-      console.log(`${this.state.fileName} is ready to be submitted: ${this.state.fileData}`);
+      if (event.target.files[0]) {
+        this.setState({fileName: event.target.files[0].name})
+        this.setState({fileData: event.target.files[0]});
+        console.log(`${this.state.fileName} is ready to be submitted: ${this.state.fileData}`);
+      }
     }
   }
 
@@ -246,7 +248,7 @@ class App extends Component {
         	<input type="text" style={{ width: "300px" }} placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
           <input type="text" style={{ width: "300px" }} placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
 
-        	<button type="submit">
+        	<button type="submit" className="btn btn-primary">
         		SIGN IN 
         	</button>
         </form>
