@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import "./styles.css" // import CSS stylesheet
 import axios from 'axios';
 import download from 'downloadjs';
 
@@ -232,7 +233,7 @@ class App extends Component {
     return (
       <div>
         
-        <NaviBar />
+        <NaviBar user={this.state.user} />
 
         {uploadFileField}
 
@@ -245,32 +246,34 @@ class App extends Component {
         </div>
 
 
-        <form onSubmit={this.login}>
+        <div id="login-module">
+          <form style={{ border: "1px solid green" }} onSubmit={this.login}>
 
-        	<input type="text" style={{ width: "300px" }} placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
-          <input type="text" style={{ width: "300px" }} placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+          	<input type="text" style={{ width: "300px" }} placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
+            <input type="text" style={{ width: "300px" }} placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
 
-        	<button type="submit" className="btn btn-primary">
-        		SIGN IN 
-        	</button>
-        </form>
+          	<button type="submit" className="btn btn-primary">
+          		SIGN IN 
+          	</button>
+          </form>
 
-        <p onClick={this.handleSignOut}>
-        	SIGN OUT 
-        </p>
+          <p onClick={this.handleSignOut}>
+          	SIGN OUT 
+          </p>
+        </div>
 
+        <div id="register-module">
+          <form style={{ border: "1px solid blue"}} onSubmit={this.register}>
 
-
-        <form style={{ border: "1px solid blue"}} onSubmit={this.register}>
-
-          <input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({newUserInput: event.target.value})} />
-          <input type="text" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({newPasswordInput: event.target.value})} />
-          <input type="text" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({newPasswordConfirmInput: event.target.value})} />
-          <button type="submit">
-            REGISTER 
-          </button>
-        </form>
-
+            <input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({newUserInput: event.target.value})} />
+            <input type="text" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({newPasswordInput: event.target.value})} />
+            <input type="text" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({newPasswordConfirmInput: event.target.value})} />
+            <button type="submit">
+              REGISTER 
+            </button>
+          </form>
+        </div>
+        
       </div>
     );
   }
@@ -282,11 +285,11 @@ class NaviBar extends Component {
   render() {
     return(
 
-      <div id="navbar" style={{ width: "1000px", height: "50px", backgroundColor: "#000000" }} >
+      <div id="navibar" >
 
-        <Logo />
+        < Logo />
 
-        <UserLogo />
+        < UserModule user={ this.props.user } />
 
       </div>
 
@@ -299,18 +302,24 @@ class Logo extends Component {
   render() {
     return(
 
-      <div></div>
+      <div id="logo-container">
+        <p id="logo-text"> Mini Fridge </p>
+      </div>
 
 
     )
   }
 }
 
-class UserLogo extends Component {
+class UserModule extends Component {
   render() {
     return(
 
-      <div></div>
+      <div>
+
+        <div id="user-greeting"> Hey {this.props.user} </div>
+
+      </div>
 
     )
   }
