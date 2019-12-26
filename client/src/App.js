@@ -25,14 +25,7 @@ class App extends Component {
   //componentUnmount() {
     //TASK: clear data upon sign out?
   //}
-
-  // define callback functions for child passing data back to parent App component
-  updateNewUserInput = (u) => { this.setState({newUserInput: u}) };
-  updateNewPassWordInput = (p) => { this.setState({newPasswordInput: p}) };
-  updateNewPasswordConfirmInput = (p) => { this.setState({newPasswordConfirmInput: p}) };
-  updateFileRecordsArray = (fArray) => { this.setState({fileRecordsArray: fArray}) };
-  updateLoggedIn = (isLoggedIn) => { this.setState({loggedIn: isLoggedIn}) };
-
+ 
   storeFile = (event) => {
   	let file = event.target.files[0];
   	this.setState({fileData: file});
@@ -298,12 +291,14 @@ class App extends Component {
 
   render() {
 
+
+
     return (
       <div>
         
         <NaviBar user={this.state.user} />
 
-        <uploadFileControl isLoggedIn={this.isLoggedIn} uploadFile={this.uploadFile} handleFileUpload={this.handleFileUpload} />;
+        <UploadFileControl loggedIn={this.state.loggedIn} uploadFile={this.uploadFile} handleFileUpload={this.handleFileUpload} />
 
         <div id="fileName">
           Filename: {this.state.fileName}
@@ -458,22 +453,21 @@ class UserModule extends Component {
   }
 }
 
-class uploadFileControl extends Component {
+class UploadFileControl extends Component {
 
   render() {
-      let uploadFileField;
+
+      let showUploadForm;   
       const isLoggedIn = this.props.loggedIn;
-
+      
       if (isLoggedIn) {
-        uploadFileField = <UploadFileForm uploadFile={this.props.uploadFile} handleFileUpload={this.props.handleFileUpload} />;
-
+        showUploadForm = <UploadFileForm uploadFile={this.props.uploadFile} handleFileUpload={this.props.handleFileUpload} />
       } else {
-        uploadFileField = null;
+        showUploadForm = null;
       }
 
-      return(
-        { uploadFileField }
-      )
+      return(showUploadForm);
+
   }
 }
 
