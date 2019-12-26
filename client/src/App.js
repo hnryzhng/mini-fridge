@@ -26,6 +26,13 @@ class App extends Component {
     //TASK: clear data upon sign out?
   //}
 
+  // define callback functions for child passing data back to parent App component
+  updateNewUserInput = (u) => { this.setState({newUserInput: u}) };
+  updateNewPassWordInput = (p) => { this.setState({newPasswordInput: p}) };
+  updateNewPasswordConfirmInput = (p) => { this.setState({newPasswordConfirmInput: p}) };
+  updateFileRecordsArray = (fArray) => { this.setState({fileRecordsArray: fArray}) };
+  updateLoggedIn = (isLoggedIn) => { this.setState({loggedIn: isLoggedIn}) };
+
   storeFile = (event) => {
   	let file = event.target.files[0];
   	this.setState({fileData: file});
@@ -138,6 +145,78 @@ class App extends Component {
 
   }
 
+  handleRegister = (username, newP, newPC) => {
+
+    console.log("new username input:", username);
+    console.log("new password input:", newP);
+    console.log("new password confirm input:", newPC);
+
+    axios.post("http://localhost:3001/api/register", {
+    //axios.post("/api/register", {      
+            user: username,
+            password: newP,
+            passwordConfirm: newPC
+        })
+        .then(response => response.data)
+        .then(data => {
+          if (data.success) {
+            console.log("new user registered!");
+            // log in after registration
+            this.setState({user: username}, console.log("set state user", this.state.user));
+            this.setState({newPasswordInput: newP}, console.log("set new pass input", this.state.newPasswordInput));
+            this.setState({newPasswordConfirmInput: newPC}, console.log("set new pass confirm input", this.state.newPasswordConfirmInput));
+            this.setState({loggedIn: true}, console.log("logged in status", this.state.loggedIn));
+
+          } else {      
+            console.log("registration failed");
+            console.log(data.error);
+          }
+        })
+        .catch(err => console.log("registration error:", err));
+
+  }
+
+
+
+
+
+  handleLogin = (username, password) => {
+
+    console.log("submitted username: ", username);
+    console.log("submitted password: ", password);
+    
+    axios.post("http://localhost:3001/api/login", {
+    // axios.post("/api/login", { 
+          user: username,
+              password: password
+        })
+        .then(response => response.data)
+        .then(data => {
+              //console.log("data obj:", data);
+          if (data.success) {
+            // change app state 
+            this.setState({user: username})
+            this.setState({loggedIn: true})
+            this.setState({fileRecordsArray: data.fileRecordsArray})
+            console.log("set state user:", this.state.user);
+            console.log("set state logged in status:", this.state.loggedIn);
+            console.log("set state user's file records:", this.state.fileRecordsArray);
+          } else {
+                // user is not registered
+                // display message
+                console.log(data.error);
+            };
+        })
+        .catch(error => console.log("sign in error:", error));
+        
+
+  }
+
+
+
+
+
+
   login = (event) => {
   	event.preventDefault();
 
@@ -219,64 +298,118 @@ class App extends Component {
 
   render() {
 
-  	// conditionally show upload file field only if logged in
-  	const isLoggedIn = this.state.loggedIn;
-  	let uploadFileField;
-
-  	if (isLoggedIn) {
-  		uploadFileField = <UploadFileForm uploadFile={this.uploadFile} handleFileUpload={this.handleFileUpload} />;
-
-  	} else {
-  		uploadFileField = null;
-  	}
-
     return (
       <div>
         
         <NaviBar user={this.state.user} />
 
-        {uploadFileField}
+        <uploadFileControl isLoggedIn={this.isLoggedIn} uploadFile={this.uploadFile} handleFileUpload={this.handleFileUpload} />;
 
         <div id="fileName">
           Filename: {this.state.fileName}
         </div>
 
-        <div id="listContainer" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
+        <div id="list-container" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
           <List fileRecordsArray={ this.state.fileRecordsArray } user={ this.state.user } del= { this.del }/>  
         </div>
 
+        <p onClick={this.handleSignOut}>
+        	SIGN OUT 
+        </p>
 
-        <div id="login-module">
-          <form style={{ border: "1px solid green" }} onSubmit={this.login}>
+        <LoginModule handleLogin={ this.handleLogin } /> 
 
-          	<input type="text" style={{ width: "300px" }} placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
-            <input type="text" style={{ width: "300px" }} placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+        <RegisterModule handleRegister={ this.handleRegister } />
 
-          	<button type="submit" className="btn btn-primary">
-          		SIGN IN 
-          	</button>
-          </form>
 
-          <p onClick={this.handleSignOut}>
-          	SIGN OUT 
-          </p>
-        </div>
-
-        <div id="register-module">
-          <form style={{ border: "1px solid blue"}} onSubmit={this.register}>
-
-            <input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({newUserInput: event.target.value})} />
-            <input type="text" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({newPasswordInput: event.target.value})} />
-            <input type="text" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({newPasswordConfirmInput: event.target.value})} />
-            <button type="submit">
-              REGISTER 
-            </button>
-          </form>
-        </div>
         
       </div>
     );
   }
+}
+class LoginModule extends Component {
+
+  state = {
+    usernameInput: null,
+    passwordInput: null
+  }
+
+  sendToParent = (event) => {
+
+    event.preventDefault();
+
+    const user = this.state.usernameInput;
+    const password = this.state.passwordInput;
+
+    this.props.handleLogin(user, password);
+
+  }
+
+    render() {
+      return(
+
+        <div id="login-module">
+          <form style={{ border: "1px solid green" }} onSubmit={this.sendToParent}>
+
+            <input type="text" style={{ width: "300px" }} placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
+            <input type="text" style={{ width: "300px" }} placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+
+            <button type="submit" className="btn btn-primary">
+              SIGN IN 
+            </button>
+          </form>
+        </div>
+
+
+      )
+    }
+
+
+}
+
+class RegisterModule extends Component {
+
+  state = {
+    user: null,
+    password: null,
+    passwordConfirm: null
+  }
+
+  sendToParent = (event) => {
+
+    event.preventDefault();
+
+    const user = this.state.user;
+    const password = this.state.password;
+    const passwordConfirm = this.state.passwordConfirm;
+    this.props.handleRegister(user, password, passwordConfirm);
+  }
+
+
+  render() {
+    return(
+
+
+      <div id="register-module">
+      <form style={{ border: "1px solid blue"}} onSubmit={ this.sendToParent }>
+
+        <input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({user: event.target.value})} />
+        <input type="text" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({password: event.target.value})} />
+        <input type="text" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({passwordConfirm: event.target.value})} />
+        <button type="submit">
+          REGISTER 
+        </button>
+      </form>
+    </div>
+
+
+    )
+  }
+
+
+
+
+
 }
 
 
@@ -322,6 +455,25 @@ class UserModule extends Component {
       </div>
 
     )
+  }
+}
+
+class uploadFileControl extends Component {
+
+  render() {
+      let uploadFileField;
+      const isLoggedIn = this.props.loggedIn;
+
+      if (isLoggedIn) {
+        uploadFileField = <UploadFileForm uploadFile={this.props.uploadFile} handleFileUpload={this.props.handleFileUpload} />;
+
+      } else {
+        uploadFileField = null;
+      }
+
+      return(
+        { uploadFileField }
+      )
   }
 }
 
