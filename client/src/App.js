@@ -9,8 +9,6 @@ class App extends Component {
     usernameInput: null,
     passwordInput: null,
     newUserInput: null,
-    newPasswordInput: null,
-    newPasswordConfirmInput: null,
     user: null,
     userID: null,	// TASK: how do I keep this hidden?
     loggedIn: false,
@@ -104,35 +102,25 @@ class App extends Component {
   }
 
 
-  handleRegister = (username, newP, newPC) => {
+  handleRegisterModule = (username, success) => {
 
+  	console.log("handleRegisterModule:");
     console.log("new username input:", username);
-    console.log("new password input:", newP);
-    console.log("new password confirm input:", newPC);
 
-    axios.post("http://localhost:3001/api/register", {
-    //axios.post("/api/register", {      
-            user: username,
-            password: newP,
-            passwordConfirm: newPC
-        })
-        .then(response => response.data)
-        .then(data => {
-          if (data.success) {
-            console.log("new user registered!");
-            // log in after registration
-            this.setState({user: username}, console.log("set state user", this.state.user));
-            this.setState({newPasswordInput: newP}, console.log("set new pass input", this.state.newPasswordInput));
-            this.setState({newPasswordConfirmInput: newPC}, console.log("set new pass confirm input", this.state.newPasswordConfirmInput));
-            this.setState({loggedIn: true}, console.log("logged in status", this.state.loggedIn));
+    if (success) {
+    	// log in if successfull registered
+    	this.setState({ loggedIn: true });
+    	this.setState({ user: username });
+    } else {
+    	this.setState({ loggedIn: false });
+    }
+  }
 
-          } else {      
-            console.log("registration failed");
-            console.log(data.error);
-          }
-        })
-        .catch(err => console.log("registration error:", err));
+  handleLoginModule = (username, password) => {
 
+    console.log("submitted username: ", username);
+    console.log("submitted password: ", password);
+    
   }
 
 
@@ -164,8 +152,6 @@ class App extends Component {
             };
         })
         .catch(error => console.log("sign in error:", error));
-        
-
   }
 
 
@@ -264,7 +250,7 @@ class App extends Component {
 
         <SignOutButton handleSignOut={this.handleSignOut} />
 
-        <RegisterModule handleRegister={ this.handleRegister } />
+        <RegisterModule handleRegisterModule={ this.handleRegisterModule } />
         
       </div>
     );
@@ -345,16 +331,42 @@ class RegisterModule extends Component {
     user: null,
     password: null,
     passwordConfirm: null
-  }
+  };
 
   sendToParent = (event) => {
 
     event.preventDefault();
 
-    const user = this.state.user;
-    const password = this.state.password;
-    const passwordConfirm = this.state.passwordConfirm;
-    this.props.handleRegister(user, password, passwordConfirm);
+    const userInput = this.state.user;
+    const passwordInput = this.state.password;
+    const passwordConfirmInput = this.state.passwordConfirm;
+    
+    // send POST request
+    //axios.post("/api/register", {      
+    axios.post("http://localhost:3001/api/register", {
+            user: userInput,
+            password: passwordInput,
+            passwordConfirm: passwordConfirmInput
+        })
+        .then(response => response.data)
+        .then(data => {
+          if (data.success) {
+            console.log("new user registered!");
+            
+            // send data back to App component
+            this.props.handleRegisterModule(userInput, true);
+
+
+          } else {      
+            console.log("registration failed");
+            console.log(data.error);
+
+            // send data back to App component
+			this.props.handleRegisterModule(null, false);
+
+          }
+        })
+        .catch(err => console.log("registration error:", err));
   }
 
 
