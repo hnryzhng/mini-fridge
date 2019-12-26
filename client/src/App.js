@@ -103,40 +103,6 @@ class App extends Component {
     }
   }
 
-  register = (event) => {
-    event.preventDefault();
-
-    const username = this.state.newUserInput;
-    const newP = this.state.newPasswordInput;
-    const newPC = this.state.newPasswordConfirmInput;
-    console.log("new username input:", username);
-    console.log("new password input:", newP);
-    console.log("new password confirm input:", newPC);
-
-    axios.post("http://localhost:3001/api/register", {
-    //axios.post("/api/register", {      
-            user: username,
-            password: newP,
-            passwordConfirm: newPC
-        })
-        .then(response => response.data)
-        .then(data => {
-          if (data.success) {
-            console.log("new user registered!");
-            // log in after registration
-            this.setState({user: username}, console.log("set state user", this.state.user));
-            this.setState({newPasswordInput: newP}, console.log("set new pass input", this.state.newPasswordInput));
-            this.setState({newPasswordConfirmInput: newPC}, console.log("set new pass confirm input", this.state.newPasswordConfirmInput));
-            this.setState({loggedIn: true}, console.log("logged in status", this.state.loggedIn));
-
-          } else {      
-            console.log("registration failed");
-            console.log(data.error);
-          }
-        })
-        .catch(err => console.log("registration error:", err));
-
-  }
 
   handleRegister = (username, newP, newPC) => {
 
@@ -170,9 +136,6 @@ class App extends Component {
   }
 
 
-
-
-
   handleLogin = (username, password) => {
 
     console.log("submitted username: ", username);
@@ -181,7 +144,7 @@ class App extends Component {
     axios.post("http://localhost:3001/api/login", {
     // axios.post("/api/login", { 
           user: username,
-              password: password
+          password: password
         })
         .then(response => response.data)
         .then(data => {
@@ -206,45 +169,6 @@ class App extends Component {
   }
 
 
-
-
-
-
-  login = (event) => {
-  	event.preventDefault();
-
-  	const username = this.state.usernameInput;
-    const password = this.state.passwordInput;
-  	console.log("submitted username: ", username);
-    console.log("submitted password: ", password);
-	  
-    axios.post("http://localhost:3001/api/login", {
-  	// axios.post("/api/login", { 
-  				user: username,
-          		password: password
-  			})
-  			.then(response => response.data)
-  			.then(data => {
-          		//console.log("data obj:", data);
-  				if (data.success) {
-  					// change app state 
-  					this.setState({user: username})
-  					this.setState({loggedIn: true})
-  					this.setState({fileRecordsArray: data.fileRecordsArray})
-        			console.log("set state user:", this.state.user);
-        			console.log("set state logged in status:", this.state.loggedIn);
-        			console.log("set state user's file records:", this.state.fileRecordsArray);
-  				} else {
-          			// user is not registered
-          			// display message
-          			console.log(data.error);
-        		};
-  			})
-  			.catch(error => console.log("sign in error:", error));
-  			
-
-  }
-
   handleSignOut = () => {
   	
   	this.setState({ user: null });
@@ -256,6 +180,38 @@ class App extends Component {
 
 
   }
+
+  dLoad = async(user, fId, fName) => {
+    // TASK BOOKMARK
+    // keep name of downloaded file
+
+    console.log("standalone download function:", user, ",", fId, ",", fName);
+    
+    const reqUrl = `http://localhost:3001/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
+
+    axios(reqUrl, {
+      method: 'GET',
+      responseType: 'arraybuffer'
+    })
+    .then((response) => {
+      console.log("response content:", response.data)
+
+
+      var blob = new Blob([response.data], {type: response.headers['content-type']});
+      console.log("Blob file:", blob);
+      
+      download(blob)
+
+      // const fileURL = URL.createObjectURL(blob);
+      // console.log("file URL:", fileURL);
+      // window.open(fileURL); 
+    })
+    .catch(error => {
+      console.log('download error:', error);
+    });
+
+  }
+
 
   del = (user, fId) => {
     // list item delete 
@@ -296,7 +252,7 @@ class App extends Component {
     return (
       <div>
         
-        <NaviBar user={this.state.user} />
+        <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLogin={this.handleLogin} />
 
         <UploadFileControl loggedIn={this.state.loggedIn} uploadFile={this.uploadFile} handleFileUpload={this.handleFileUpload} />
 
@@ -304,24 +260,34 @@ class App extends Component {
           Filename: {this.state.fileName}
         </div>
 
-        <div id="list-container" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
-          <List fileRecordsArray={ this.state.fileRecordsArray } user={ this.state.user } del= { this.del }/>  
-        </div>
+        <ListContainer fileRecordsArray={ this.state.fileRecordsArray } user={ this.state.user } del= { this.del } dLoad={ this.dLoad} />
 
-        <p onClick={this.handleSignOut}>
-        	SIGN OUT 
-        </p>
-
-        <LoginModule handleLogin={ this.handleLogin } /> 
+        <SignOutButton handleSignOut={this.handleSignOut} />
 
         <RegisterModule handleRegister={ this.handleRegister } />
-
-
         
       </div>
     );
   }
 }
+
+class ListContainer extends Component {
+
+
+  render() {
+    return(
+
+      <div id="list-container" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
+        <List fileRecordsArray={ this.props.fileRecordsArray } user={ this.props.user } del= { this.props.del } dLoad={ this.props.dLoad }/>  
+      </div>
+
+    )
+  }
+
+
+}
+
+
 class LoginModule extends Component {
 
   state = {
@@ -360,6 +326,17 @@ class LoginModule extends Component {
     }
 
 
+}
+
+class SignOutButton extends Component {
+
+  render() {
+    return(
+      <p onClick={this.props.handleSignOut} >
+        SIGN OUT 
+      </p>
+    )
+  }
 }
 
 class RegisterModule extends Component {
@@ -417,11 +394,31 @@ class NaviBar extends Component {
 
         < Logo />
 
-        < UserModule user={ this.props.user } />
+        <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLogin={ this.props.handleLogin } />
+
+
 
       </div>
 
     )
+  }
+
+}
+
+class NavigationControl extends Component {
+
+  render() {
+
+    let showComponent;
+    const isLoggedIn = this.props.loggedIn;
+
+    if (isLoggedIn) {
+      showComponent = <UserModule user={ this.props.user } />
+    } else {
+      showComponent = <LoginModule handleLogin={ this.props.handleLogin } /> 
+    }
+
+    return(showComponent);
   }
 
 }
@@ -491,7 +488,7 @@ class List extends Component {
 
 	render() {
 		let list = this.props.fileRecordsArray.map((file,index)=>{
-		  return <Item key={index} fileName={file.fileName} fileId={file.fileId} user={this.props.user} del={this.props.del} />
+		  return <Item key={index} fileName={file.fileName} fileId={file.fileId} user={this.props.user} del={this.props.del} dLoad={this.props.dLoad}/>
 		});
 
 		return <ul>{list}</ul>; 
@@ -512,43 +509,10 @@ class Item extends Component {
     	<div>
     		<li id={ fileId } > { this.props.fileName } </li>
     		<p onClick={ () => { this.props.del(user, fileId) } }> DELETE </p>
-        <p onClick={ () => { dLoad(user, fileId, fileName) } }> DOWNLOAD </p>
+        <p onClick={ () => { this.props.dLoad(user, fileId, fileName) } }> DOWNLOAD </p>
     	</div>
     )
   }
-}
-
-// download file request
-
-async function dLoad(user, fId, fName) {
-  // TASK BOOKMARK
-  // keep name of downloaded file
-
-	console.log("standalone download function:", user, ",", fId, ",", fName);
-	
-  const reqUrl = `http://localhost:3001/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
-
-  axios(reqUrl, {
-    method: 'GET',
-    responseType: 'arraybuffer'
-  })
-  .then((response) => {
-    console.log("response content:", response.data)
-
-
-    var blob = new Blob([response.data], {type: response.headers['content-type']});
-    console.log("Blob file:", blob);
-    
-    download(blob)
-
-    // const fileURL = URL.createObjectURL(blob);
-    // console.log("file URL:", fileURL);
-    // window.open(fileURL); 
-  })
-  .catch(error => {
-    console.log('download error:', error);
-  });
-
 }
 
 export default App;
