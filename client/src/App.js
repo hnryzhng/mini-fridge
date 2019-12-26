@@ -10,7 +10,6 @@ class App extends Component {
     passwordInput: null,
     newUserInput: null,
     user: null,
-    userID: null,	// TASK: how do I keep this hidden?
     loggedIn: false,
     fileName: null,
     fileData: null,
@@ -116,44 +115,20 @@ class App extends Component {
     }
   }
 
-  handleLoginModule = (username, password) => {
+  handleLoginModule = (username, fileRecordsArray, success) => {
 
-    console.log("submitted username: ", username);
-    console.log("submitted password: ", password);
+    console.log("handleLoginModule username: ", username);
+    console.log("handleLoginModule fileRecordsArray:", fileRecordsArray);
+
+    if (success) {
+    	this.setState({ loggedIn: true });
+    	this.setState({ user: username });
+    	this.setState({ fileRecordsArray: fileRecordsArray });
+    } else {
+    	this.setState({ loggedIn: false });
+    }
     
   }
-
-
-  handleLogin = (username, password) => {
-
-    console.log("submitted username: ", username);
-    console.log("submitted password: ", password);
-    
-    axios.post("http://localhost:3001/api/login", {
-    // axios.post("/api/login", { 
-          user: username,
-          password: password
-        })
-        .then(response => response.data)
-        .then(data => {
-              //console.log("data obj:", data);
-          if (data.success) {
-            // change app state 
-            this.setState({user: username})
-            this.setState({loggedIn: true})
-            this.setState({fileRecordsArray: data.fileRecordsArray})
-            console.log("set state user:", this.state.user);
-            console.log("set state logged in status:", this.state.loggedIn);
-            console.log("set state user's file records:", this.state.fileRecordsArray);
-          } else {
-                // user is not registered
-                // display message
-                console.log(data.error);
-            };
-        })
-        .catch(error => console.log("sign in error:", error));
-  }
-
 
   handleSignOut = () => {
   	
@@ -234,11 +209,10 @@ class App extends Component {
   render() {
 
 
-
     return (
       <div>
         
-        <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLogin={this.handleLogin} />
+        <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} />
 
         <UploadFileControl loggedIn={this.state.loggedIn} uploadFile={this.uploadFile} handleFileUpload={this.handleFileUpload} />
 
@@ -285,10 +259,32 @@ class LoginModule extends Component {
 
     event.preventDefault();
 
-    const user = this.state.usernameInput;
-    const password = this.state.passwordInput;
+    // send POST request to backend
+    axios.post("http://localhost:3001/api/login", {
+    // axios.post("/api/login", { 
+          user: this.state.usernameInput,
+          password: this.state.passwordInput
+        })
+        .then(response => response.data)
+        .then(data => {
+			if (data.success) {
+				// change app state 
+				console.log("user:", this.state.usernameInput);
+				console.log("user's file records:", data.fileRecordsArray);
 
-    this.props.handleLogin(user, password);
+				// send data up to App parent component 
+				this.props.handleLoginModule(this.state.usernameInput, data.fileRecordsArray, true);
+
+			} else {
+				// cannot find user
+				console.log(data.error);
+
+				// send data up to App parent component 
+				this.props.handleLoginModule(data.user, data.fileRecordsArray, false);
+			};
+        })
+        .catch(error => console.log("sign in error:", error));
+    
 
   }
 
@@ -336,17 +332,13 @@ class RegisterModule extends Component {
   sendToParent = (event) => {
 
     event.preventDefault();
-
-    const userInput = this.state.user;
-    const passwordInput = this.state.password;
-    const passwordConfirmInput = this.state.passwordConfirm;
     
     // send POST request
     //axios.post("/api/register", {      
     axios.post("http://localhost:3001/api/register", {
-            user: userInput,
-            password: passwordInput,
-            passwordConfirm: passwordConfirmInput
+            user: this.state.user,
+            password: this.state.password,
+            passwordConfirm: this.state.passwordConfirm
         })
         .then(response => response.data)
         .then(data => {
@@ -354,7 +346,7 @@ class RegisterModule extends Component {
             console.log("new user registered!");
             
             // send data back to App component
-            this.props.handleRegisterModule(userInput, true);
+            this.props.handleRegisterModule(this.state.user, true);
 
 
           } else {      
@@ -406,9 +398,7 @@ class NaviBar extends Component {
 
         < Logo />
 
-        <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLogin={ this.props.handleLogin } />
-
-
+        <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLoginModule={ this.props.handleLoginModule } />
 
       </div>
 
@@ -427,7 +417,7 @@ class NavigationControl extends Component {
     if (isLoggedIn) {
       showComponent = <UserModule user={ this.props.user } />
     } else {
-      showComponent = <LoginModule handleLogin={ this.props.handleLogin } /> 
+      showComponent = <LoginModule handleLoginModule={ this.props.handleLoginModule } /> 
     }
 
     return(showComponent);
