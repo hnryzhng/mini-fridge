@@ -73,38 +73,6 @@ class App extends Component {
   }
 
 
-  dLoad = async(user, fId, fName) => {
-    // TASK BOOKMARK
-    // keep name of downloaded file
-
-    console.log("standalone download function:", user, ",", fId, ",", fName);
-    
-    const reqUrl = `http://localhost:3001/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
-
-    axios(reqUrl, {
-      method: 'GET',
-      responseType: 'arraybuffer'
-    })
-    .then((response) => {
-      console.log("response content:", response.data)
-
-
-      var blob = new Blob([response.data], {type: response.headers['content-type']});
-      console.log("Blob file:", blob);
-      
-      download(blob)
-
-      // const fileURL = URL.createObjectURL(blob);
-      // console.log("file URL:", fileURL);
-      // window.open(fileURL); 
-    })
-    .catch(error => {
-      console.log('download error:', error);
-    });
-
-  }
-
-
   del = (user, fId) => {
     // list item delete 
 
@@ -151,7 +119,7 @@ class App extends Component {
           Filename: {this.state.fileName}
         </div>
 
-        <ListContainer fileRecordsArray={ this.state.fileRecordsArray } user={ this.state.user } del= { this.del } dLoad={ this.dLoad} />
+        <ListContainer { ...this.state } del= { this.del } />
 
         <SignOutButton handleSignOut={this.handleSignOut} />
 
@@ -169,7 +137,7 @@ class ListContainer extends Component {
     return(
 
       <div id="list-container" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
-        <List fileRecordsArray={ this.props.fileRecordsArray } user={ this.props.user } del= { this.props.del } dLoad={ this.props.dLoad }/>  
+        <List { ...this.props } del= { this.props.del } />  
       </div>
 
     )
@@ -491,7 +459,7 @@ class List extends Component {
 
 	render() {
 		let list = this.props.fileRecordsArray.map((file,index)=>{
-		  return <Item key={index} fileName={file.fileName} fileId={file.fileId} user={this.props.user} del={this.props.del} dLoad={this.props.dLoad}/>
+		  return <Item key={index} fileName={file.fileName} fileId={file.fileId} user={this.props.user} del={this.props.del} />
 		});
 
 		return <ul>{list}</ul>; 
@@ -501,6 +469,38 @@ class List extends Component {
 }
 
 class Item extends Component {
+
+  dLoad = async(user, fId, fName) => {
+    // TASK BOOKMARK
+    // keep name of downloaded file
+
+    console.log("standalone download function:", user, ",", fId, ",", fName);
+    
+    const reqUrl = `http://localhost:3001/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
+
+    axios(reqUrl, {
+      method: 'GET',
+      responseType: 'arraybuffer'
+    })
+    .then((response) => {
+      console.log("response content:", response.data)
+
+
+      var blob = new Blob([response.data], {type: response.headers['content-type']});
+      console.log("Blob file:", blob);
+      
+      download(blob)
+
+      // const fileURL = URL.createObjectURL(blob);
+      // console.log("file URL:", fileURL);
+      // window.open(fileURL); 
+    })
+    .catch(error => {
+      console.log('download error:', error);
+    });
+
+  }
+
 
   render() {
     
@@ -512,7 +512,7 @@ class Item extends Component {
     	<div>
     		<li id={ fileId } > { this.props.fileName } </li>
     		<p onClick={ () => { this.props.del(user, fileId) } }> DELETE </p>
-        <p onClick={ () => { this.props.dLoad(user, fileId, fileName) } }> DOWNLOAD </p>
+        <p onClick={ () => { this.dLoad(user, fileId, fileName) } }> DOWNLOAD </p>
     	</div>
     )
   }
