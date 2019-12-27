@@ -72,39 +72,12 @@ class App extends Component {
 
   }
 
+  handleFileRecordsUpdate = (updatedFileRecordsArray) => {
 
-  del = (user, fId) => {
-    // list item delete 
+    this.setState({ fileRecordsArray: updatedFileRecordsArray }, () => console.log("updated fileRecordsArray: ", this.state.fileRecordsArray));
 
-    console.log("standalone delete function:", user, ",", fId);
-    axios.get("http://localhost:3001/api/deleteFileGridFS", {
-    // axios.get("/api/deleteFileGridFS", {
-            params: {
-              user: user, 
-              fileId: fId
-            }
-          })
-          .then(response => response.data)
-          .then(data => {
-            if (data.success) {
-              console.log("file has been deleted on the backend");
-              console.log("data:", data);
-              // find file in fileRecordsArray using data.file_id, then delete
-              
-              var oldArray = this.state.fileRecordsArray;
-
-              // returns new array with files not matching id of file to be deleted
-              var newArray = oldArray.filter(record => record.fileId !== data.file_id)
-
-              console.log("newArray:", newArray);
-              
-              // set new state of fileRecordsArray
-              this.setState({fileRecordsArray: newArray}) 
-            }
-          })
-            .catch(err => console.log("error with delete request:", err));
   }
-
+  
   render() {
 
 
@@ -119,7 +92,7 @@ class App extends Component {
           Filename: {this.state.fileName}
         </div>
 
-        <ListContainer { ...this.state } del= { this.del } />
+        <ListContainer { ...this.state } handleFileRecordsUpdate={ this.handleFileRecordsUpdate } />
 
         <SignOutButton handleSignOut={this.handleSignOut} />
 
@@ -137,7 +110,7 @@ class ListContainer extends Component {
     return(
 
       <div id="list-container" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
-        <List { ...this.props } del= { this.props.del } />  
+        <List { ...this.props } handleFileRecordsUpdate={ this.props.handleFileRecordsUpdate } />  
       </div>
 
     )
@@ -459,7 +432,7 @@ class List extends Component {
 
 	render() {
 		let list = this.props.fileRecordsArray.map((file,index)=>{
-		  return <Item key={index} fileName={file.fileName} fileId={file.fileId} user={this.props.user} del={this.props.del} />
+		  return <Item key={ index } fileName={ file.fileName } fileId={ file.fileId } user={ this.props.user } fileRecordsArray={ this.props.fileRecordsArray } handleFileRecordsUpdate={ this.props.handleFileRecordsUpdate } />
 		});
 
 		return <ul>{list}</ul>; 
@@ -502,16 +475,50 @@ class Item extends Component {
   }
 
 
+  del = (user, fId, fileRecordsArray) => {
+    // list item delete 
+
+    console.log("standalone delete function:", user, ",", fId);
+    axios.get("http://localhost:3001/api/deleteFileGridFS", {
+    // axios.get("/api/deleteFileGridFS", {
+            params: {
+              user: user, 
+              fileId: fId
+            }
+          })
+          .then(response => response.data)
+          .then(data => {
+            if (data.success) {
+              console.log("file has been deleted on the backend");
+              console.log("data:", data);
+              // find file in fileRecordsArray using data.file_id, then delete
+              
+              var oldArray = fileRecordsArray;
+
+              // returns new array with files not matching id of file to be deleted
+              var newArray = oldArray.filter(record => record.fileId !== data.file_id)
+
+              console.log("newArray:", newArray);
+              
+              // send updated file records array to be updated in App parent component
+              this.props.handleFileRecordsUpdate(newArray);
+            }
+          })
+          .catch(err => console.log("error with delete request:", err));
+  }
+
+
   render() {
     
     const user = this.props.user;
     const fileId = this.props.fileId;
     const fileName = this.props.fileName;
+    const fileRecordsArray = this.props.fileRecordsArray;
     
     return(
     	<div>
     		<li id={ fileId } > { this.props.fileName } </li>
-    		<p onClick={ () => { this.props.del(user, fileId) } }> DELETE </p>
+    		<p onClick={ () => { this.del(user, fileId, fileRecordsArray) } }> DELETE </p>
         <p onClick={ () => { this.dLoad(user, fileId, fileName) } }> DOWNLOAD </p>
     	</div>
     )
