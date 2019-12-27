@@ -6,9 +6,6 @@ import download from 'downloadjs';
 class App extends Component {
 
   state = {
-    usernameInput: null,
-    passwordInput: null,
-    newUserInput: null,
     user: null,
     loggedIn: false,
     fileData: null,
@@ -17,7 +14,7 @@ class App extends Component {
   };
 
   //componentWillMount() {
-
+    // if loggedIn, fetch user data for most updated list? do we need to update fileRecordsArray when uploading file if I do this?
   //}
 
   //componentUnmount() {
@@ -189,7 +186,7 @@ class LoginModule extends Component {
     passwordInput: null
   }
 
-  sendToParent = (event) => {
+  login = (event) => {
 
     event.preventDefault();
 
@@ -226,7 +223,7 @@ class LoginModule extends Component {
       return(
 
         <div id="login-module">
-          <form style={{ border: "1px solid green" }} onSubmit={this.sendToParent}>
+          <form style={{ border: "1px solid green" }} onSubmit={this.login}>
 
             <input type="text" style={{ width: "300px" }} placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
             <input type="text" style={{ width: "300px" }} placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
@@ -263,7 +260,7 @@ class RegisterModule extends Component {
     passwordConfirm: null
   };
 
-  sendToParent = (event) => {
+  register = (event) => {
 
     event.preventDefault();
     
@@ -301,7 +298,7 @@ class RegisterModule extends Component {
 
 
       <div id="register-module">
-      <form style={{ border: "1px solid blue"}} onSubmit={ this.sendToParent }>
+      <form style={{ border: "1px solid blue"}} onSubmit={ this.register }>
 
         <input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({user: event.target.value})} />
         <input type="text" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({password: event.target.value})} />
@@ -315,9 +312,6 @@ class RegisterModule extends Component {
 
     )
   }
-
-
-
 
 
 }
