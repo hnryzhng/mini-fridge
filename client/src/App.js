@@ -11,16 +11,18 @@ class App extends Component {
     newUserInput: null,
     user: null,
     loggedIn: false,
-    fileName: null,
     fileData: null,
+    fileName: null,
     fileRecordsArray: []
   };
 
   //componentWillMount() {
+
   //}
 
   //componentUnmount() {
     //TASK: clear data upon sign out?
+    // if (!loggedIn) set all states to null or false
   //}
 
   handleRegisterModule = (username, success) => {
@@ -63,86 +65,15 @@ class App extends Component {
 
   }
 
+  handleFileUploadComponent = (fData, success) => {
 
-
-
-  storeFile = (event) => {
-  	let file = event.target.files[0];
-  	this.setState({fileData: file});
-  }
-
-  handleFileUpload = (event) => {
-    event.preventDefault();
-    if (event) {
-      if (event.target.files[0]) {
-        this.setState({fileName: event.target.files[0].name})
-        this.setState({fileData: event.target.files[0]});
-        console.log(`${this.state.fileName} is ready to be submitted: ${this.state.fileData}`);
-      }
+    if (success) {
+      // update fileRecordsArray
+      this.setState({fileName: fData.file_name});
+      this.setState({fileRecordsArray: [...this.state.fileRecordsArray, {fileName: fData.file_name, fileId: fData.file_id}]}, () => console.log("fileRecordsArray:", this.state.fileRecordsArray)); // use spread operator to create a new array instead of mutating old one
     }
+
   }
-
-  uploadFile = (event) => {
-
-	// upload only if logged in 
-	// file size < 50 kb (frontend), num of files <= 5 per user (backend)
-
-    // multer + react: https://blog.stvmlbrn.com/2017/12/17/upload-files-using-react-to-node-express-server.html
-    event.preventDefault();
-
-
-    const { user, loggedIn, fileName, fileData } = this.state; 
-
-    console.log("user: ", user);
-    console.log("loggedIn: ", loggedIn);
-    console.log("file name: ", fileName);
-    console.log("fileData: ", fileData);
-
-    // check for file data upon submitting
-    if (!fileData) {
-    	console.log("please add a file before submitting");
-    	alert("please add a file before submitting");
-    	return // return to terminate function
-    }
-	    
-	// allow upload only if logged in
-    if (loggedIn) {
-
-    	// file validation: file size < 500 kb
-    	const fileSize = fileData.size;
-    	const fileSizeLimit = 500000;	// bytes; fileSizeLimit/1000 = kilobytes
-
-    	if (fileSize < fileSizeLimit) {
-		    // instantiate react form object to hold file data
-		    const formDataObj = new FormData();
-
-		  	// TASK: backend user logged_in: true ? 
-		  	formDataObj.append("user", user);
-		    formDataObj.append("fileName", fileName);
-		    formDataObj.append("fileData", fileData);
-
-		    axios.post("http://localhost:3001/api/uploadFileGridFS", formDataObj)
-    		//axios.post("/api/uploadFileGridFS", formDataObj)
-		            .then(response => response.data)	// TASK: if response obj success is true, then add pretty file name to list display (or just retrieve all names from componentWillMount because setState below refreshes component  state?)
-		            .then(data => {
-		            	if (data.success) {
-                    console.log("data:", data);
-		            		this.setState({fileRecordsArray: [...this.state.fileRecordsArray, {fileName: data.file_name, fileId: data.file_id}]}); // use spread operator to create a new array instead of mutating old one
-		            	} else {
-		            		console.log("error: trouble uploading your file");
-		            	}
-		            })
-		            .catch(error => console.log("upload file error:", error));
-		} else {
-			console.log(`the size of ${fileName} is too large at ${fileSize}; max size is ${fileSizeLimit} bytes`);
-			alert(`the size of ${fileName} is too large at ${fileSize/1000} kilobytes; max size is ${fileSizeLimit/1000} kilobytes`);
-		}
-
-    } else {
-		  console.log("you must be logged in to upload file");
-    }
-  }
-
 
 
   dLoad = async(user, fId, fName) => {
@@ -217,7 +148,7 @@ class App extends Component {
         
         <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} />
 
-        <UploadFileControl loggedIn={this.state.loggedIn} uploadFile={this.uploadFile} handleFileUpload={this.handleFileUpload} />
+        <UploadFileControl {...this.state} handleFileUploadComponent={this.handleFileUploadComponent} />
 
         <div id="fileName">
           Filename: {this.state.fileName}
@@ -357,7 +288,7 @@ class RegisterModule extends Component {
             console.log(data.error);
 
             // send data back to App component
-			this.props.handleRegisterModule(null, false);
+            this.props.handleRegisterModule(null, false);
 
           }
         })
@@ -463,7 +394,7 @@ class UploadFileControl extends Component {
       const isLoggedIn = this.props.loggedIn;
       
       if (isLoggedIn) {
-        showUploadForm = <UploadFileForm uploadFile={this.props.uploadFile} handleFileUpload={this.props.handleFileUpload} />
+        showUploadForm = <UploadFileForm {...this.props} handleFileUploadComponent={this.props.handleFileUploadComponent} />
       } else {
         showUploadForm = null;
       }
@@ -474,11 +405,84 @@ class UploadFileControl extends Component {
 }
 
 class UploadFileForm extends Component {
+
+  // file size < 500 kb (frontend), num of files <= 5 per user (backend)
+  state = {
+    fileData: null
+  }
+
+
+  uploadFile = (event) => {
+
+    const fileData = this.state.fileData;
+    const fileName = fileData.name;
+    const user = this.props.user;
+    const loggedIn = this.props.loggedIn;
+
+    // multer + react: https://blog.stvmlbrn.com/2017/12/17/upload-files-using-react-to-node-express-server.html
+    event.preventDefault();
+
+    console.log("---UploadFileForm component---");
+    console.log("user: ", user);
+    console.log("loggedIn: ", loggedIn);
+    console.log("file name: ", fileName);
+    console.log("fileData: ", fileData);
+
+    // check that file data exists upon submitting
+    if (!fileData) {
+      console.log("please add a file before submitting");
+      alert("please add a file before submitting");
+      return // return to terminate function
+    }
+      
+    // allow upload only if logged in
+    if (!loggedIn) {
+      console.log("you must be logged in to upload file");
+      return // terminate function
+    }
+
+    // file validation: file size < 500 kb
+    const fileSize = fileData.size;
+    const fileSizeLimit = 500000; // bytes; fileSizeLimit/1000 = kilobytes
+
+    // send file data with POST request
+    if (fileSize < fileSizeLimit) {
+      // instantiate react form object to hold file data
+      const formDataObj = new FormData();
+
+      // TASK: backend user logged_in: true ? 
+      formDataObj.append("user", user);
+      formDataObj.append("fileName", fileName);
+      formDataObj.append("fileData", fileData);
+
+      axios.post("http://localhost:3001/api/uploadFileGridFS", formDataObj)
+      //axios.post("/api/uploadFileGridFS", formDataObj)
+              .then(response => response.data) 
+              .then(data => {
+                if (data.success) {
+                  console.log("data:", data);
+
+                  // send file name back to parent to update fileRecordsArray
+                  this.props.handleFileUploadComponent(data, true);
+
+                } else {
+                  console.log("error: trouble uploading your file");
+                  this.props.handleFileUploadComponent(null, false);
+                }
+              })
+              .catch(error => console.log("upload file error:", error));
+    } else {
+      console.log(`the size of ${fileName} is too large at ${fileSize}; max size is ${fileSizeLimit} bytes`);
+      alert(`the size of ${fileName} is too large at ${fileSize/1000} kilobytes; max size is ${fileSizeLimit/1000} kilobytes`);
+    }
+
+  }
+
 	render() {
 		return(
-        <form onSubmit={this.props.uploadFile}>
+        <form onSubmit={this.uploadFile}>
 
-          <input type="file" style={{ width: "300px" }} placeholder="upload file" name="fileData" onChange={this.props.handleFileUpload} />
+          <input type="file" style={{ width: "300px" }} placeholder="upload file" name="fileData" onChange={event=>this.setState({fileData: event.target.files[0]})} />
 
           <button type="submit">
               submit file
