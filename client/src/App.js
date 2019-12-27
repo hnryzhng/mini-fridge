@@ -132,7 +132,7 @@ class LoginModule extends Component {
     event.preventDefault();
 
     // send POST request to backend
-    axios.post("http://localhost:3001/api/login", {
+    axios.post("/api/login", {
     // axios.post("/api/login", { 
           user: this.state.usernameInput,
           password: this.state.passwordInput
@@ -207,7 +207,7 @@ class RegisterModule extends Component {
     
     // send POST request
     //axios.post("/api/register", {      
-    axios.post("http://localhost:3001/api/register", {
+    axios.post("/api/register", {
             user: this.state.user,
             password: this.state.password,
             passwordConfirm: this.state.passwordConfirm
@@ -390,7 +390,7 @@ class UploadFileForm extends Component {
       formDataObj.append("fileName", fileName);
       formDataObj.append("fileData", fileData);
 
-      axios.post("http://localhost:3001/api/uploadFileGridFS", formDataObj)
+      axios.post("/api/uploadFileGridFS", formDataObj)
       //axios.post("/api/uploadFileGridFS", formDataObj)
               .then(response => response.data) 
               .then(data => {
@@ -449,7 +449,7 @@ class Item extends Component {
 
     console.log("standalone download function:", user, ",", fId, ",", fName);
     
-    const reqUrl = `http://localhost:3001/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
+    const reqUrl = `/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
 
     axios(reqUrl, {
       method: 'GET',
@@ -479,7 +479,7 @@ class Item extends Component {
     // list item delete 
 
     console.log("standalone delete function:", user, ",", fId);
-    axios.get("http://localhost:3001/api/deleteFileGridFS", {
+    axios.get("/api/deleteFileGridFS", {
     // axios.get("/api/deleteFileGridFS", {
             params: {
               user: user, 
