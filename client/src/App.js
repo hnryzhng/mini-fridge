@@ -22,7 +22,50 @@ class App extends Component {
   //componentUnmount() {
     //TASK: clear data upon sign out?
   //}
- 
+
+  handleRegisterModule = (username, success) => {
+
+  	console.log("handleRegisterModule:");
+    console.log("new username input:", username);
+
+    if (success) {
+    	// log in if successfull registered
+    	this.setState({ loggedIn: true });
+    	this.setState({ user: username });
+    } else {
+    	this.setState({ loggedIn: false });
+    }
+  }
+
+  handleLoginModule = (username, fileRecordsArray, success) => {
+
+    console.log("handleLoginModule username: ", username);
+    console.log("handleLoginModule fileRecordsArray:", fileRecordsArray);
+
+    if (success) {
+    	this.setState({ loggedIn: true });
+    	this.setState({ user: username });
+    	this.setState({ fileRecordsArray: fileRecordsArray });
+    } else {
+    	this.setState({ loggedIn: false });
+    }
+    
+  }
+
+  handleSignOut = () => {
+  	
+  	this.setState({ user: null });
+  	this.setState({ loggedIn: false });
+    this.setState({ fileRecordsArray: [] });
+  	
+  	console.log("signed out user state:", this.state.user);
+  	console.log("signed out log in state:", this.state.loggedIn);
+
+  }
+
+
+
+
   storeFile = (event) => {
   	let file = event.target.files[0];
   	this.setState({fileData: file});
@@ -101,46 +144,6 @@ class App extends Component {
   }
 
 
-  handleRegisterModule = (username, success) => {
-
-  	console.log("handleRegisterModule:");
-    console.log("new username input:", username);
-
-    if (success) {
-    	// log in if successfull registered
-    	this.setState({ loggedIn: true });
-    	this.setState({ user: username });
-    } else {
-    	this.setState({ loggedIn: false });
-    }
-  }
-
-  handleLoginModule = (username, fileRecordsArray, success) => {
-
-    console.log("handleLoginModule username: ", username);
-    console.log("handleLoginModule fileRecordsArray:", fileRecordsArray);
-
-    if (success) {
-    	this.setState({ loggedIn: true });
-    	this.setState({ user: username });
-    	this.setState({ fileRecordsArray: fileRecordsArray });
-    } else {
-    	this.setState({ loggedIn: false });
-    }
-    
-  }
-
-  handleSignOut = () => {
-  	
-  	this.setState({ user: null });
-  	this.setState({ loggedIn: false });
-    this.setState({ fileRecordsArray: [] });
-  	
-  	console.log("signed out user state:", this.state.user);
-  	console.log("signed out log in state:", this.state.loggedIn);
-
-
-  }
 
   dLoad = async(user, fId, fName) => {
     // TASK BOOKMARK
