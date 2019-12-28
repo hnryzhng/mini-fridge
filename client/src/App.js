@@ -20,6 +20,7 @@ class App extends Component {
   //componentUnmount() {
     //TASK: clear data upon sign out?
     // if (!loggedIn) set all states to null or false
+
   //}
 
   handleRegisterModule = (username, success) => {
@@ -84,7 +85,7 @@ class App extends Component {
     return (
       <div>
         
-        <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} />
+        <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} handleSignOut={this.handleSignOut} />
 
         <UploadFileControl {...this.state} handleFileUploadComponent={this.handleFileUploadComponent} />
 
@@ -93,8 +94,6 @@ class App extends Component {
         </div>
 
         <ListContainer { ...this.state } handleFileRecordsUpdate={ this.handleFileRecordsUpdate } />
-
-        <SignOutButton handleSignOut={this.handleSignOut} />
 
         <RegisterModule handleRegisterModule={ this.handleRegisterModule } />
         
@@ -186,9 +185,10 @@ class SignOutButton extends Component {
 
   render() {
     return(
-      <p onClick={this.props.handleSignOut} >
-        SIGN OUT 
-      </p>
+
+    	<div id="sign-out-button" onClick={this.props.handleSignOut} >
+        	SIGN OUT 
+      	</div>
     )
   }
 }
@@ -267,7 +267,7 @@ class NaviBar extends Component {
 
         < Logo />
 
-        <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLoginModule={ this.props.handleLoginModule } />
+        <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLoginModule={ this.props.handleLoginModule } handleSignOut={ this.props.handleSignOut } />
 
       </div>
 
@@ -284,7 +284,7 @@ class NavigationControl extends Component {
     const isLoggedIn = this.props.loggedIn;
 
     if (isLoggedIn) {
-      showComponent = <UserModule user={ this.props.user } />
+      showComponent = <div><UserModule user={ this.props.user } /><SignOutButton handleSignOut={this.props.handleSignOut} /></div>
     } else {
       showComponent = <LoginModule handleLoginModule={ this.props.handleLoginModule } /> 
     }
