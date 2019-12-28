@@ -1,7 +1,7 @@
 #navibar {
 	position: fixed;
 	width: 100%;
-	height: 1em;
+	height: 2em;
 	background-color: #c0c0c0;
 }
 
@@ -10,11 +10,14 @@
 	position: absolute;
 	top: 0;
 	right: 0;
-	width: 30%;
+	width: 50%;
 	height: 80%;
 	background-color: yellow;
 }
 
+#logo-container {
+	height: 100%;
+}
 
 #logo {
 	color: #ffffff;
@@ -22,12 +25,12 @@
 
 #login-module {
 	width: 100%;
-	height: 100%;
+	height: 80%;
 	border: 1px solid green;
 }
 
 #login-username {
-	width: 20%;
+	width: 50%;
 	height: 100%;
 }
 
@@ -45,8 +48,8 @@
 	margin-right: 2em;
 } 
 
-#upload-file-form {
-	margin-top: 100px;
+#upload-file-container {
+	padding-top: 5rem;
 	width: 300px;
 }
 

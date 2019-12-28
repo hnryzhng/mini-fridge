@@ -355,7 +355,14 @@ class UploadFileControl extends Component {
         showUploadForm = null;
       }
 
-      return(showUploadForm);
+      return(
+      	<div id="upload-file-container">
+
+      		{ showUploadForm }
+
+      	</div>
+
+      	);
 
   }
 }
