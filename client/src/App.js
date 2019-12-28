@@ -164,10 +164,10 @@ class LoginModule extends Component {
       return(
 
         <div id="login-module">
-          <form style={{ border: "1px solid green" }} onSubmit={this.login}>
+          <form onSubmit={this.login}>
 
-            <input type="text" style={{ width: "300px" }} placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
-            <input type="text" style={{ width: "300px" }} placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+            <input type="text" id="login-username" placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
+            <input type="text" id="login-password" placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
 
             <button type="submit" className="btn btn-primary">
               SIGN IN 
@@ -289,7 +289,12 @@ class NavigationControl extends Component {
       showComponent = <LoginModule handleLoginModule={ this.props.handleLoginModule } /> 
     }
 
-    return(showComponent);
+    return(
+
+    	<div id="navigation-control-container">
+    		{ showComponent }
+    	</div>
+    	);
   }
 
 }
@@ -299,7 +304,9 @@ class Logo extends Component {
     return(
 
       <div id="logo-container">
-        <p id="logo-text"> Mini Fridge </p>
+        <div id="logo"> 
+        	<p> Mini Fridge </p>
+        </div>
       </div>
 
 

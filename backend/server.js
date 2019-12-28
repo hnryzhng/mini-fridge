@@ -29,7 +29,7 @@ require("dotenv").config();
 
 // ping Heroku
 const pingHeroku = require(path.join(__dirname, "/ping-heroku.js"));
-pingHeroku("https://mini-fridge.herokuapp.com", 900000);	// every 900 seconds, or 15 minutes
+// pingHeroku("https://mini-fridge.herokuapp.com", 900000);	// every 900 seconds, or 15 minutes
 
 // GRIDFS
 // let GridFsStorage = require("multer-gridfs-storage");
