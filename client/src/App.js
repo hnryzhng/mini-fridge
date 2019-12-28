@@ -241,7 +241,7 @@ class RegisterModule extends Component {
     return(
 
     	<div id="register-module-container">
-      		<button type="button" onClick={ ()=> this.setState({show: true}) } > REGISTER MOI </button>
+      		<button type="button" id="register-button" onClick={ ()=> this.setState({show: true}) } > Register for an account </button>
 			
 			<div id="register-module" style={{ display: this.state.show? 'block' : 'none' }}>
 				<form style={{ border: "1px solid blue"}} onSubmit={ this.register }>
