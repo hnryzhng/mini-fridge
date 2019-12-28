@@ -85,7 +85,7 @@ class App extends Component {
     return (
       <div>
         
-        <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} handleSignOut={this.handleSignOut} />
+        <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} handleRegisterModule={this.handleRegisterModule} handleSignOut={this.handleSignOut} />
 
         <UploadFileControl {...this.state} handleFileUploadComponent={this.handleFileUploadComponent} />
 
@@ -95,7 +95,7 @@ class App extends Component {
 
         <ListContainer { ...this.state } handleFileRecordsUpdate={ this.handleFileRecordsUpdate } />
 
-        <RegisterModule handleRegisterModule={ this.handleRegisterModule } />
+        
         
       </div>
     );
@@ -171,6 +171,7 @@ class LoginModule extends Component {
             <button type="submit" className="btn btn-primary">
               SIGN IN 
             </button>
+
           </form>
         </div>
 
@@ -198,7 +199,8 @@ class RegisterModule extends Component {
   state = {
     user: null,
     password: null,
-    passwordConfirm: null
+    passwordConfirm: null,
+    show: false
   };
 
   register = (event) => {
@@ -235,21 +237,28 @@ class RegisterModule extends Component {
 
 
   render() {
+
     return(
 
+    	<div id="register-module-container">
+      		<button type="button" onClick={ ()=> this.setState({show: true}) } > REGISTER MOI </button>
+			
+			<div id="register-module" style={{ display: this.state.show? 'block' : 'none' }}>
+				<form style={{ border: "1px solid blue"}} onSubmit={ this.register }>
 
-      <div id="register-module">
-      <form style={{ border: "1px solid blue"}} onSubmit={ this.register }>
+				<input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({user: event.target.value})} />
+				<input type="text" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({password: event.target.value})} />
+				<input type="text" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({passwordConfirm: event.target.value})} />
+				<button type="submit">
+				  REGISTER 
+				</button>
 
-        <input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({user: event.target.value})} />
-        <input type="text" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({password: event.target.value})} />
-        <input type="text" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({passwordConfirm: event.target.value})} />
-        <button type="submit">
-          REGISTER 
-        </button>
-      </form>
-    </div>
+				</form>
 
+				<button type="button" id="close-signout-module" onClick={ ()=> this.setState({ show: false })} > CLOSE </button>
+			</div>
+
+      	</div>
 
     )
   }
@@ -260,16 +269,16 @@ class RegisterModule extends Component {
 
 class NaviBar extends Component {
 
-  render() {
-    return(
+	render() {
+		return(
 
-      <div id="navibar" >
+		  <div id="navibar" >
 
-        < Logo />
+		    < Logo />
 
-        <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLoginModule={ this.props.handleLoginModule } handleSignOut={ this.props.handleSignOut } />
+		    <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLoginModule={ this.props.handleLoginModule } handleRegisterModule={ this.props.handleRegisterModule } handleSignOut={ this.props.handleSignOut } />
 
-      </div>
+		  </div>
 
     )
   }
@@ -278,16 +287,21 @@ class NaviBar extends Component {
 
 class NavigationControl extends Component {
 
-  render() {
 
-    let showComponent;
-    const isLoggedIn = this.props.loggedIn;
+	render() {
 
-    if (isLoggedIn) {
-      showComponent = <div><UserModule user={ this.props.user } /><SignOutButton handleSignOut={this.props.handleSignOut} /></div>
-    } else {
-      showComponent = <LoginModule handleLoginModule={ this.props.handleLoginModule } /> 
-    }
+	let showComponent;
+	const isLoggedIn = this.props.loggedIn;
+
+	if (isLoggedIn) {
+	  showComponent = <div><UserModule user={ this.props.user } /><SignOutButton handleSignOut={this.props.handleSignOut} /></div>
+	} else {
+	  showComponent = 
+	  	<div>
+	  		<LoginModule handleLoginModule={ this.props.handleLoginModule } /> 
+	  		<RegisterModule handleRegisterModule={ this.props.handleRegisterModule } />
+	  	</div>
+	}
 
     return(
 
@@ -422,15 +436,17 @@ class UploadFileForm extends Component {
 
 	render() {
 		return(
-        <form onSubmit={this.uploadFile}>
+			<div id="upload-file-form">
+		        <form onSubmit={this.uploadFile}>
 
-          <input type="file" style={{ width: "300px" }} placeholder="upload file" name="fileData" onChange={event=>this.setState({fileData: event.target.files[0]})} />
+		          <input type="file" placeholder="upload file" name="fileData" onChange={event=>this.setState({fileData: event.target.files[0]})} />
 
-          <button type="submit">
-              submit file
-          </button>
+		          <button type="submit">
+		              submit file
+		          </button>
 
-        </form>
+		        </form>
+		    </div>
 	    )
 	}
 }
