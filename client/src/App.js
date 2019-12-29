@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import "./styles.css" // import CSS stylesheet
 import axios from 'axios';
 import download from 'downloadjs';
+import "./styles.css" // import CSS stylesheet
 
 class App extends Component {
 
@@ -88,10 +88,6 @@ class App extends Component {
         <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} handleRegisterModule={this.handleRegisterModule} handleSignOut={this.handleSignOut} />
 
         <UploadFileControl {...this.state} handleFileUploadComponent={this.handleFileUploadComponent} />
-
-        <div id="fileName">
-          Filename: {this.state.fileName}
-        </div>
 
         <ListContainer { ...this.state } handleFileRecordsUpdate={ this.handleFileRecordsUpdate } />
 
@@ -369,90 +365,139 @@ class UploadFileControl extends Component {
 
 class UploadFileForm extends Component {
 
-  // file size < 500 kb (frontend), num of files <= 5 per user (backend)
-  state = {
-    fileData: null
-  }
+	constructor(props) {
+		// use constructor so can define file input element
+		
+		super(props)
 
+		// file size < 500 kb (frontend), num of files <= 5 per user (backend)
+		this.state = {
+			fileData: null,
+			hasFileWaiting: false
+		}
 
-  uploadFile = (event) => {
+		// define DOM objects
+		this.fileInputObj = React.createRef();
+		this.fileSubmitButton = React.createRef();
+	}
 
-    const fileData = this.state.fileData;
-    const fileName = fileData.name;
-    const user = this.props.user;
-    const loggedIn = this.props.loggedIn;
+	uploadFile = (event) => {
 
-    // multer + react: https://blog.stvmlbrn.com/2017/12/17/upload-files-using-react-to-node-express-server.html
-    event.preventDefault();
+		const fileData = this.state.fileData;
+		const fileName = fileData.name;
+		const user = this.props.user;
+		const loggedIn = this.props.loggedIn;
 
-    console.log("---UploadFileForm component---");
-    console.log("user: ", user);
-    console.log("loggedIn: ", loggedIn);
-    console.log("file name: ", fileName);
-    console.log("fileData: ", fileData);
+		// multer + react: https://blog.stvmlbrn.com/2017/12/17/upload-files-using-react-to-node-express-server.html
+		event.preventDefault();
 
-    // check that file data exists upon submitting
-    if (!fileData) {
-      console.log("please add a file before submitting");
-      alert("please add a file before submitting");
-      return // return to terminate function
-    }
-      
-    // allow upload only if logged in
-    if (!loggedIn) {
-      console.log("you must be logged in to upload file");
-      return // terminate function
-    }
+		console.log("---UploadFileForm component---");
+		console.log("user: ", user);
+		console.log("loggedIn: ", loggedIn);
+		console.log("file name: ", fileName);
+		console.log("fileData: ", fileData);
 
-    // file validation: file size < 500 kb
-    const fileSize = fileData.size;
-    const fileSizeLimit = 500000; // bytes; fileSizeLimit/1000 = kilobytes
+		// check that file data exists upon submitting
+		if (!fileData) {
+			console.log("please add a file before submitting");
+			alert("please add a file before submitting");
+			return // return to terminate function
+		}
 
-    // send file data with POST request
-    if (fileSize < fileSizeLimit) {
-      // instantiate react form object to hold file data
-      const formDataObj = new FormData();
+		// allow upload only if logged in
+		if (!loggedIn) {
+			console.log("you must be logged in to upload file");
+			return // terminate function
+		}
 
-      // TASK: backend user logged_in: true ? 
-      formDataObj.append("user", user);
-      formDataObj.append("fileName", fileName);
-      formDataObj.append("fileData", fileData);
+		// file validation: file size < 500 kb
+		const fileSize = fileData.size;
+		const fileSizeLimit = 500000; // bytes; fileSizeLimit/1000 = kilobytes
 
-      axios.post("http://localhost:3001/api/uploadFileGridFS", formDataObj)
-      //axios.post("/api/uploadFileGridFS", formDataObj)
-              .then(response => response.data) 
-              .then(data => {
-                if (data.success) {
-                  console.log("data:", data);
+		// send file data with POST request
+		if (fileSize < fileSizeLimit) {
+			// instantiate react form object to hold file data
+			const formDataObj = new FormData();
 
-                  // send file name back to parent to update fileRecordsArray
-                  this.props.handleFileUploadComponent(data, true);
+			// TASK: backend user logged_in: true ? 
+			formDataObj.append("user", user);
+			formDataObj.append("fileName", fileName);
+			formDataObj.append("fileData", fileData);
 
-                } else {
-                  console.log("error: trouble uploading your file");
-                  this.props.handleFileUploadComponent(null, false);
-                }
-              })
-              .catch(error => console.log("upload file error:", error));
-    } else {
-      console.log(`the size of ${fileName} is too large at ${fileSize}; max size is ${fileSizeLimit} bytes`);
-      alert(`the size of ${fileName} is too large at ${fileSize/1000} kilobytes; max size is ${fileSizeLimit/1000} kilobytes`);
-    }
+			axios.post("http://localhost:3001/api/uploadFileGridFS", formDataObj)
+			//axios.post("/api/uploadFileGridFS", formDataObj)
+			      .then(response => response.data) 
+			      .then(data => {
+			        if (data.success) {
+			          console.log("data:", data);
 
-  }
+			          // send file name back to parent to update fileRecordsArray
+			          this.props.handleFileUploadComponent(data, true);
+
+			        } else {
+			          console.log("error: trouble uploading your file");
+			          this.props.handleFileUploadComponent(null, false);
+			        }
+			      })
+			      .catch(error => console.log("upload file error:", error));
+		} else {
+			console.log(`the size of ${fileName} is too large at ${fileSize}; max size is ${fileSizeLimit} bytes`);
+			alert(`the size of ${fileName} is too large at ${fileSize/1000} kilobytes; max size is ${fileSizeLimit/1000} kilobytes`);
+		}
+
+	}
+
+	clickFileInput = (event) => {
+
+		event.preventDefault();
+
+		// grab DOM elements
+		const fileInputObj = this.fileInputObj.current;
+		const fileSubmitButton = this.fileSubmitButton.current;
+
+		// if no file 
+		if (!this.state.hasFileWaiting) {
+
+			// click element
+			fileInputObj.click();  	
+
+			this.setState({ hasFileWaiting: true });
+
+		} else {
+			// send file
+
+			fileSubmitButton.click();
+
+			this.setState({ hasFileWaiting: false });
+
+		}
+
+		console.log('fileinputobj clicked:', fileInputObj);
+	}
 
 	render() {
 		return(
-			<div id="upload-file-form">
-		        <form onSubmit={this.uploadFile}>
+			<div id="upload-file-module">
 
-		          <input type="file" placeholder="upload file" name="fileData" onChange={event=>this.setState({fileData: event.target.files[0]})} />
+			    <div id="upload-file-control">
+			        <button type="button" id="upload-file-button" onClick={ this.clickFileInput } >{this.state.hasFileWaiting? 'SUBMIT FILE':'UPLOAD'}</button>
+			        <div id="filename-display">
+			        	<p> {this.state.fileData? this.state.fileData.name : " "} </p>
+			        </div>
+			    </div>
 
-		          <button type="submit">
-		              submit file
-		          </button>
+				<div id="upload-file-form">
+			        <form onSubmit={this.uploadFile}>
 
-		        </form>
+			          <input ref={this.fileInputObj} type="file" id="upload-file-input" placeholder="upload file" name="fileData" onChange={event=>this.setState({fileData: event.target.files[0]})} />
+
+			          <button type="submit" id="submit-file-button" ref={this.fileSubmitButton}>
+			              submit file
+			          </button>
+			        </form>
+			    </div>
+		        
+
 		    </div>
 	    )
 	}
