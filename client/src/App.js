@@ -106,7 +106,7 @@ class ListContainer extends Component {
 
 	handleUpdatedArray = (updatedArray) => {
 
-		this.setState({ filteredFileRecordsArray: updatedArray }, () => { console.log("list container updated file array") });
+		this.setState({ filteredFileRecordsArray: updatedArray }, () => { console.log("list container updated file array:", this.state.filteredFileRecordsArray) });
 
 	}
 
@@ -129,22 +129,41 @@ class ListContainer extends Component {
 class SearchFilter extends Component {
 
 	state = {
-		fileInput: null,
+		fileInput: '',
 		filteredFileRecordsArray: null
-	}
-
-	search = (event) => {
-		// pass filtered file records array to List component
-
-		this.setState({ fileInput: event.target.value }, this.filterResults(this.state.fileInput));
-
 	}
 
 	filterResults = (fileName) => {
 
-		const newArray = this.props.fileRecordsArray.filter(fileItem => fileName.indexOf(fileItem) !== -1);	// filter for files in array that match input filename
+		console.log('filterResults filename:', fileName);
+		console.log('searchfilter filterInput state:', this.state.fileInput);
+		console.log('searchfilter unfiltered array:', this.props.fileRecordsArray)
 
-		this.setState({ filteredFileRecordsArray: newArray }, this.props.handleUpdatedArray(this.state.filteredFileRecordsArray));
+		// filter for files in array that match input filename
+		const newArray = this.props.fileRecordsArray.filter((fileItem) => {
+				
+				const itemName = fileItem.fileName.toLowerCase();
+				const f = fileName.toLowerCase();
+				// console.log('file item in array:', itemName);
+
+				// TASK BOOKMARK: add object to array instead of just item filename
+				return(itemName.indexOf(f) !== -1)
+		});	
+
+
+		this.setState({ filteredFileRecordsArray: newArray }, () => { 
+		
+				console.log("filter results filteredFileRecordsArray: ", this.state.filteredFileRecordsArray);
+				this.props.handleUpdatedArray(this.state.filteredFileRecordsArray); 
+			}
+		);
+
+	}
+
+	searchFilter = (event) => {
+		// pass filtered file records array to List component
+
+		this.setState({ fileInput: event.target.value }, () => { this.filterResults(this.state.fileInput) });
 
 	}
 
