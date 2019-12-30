@@ -221,21 +221,21 @@ class LoginModule extends Component {
         })
         .then(response => response.data)
         .then(data => {
-			if (data.success) {
-				// change app state 
-				console.log("user:", this.state.usernameInput);
-				console.log("user's file records:", data.fileRecordsArray);
+    			if (data.success) {
+    				// change app state 
+    				console.log("user:", this.state.usernameInput);
+    				console.log("user's file records:", data.fileRecordsArray);
 
-				// send data up to App parent component 
-				this.props.handleLoginModule(this.state.usernameInput, data.fileRecordsArray, true);
+    				// send data up to App parent component 
+    				this.props.handleLoginModule(this.state.usernameInput, data.fileRecordsArray, true);
 
-			} else {
-				// cannot find user
-				console.log(data.error);
+    			} else {
+    				// cannot find user
+    				console.log(data.error);
 
-				// send data up to App parent component 
-				this.props.handleLoginModule(data.user, data.fileRecordsArray, false);
-			};
+    				// send data up to App parent component 
+    				this.props.handleLoginModule(data.user, data.fileRecordsArray, false);
+    			};
         })
         .catch(error => console.log("sign in error:", error));
     
@@ -245,19 +245,18 @@ class LoginModule extends Component {
     render() {
       return(
 
-        <div id="login-module">
-          <form onSubmit={this.login}>
+        <div className="container">
 
-            <input type="text" id="login-username" placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
-            <input type="text" id="login-password" placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+          <form className="row form-inline" id="login-module" onSubmit={this.login}>
+            <input type="text" className="col form-control" id="login-username" placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
+            <input type="text" className="col form-control" id="login-password" placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
 
             <button type="submit" className="btn btn-primary">
               SIGN IN 
             </button>
-
           </form>
-        </div>
 
+        </div>
 
       )
     }
@@ -396,7 +395,7 @@ class Logo extends Component {
   render() {
     return(
     
-      <a id="logo-container" className="navbar-brand" href="#">
+      <a className="navbar-brand" id="logo-container" href="#">
         <p> Mini Fridge </p>
       </a>  
     
