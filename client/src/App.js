@@ -344,13 +344,13 @@ class NaviBar extends Component {
 	render() {
 		return(
 
-		  <div id="navibar" >
+		  <nav id="navibar" >
 
 		    < Logo />
 
 		    <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLoginModule={ this.props.handleLoginModule } handleRegisterModule={ this.props.handleRegisterModule } handleSignOut={ this.props.handleSignOut } />
 
-		  </div>
+		  </nav>
 
     )
   }
