@@ -101,23 +101,31 @@ class App extends Component {
 class ListContainer extends Component {
 
 	state = {
-		filteredFileRecordsArray: null 
+		filteredFileRecordsArray: null
 	}
 
-	handleUpdatedArray = (updatedArray) => {
-
-		this.setState({ filteredFileRecordsArray: updatedArray }, () => { console.log("list container updated file array:", this.state.filteredFileRecordsArray) });
-
+	handleSearchFilter = (updatedArray) => {
+		this.setState({ filteredFileRecordsArray: updatedArray });
 	}
 
   render() {
+
+	// loads fileRecordsArray from App component if filtered array (shallow) from SearchFilter component doesn't exist
+	var filteredFileRecordsArray;
+
+	if (this.state.filteredFileRecordsArray) {
+		filteredFileRecordsArray = this.state.filteredFileRecordsArray;
+	} else {
+		filteredFileRecordsArray = this.props.fileRecordsArray;
+	}
+
     return(
 
-
-
 		<div id="list-container" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
-    		<SearchFilter fileRecordsArray= { this.props.fileRecordsArray } handleUpdatedArray={ this.handleUpdatedArray }  />
-			<List { ...this.props } handleFileRecordsUpdate={ this.props.handleFileRecordsUpdate } />  
+    		<SearchFilter { ...this.props } fileRecordsArray= { this.props.fileRecordsArray } handleSearchFilter={ this.handleSearchFilter } />
+			
+			<List { ...this.props } filteredFileRecordsArray={ filteredFileRecordsArray } />  
+
 		</div>
 
     )
@@ -127,6 +135,8 @@ class ListContainer extends Component {
 }
 
 class SearchFilter extends Component {
+
+	// pass filtered file records array to List component
 
 	state = {
 		fileInput: '',
@@ -146,7 +156,7 @@ class SearchFilter extends Component {
 				const f = fileName.toLowerCase();
 				// console.log('file item in array:', itemName);
 
-				// TASK BOOKMARK: add object to array instead of just item filename
+				// return file item whose name has string of fileName being searched 
 				return(itemName.indexOf(f) !== -1)
 		});	
 
@@ -154,27 +164,29 @@ class SearchFilter extends Component {
 		this.setState({ filteredFileRecordsArray: newArray }, () => { 
 		
 				console.log("filter results filteredFileRecordsArray: ", this.state.filteredFileRecordsArray);
-				this.props.handleUpdatedArray(this.state.filteredFileRecordsArray); 
+
+				// send filtered array to ListContainer parent component to be sent to List sibling
+				this.props.handleSearchFilter(this.state.filteredFileRecordsArray); 
 			}
 		);
 
 	}
 
 	searchFilter = (event) => {
-		// pass filtered file records array to List component
-
+		
 		this.setState({ fileInput: event.target.value }, () => { this.filterResults(this.state.fileInput) });
 
 	}
 
 	render() {
+
 		return(
 
-			<input type="text" id="search-filter-input" placeholder="FILE YOU ARE LOOKING FOR" onChange={ this.searchFilter } />
-
+			<div id="search-filter">
+				<input type="text" id="search-filter-input" placeholder="FILE YOU ARE LOOKING FOR" onChange={ this.searchFilter } />
+			</div>	
 		)
 	}
-
 
 }
 
@@ -570,7 +582,8 @@ class UploadFileForm extends Component {
 class List extends Component {
 
 	render() {
-		let list = this.props.fileRecordsArray.map((file,index)=>{
+		
+		let list = this.props.filteredFileRecordsArray.map((file,index)=>{
 		  return <Item key={ index } fileName={ file.fileName } fileId={ file.fileId } user={ this.props.user } fileRecordsArray={ this.props.fileRecordsArray } handleFileRecordsUpdate={ this.props.handleFileRecordsUpdate } />
 		});
 
