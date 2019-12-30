@@ -190,6 +190,17 @@ class SearchFilter extends Component {
 
 }
 
+class LoginRegisterModule extends Component {
+  render() {
+    return(
+      <>
+        <LoginModule handleLoginModule={ this.props.handleLoginModule } />
+        <RegisterModule handleRegisterModule={ this.props.handleRegisterModule } />
+      </>
+    )
+  }
+}
+
 
 class LoginModule extends Component {
 
@@ -344,10 +355,10 @@ class NaviBar extends Component {
 	render() {
 		return(
 
-		  <nav id="navibar" >
+		  <nav id="navibar" class="navbar navbar-expand-md">
 
-		    < Logo />
-
+        <Logo />
+        
 		    <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLoginModule={ this.props.handleLoginModule } handleRegisterModule={ this.props.handleRegisterModule } handleSignOut={ this.props.handleSignOut } />
 
 		  </nav>
@@ -366,13 +377,9 @@ class NavigationControl extends Component {
 	const isLoggedIn = this.props.loggedIn;
 
 	if (isLoggedIn) {
-	  showComponent = <div><UserModule user={ this.props.user } /><SignOutButton handleSignOut={this.props.handleSignOut} /></div>
+	  showComponent = <UserModule user={ this.props.user } handleSignOut={ this.props.handleSignOut } />
 	} else {
-	  showComponent = 
-	  	<div>
-	  		<LoginModule handleLoginModule={ this.props.handleLoginModule } /> 
-	  		<RegisterModule handleRegisterModule={ this.props.handleRegisterModule } />
-	  	</div>
+	  showComponent = <LoginRegisterModule { ...this.props } />
 	}
 
     return(
@@ -388,12 +395,11 @@ class NavigationControl extends Component {
 class Logo extends Component {
   render() {
     return(
-
-      <div id="logo-container">
-        <div id="logo"> 
-        	<p> Mini Fridge </p>
-        </div>
-      </div>
+    
+      <a id="logo-container" className="navbar-brand" href="#">
+        <p> Mini Fridge </p>
+      </a>  
+    
 
 
     )
@@ -403,13 +409,15 @@ class Logo extends Component {
 class UserModule extends Component {
   render() {
     return(
-
+          
       <div>
 
         <div id="user-greeting"> Hey {this.props.user} </div>
+      
+        <SignOutButton handleSignOut={this.props.handleSignOut} />
 
       </div>
-
+      
     )
   }
 }
