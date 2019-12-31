@@ -695,10 +695,14 @@ class Item extends Component {
     const fileRecordsArray = this.props.fileRecordsArray;
     
     return(
-    	<div>
-    		<li id={ fileId } > { this.props.fileName } </li>
-    		<p onClick={ () => { this.del(user, fileId, fileRecordsArray) } }> DELETE </p>
-        <p onClick={ () => { this.dLoad(user, fileId, fileName) } }> DOWNLOAD </p>
+    	<div className="container">
+        <div className="row">
+    		  
+          <div className="col"><li id={ fileId } > { this.props.fileName } </li></div>
+    		  <div className="col"><a><img src={ require("./static/icons/trashcan.png") } className="delete-icon" alt="DELETE" onClick={ () => { this.del(user, fileId, fileRecordsArray) } } /></a></div>
+          <div className="col"><a><img src={ require("./static/icons/download.png") } className="download-icon" alt="DOWNLOAD" onClick={ () => { this.dLoad(user, fileId, fileName) } } /></a></div>
+
+          </div>
     	</div>
     )
   }

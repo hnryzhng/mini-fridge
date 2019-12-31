@@ -82,3 +82,13 @@
 	width: 100%;
 	padding-right: 0;
 }
+
+.delete-icon {
+	width: 30px;
+	border: 1px solid black;
+}
+
+.download-icon {
+	width: 30px;
+	border: 1px solid black;
+}
