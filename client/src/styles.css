@@ -53,10 +53,17 @@
 	cursor: pointer;
 }
 
-#user-greeting {
-} 
+.modal-backdrop.show {
+	opacity:0;
+}
+
+#upload-file-button {
+	background-color: blue;
+	color: white;
+}	
 
 #upload-file-container {
+	margin: 0 auto;
 	padding-top: 5rem;
 	width: 300px;
 }
@@ -67,6 +74,12 @@
 
 #list-container {
 	margin: 0 auto;
-	width: 100%;
+	width: 300px;
+	height: 500px;
+	border: 1px solid black;
 }
 
+#search-filter-container {
+	width: 100%;
+	padding-right: 0;
+}

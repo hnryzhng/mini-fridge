@@ -121,7 +121,7 @@ class ListContainer extends Component {
 
     return(
 
-		<div id="list-container" style={{ width: "300px", height: "500px", border: "1px solid black" }}>
+		<div id="list-container">
     		<SearchFilter { ...this.props } fileRecordsArray= { this.props.fileRecordsArray } handleSearchFilter={ this.handleSearchFilter } />
 			
 			<List { ...this.props } filteredFileRecordsArray={ filteredFileRecordsArray } />  
@@ -182,9 +182,18 @@ class SearchFilter extends Component {
 
 		return(
 
-			<div id="search-filter">
-				<input type="text" id="search-filter-input" placeholder="FILE YOU ARE LOOKING FOR" onChange={ this.searchFilter } />
-			</div>	
+      <div className="input-group mb-3" id="search-filter-container">
+
+  			<div id="search-filter">
+  				<input type="text" className="form-control" id="search-filter-input" placeholder="Type in your file name" onChange={ this.searchFilter } aria-label="Type in your file name" aria-describedby="search-append-icon"/>
+  			</div>	
+
+        <div className="input-group-append">
+          <span className="input-group-text" id="search-append-icon">SEARCH</span>
+        </div>
+
+      </div>  
+
 		)
 	}
 
@@ -323,24 +332,26 @@ class RegisterModule extends Component {
     return(
 
     	<div id="register-module-container">
-      		<button type="button" id="register-button" onClick={ ()=> this.setState({show: true}) } > Register for an account </button>
+      	
+        <button type="button" id="register-button" onClick={ ()=> this.setState({show: true}) }> Register for an account </button>
 			
-			<div id="register-module" style={{ display: this.state.show? 'block' : 'none' }}>
-				<form style={{ border: "1px solid blue"}} onSubmit={ this.register }>
+  			<div id="register-module" style={{ display: this.state.show? 'block' : 'none' }}>
+  				<form style={{ border: "1px solid blue"}} onSubmit={ this.register }>
 
-				<input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({user: event.target.value})} />
-				<input type="text" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({password: event.target.value})} />
-				<input type="text" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({passwordConfirm: event.target.value})} />
-				<button type="submit">
-				  REGISTER 
-				</button>
+  				<input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({user: event.target.value})} />
+  				<input type="text" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({password: event.target.value})} />
+  				<input type="text" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({passwordConfirm: event.target.value})} />
+  				<button type="submit">
+  				  REGISTER 
+  				</button>
 
-				</form>
+  				</form>
 
-				<button type="button" id="close-signout-module" onClick={ ()=> this.setState({ show: false })} > CLOSE </button>
-			</div>
+  				<button type="button" id="close-signout-module" onClick={ ()=> this.setState({ show: false })} > CLOSE </button>
+  			</div>
 
-      	</div>
+
+      </div>
 
     )
   }
@@ -354,7 +365,7 @@ class NaviBar extends Component {
 	render() {
 		return(
 
-		  <nav id="navibar" className="navbar navbar-expand-md">
+		  <nav id="navibar" className="navbar navbar-expand-md shadow-sm p-3 mb-5 bg-white rounded">
 
         <Logo />
         
@@ -573,7 +584,7 @@ class UploadFileForm extends Component {
 			<div id="upload-file-module">
 
 			    <div id="upload-file-control">
-			        <button type="button" id="upload-file-button" onClick={ this.clickFileInput } >{this.state.hasFileWaiting? 'SUBMIT FILE':'UPLOAD'}</button>
+			        <button type="button" className="btn btn-lg btn-block" id="upload-file-button" onClick={ this.clickFileInput } >{this.state.hasFileWaiting? 'SUBMIT FILE':'UPLOAD'}</button>
 			        <div id="filename-display">
 			        	<p> {this.state.fileData? this.state.fileData.name : " "} </p>
 			        </div>
