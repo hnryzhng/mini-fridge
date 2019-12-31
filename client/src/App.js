@@ -354,7 +354,7 @@ class NaviBar extends Component {
 	render() {
 		return(
 
-		  <nav id="navibar" class="navbar navbar-expand-md">
+		  <nav id="navibar" className="navbar navbar-expand-md">
 
         <Logo />
         
@@ -383,8 +383,12 @@ class NavigationControl extends Component {
 
     return(
 
-    	<div id="navigation-control-container">
-    		{ showComponent }
+    	<div className="collapse navbar-collapse" id="navigation-control-container">
+        <ul className="navbar-nav">
+    	  
+         { showComponent }
+        
+        </ul>
     	</div>
     	);
   }
@@ -408,15 +412,21 @@ class Logo extends Component {
 class UserModule extends Component {
   render() {
     return(
+      <>
+        <li className="nav-item dropdown">
           
-      <div>
+          <a className="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Hey {this.props.user} 
+          </a>
 
-        <div id="user-greeting"> Hey {this.props.user} </div>
-      
-        <SignOutButton handleSignOut={this.props.handleSignOut} />
-
-      </div>
-      
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" href="#">
+              <SignOutButton handleSignOut={this.props.handleSignOut} /> 
+            </a>
+          </div>
+          
+        </li>
+      </>
     )
   }
 }
