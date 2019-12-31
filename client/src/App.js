@@ -182,15 +182,11 @@ class SearchFilter extends Component {
 
 		return(
 
-      <div className="input-group mb-3" id="search-filter-container">
+      <div id="search-filter-container">
 
   			<div id="search-filter">
-  				<input type="text" className="form-control" id="search-filter-input" placeholder="Type in your file name" onChange={ this.searchFilter } aria-label="Type in your file name" aria-describedby="search-append-icon"/>
+  				<input type="text" className="form-control form-control-lg" id="search-filter-input" placeholder="type to search for your file" onChange={ this.searchFilter } />
   			</div>	
-
-        <div className="input-group-append">
-          <span className="input-group-text" id="search-append-icon">SEARCH</span>
-        </div>
 
       </div>  
 
@@ -286,20 +282,31 @@ class LoginModule extends Component {
       return(
 
         <div className="container">
-
-          <form className="row form-inline" id="login-module" onSubmit={this.login}>
-            <input type="text" className="col form-control" id="login-username" placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
-            <input type="password" className="col form-control" id="login-password" placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
-
-            <button type="submit" className="btn btn-primary">
-              SIGN IN 
-            </button>
-          </form>
+          <div className="row">
 
 
-          <button type="button" id="register-button" onClick={ this.sendToParent }> Register for an account </button>
-      
+          <div className="col-sm">
+            <form className="form-inline" id="login-module" onSubmit={this.login}>
 
+              <div className="row">
+
+                  <input type="text" className="form-control form-control-lg col-sm" id="login-username" placeholder="username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
+                  <input type="password" className="form-control form-control-lg col-sm" id="login-password" placeholder="password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+
+                  <button type="submit" className="btn btn-primary ">
+                    SIGN IN 
+                  </button>
+
+              </div>
+
+            </form>
+          </div>
+          
+          
+          <button type="button col-sm" id="register-button" onClick={ this.sendToParent }> Register </button>
+          
+
+          </div>
         </div>
 
       )
@@ -403,9 +410,20 @@ class NaviBar extends Component {
 
 		  <nav id="navibar" className="navbar navbar-expand-md shadow-sm p-3 mb-5 bg-white rounded">
 
-        <Logo />
+        <div className="container">
+          <div className="row">
         
-		    <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLoginModule={ this.props.handleLoginModule } handleRegisterModule={ this.props.handleRegisterModule } handleSignOut={ this.props.handleSignOut } />
+            <div className="col-sm-4">
+              <Logo />
+            </div>
+
+            <div className="col-sm-8">
+  		        <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLoginModule={ this.props.handleLoginModule } handleRegisterModule={ this.props.handleRegisterModule } handleSignOut={ this.props.handleSignOut } />
+            </div>
+
+          </div>
+        </div>
+
 
 		  </nav>
 
@@ -459,7 +477,7 @@ class Logo extends Component {
 class UserModule extends Component {
   render() {
     return(
-      <>
+      <div>
         <li className="nav-item dropdown">
           
           <a className="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -473,7 +491,7 @@ class UserModule extends Component {
           </div>
           
         </li>
-      </>
+      </div>
     )
   }
 }
@@ -524,7 +542,7 @@ class UploadFileForm extends Component {
 	uploadFile = (event) => {
 
 		const fileData = this.state.fileData;
-		const fileName = fileData.name;
+		const fileName = ((fileData)? fileData.name: null);
 		const user = this.props.user;
 		const loggedIn = this.props.loggedIn;
 
@@ -574,9 +592,13 @@ class UploadFileForm extends Component {
 			          // send file name back to parent to update fileRecordsArray
 			          this.props.handleFileUploadComponent(data, true);
 
+                this.setState({ hasFileWaiting: false });
+
 			        } else {
 			          console.log("error: trouble uploading your file");
 			          this.props.handleFileUploadComponent(null, false);
+
+                this.setState({ hasFileWaiting: false });
 			        }
 			      })
 			      .catch(error => console.log("upload file error:", error));
@@ -615,16 +637,31 @@ class UploadFileForm extends Component {
 		console.log('fileinputobj clicked:', fileInputObj);
 	}
 
+
 	render() {
+
+    let currentButton;
+
+    if (this.state.hasFileWaiting) {
+      currentButton = <button type="button" className="btn btn-lg btn-block btn-success" id="submit-file-button" onClick={ this.uploadFile }>SUBMIT FILE</button>
+    } else {
+      currentButton = <button type="button" className="btn btn-lg btn-block btn-primary" id="upload-file-button" onClick={ this.clickFileInput } >UPLOAD</button>
+    }
+
 		return(
 			<div id="upload-file-module">
 
 			    <div id="upload-file-control">
-			        <button type="button" className="btn btn-lg btn-block" id="upload-file-button" onClick={ this.clickFileInput } >{this.state.hasFileWaiting? 'SUBMIT FILE':'UPLOAD'}</button>
+			        
+              { currentButton }
+
 			        <div id="filename-display">
-			        	<p> {this.state.fileData? this.state.fileData.name : " "} </p>
+			        	<p id="filename-display-text"> { this.state.fileData? this.state.fileData.name: "" }</p>
 			        </div>
+
 			    </div>
+
+
 
 				<div id="upload-file-form">
 			        <form onSubmit={this.uploadFile}>
@@ -635,10 +672,9 @@ class UploadFileForm extends Component {
 			              submit file
 			          </button>
 			        </form>
-			    </div>
-		        
-
 		    </div>
+
+      </div>
 	    )
 	}
 }
@@ -651,7 +687,7 @@ class List extends Component {
 		  return <Item key={ index } fileName={ file.fileName } fileId={ file.fileId } user={ this.props.user } fileRecordsArray={ this.props.fileRecordsArray } handleFileRecordsUpdate={ this.props.handleFileRecordsUpdate } />
 		});
 
-		return <ul>{list}</ul>; 
+		return <ul className="list-group">{list}</ul>; 
 
   	}
 
@@ -731,12 +767,12 @@ class Item extends Component {
     const fileRecordsArray = this.props.fileRecordsArray;
     
     return(
-    	<div className="container">
+    	<div className="container list-group-item list-group-item-action">
         <div className="row">
     		  
-          <div className="col"><li id={ fileId } > { this.props.fileName } </li></div>
-    		  <div className="col"><a><img src={ require("./static/icons/trashcan.png") } className="delete-icon" alt="DELETE" onClick={ () => { this.del(user, fileId, fileRecordsArray) } } /></a></div>
-          <div className="col"><a><img src={ require("./static/icons/download.png") } className="download-icon" alt="DOWNLOAD" onClick={ () => { this.dLoad(user, fileId, fileName) } } /></a></div>
+          <a href="#" className="col-sm-8"><li id={ fileId } > { this.props.fileName } </li></a>
+    		  <a href="#" className="col-sm-2"><img src={ require("./static/icons/delete.png") } className="delete-icon icon" alt="DELETE" onClick={ () => { this.del(user, fileId, fileRecordsArray) } } /></a>
+          <a href="#" className="col-sm-2"><img src={ require("./static/icons/download.png") } className="download-icon icon" alt="DOWNLOAD" onClick={ () => { this.dLoad(user, fileId, fileName) } } /></a>
 
           </div>
     	</div>
