@@ -289,7 +289,7 @@ class LoginModule extends Component {
 
           <form className="row form-inline" id="login-module" onSubmit={this.login}>
             <input type="text" className="col form-control" id="login-username" placeholder="type username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
-            <input type="text" className="col form-control" id="login-password" placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+            <input type="password" className="col form-control" id="login-password" placeholder="type password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
 
             <button type="submit" className="btn btn-primary">
               SIGN IN 
@@ -376,8 +376,8 @@ class RegisterModule extends Component {
   				<form style={{ border: "1px solid blue"}} onSubmit={ this.register }>
 
   				<input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({user: event.target.value})} />
-  				<input type="text" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({password: event.target.value})} />
-  				<input type="text" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({passwordConfirm: event.target.value})} />
+  				<input type="password" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({password: event.target.value})} />
+  				<input type="password" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({passwordConfirm: event.target.value})} />
   				<button type="submit">
   				  REGISTER 
   				</button>
