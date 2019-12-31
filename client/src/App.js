@@ -91,7 +91,7 @@ class App extends Component {
 
         <ListContainer { ...this.state } handleFileRecordsUpdate={ this.handleFileRecordsUpdate } />
 
-        
+
         
       </div>
     );
@@ -200,11 +200,38 @@ class SearchFilter extends Component {
 }
 
 class LoginRegisterModule extends Component {
+
+  state = {
+    showRegisterModal: false
+  }
+
+  handleShowRegisterModal = (success) => {
+    // LoginModule <-> LoginRegisterModule <-> RegisterModule
+
+    // Show RegisterModal
+    // click on LoginModule's "Register account" button 
+    // LoginModule's this.props.handleShowRegisterModal sends success paramater back to this parent component
+    // if success, change showRegisterModal to true
+    // send this.state.showRegisterModal to RegisterModule to show if true
+
+    // Close RegisterModal
+    // click on close icon in RegisterModule
+    // RegisterModule's this.props.handleShowRegisterModal sends success parameter back to parent
+    // if not success, change showRegisterModal to false
+
+    if (success) {
+      this.setState({ showRegisterModal: true });
+    } else {
+      this.setState({ showRegisterModal: false });
+    }
+
+  }
+
   render() {
     return(
       <>
-        <LoginModule handleLoginModule={ this.props.handleLoginModule } />
-        <RegisterModule handleRegisterModule={ this.props.handleRegisterModule } />
+        <LoginModule handleLoginModule={ this.props.handleLoginModule } handleShowRegisterModal={ this.handleShowRegisterModal } />
+        <RegisterModule handleRegisterModule={ this.props.handleRegisterModule } showRegisterModal={ this.state.showRegisterModal } handleShowRegisterModal={ this.handleShowRegisterModal } />
       </>
     )
   }
@@ -251,6 +278,10 @@ class LoginModule extends Component {
 
   }
 
+  sendToParent = () => {
+    this.props.handleShowRegisterModal(true);
+  }
+
     render() {
       return(
 
@@ -264,6 +295,10 @@ class LoginModule extends Component {
               SIGN IN 
             </button>
           </form>
+
+
+          <button type="button" id="register-button" onClick={ this.sendToParent }> Register for an account </button>
+      
 
         </div>
 
@@ -326,16 +361,18 @@ class RegisterModule extends Component {
         .catch(err => console.log("registration error:", err));
   }
 
+  sendToParent = () => {
+    this.props.handleShowRegisterModal(false);
+  }
 
   render() {
 
     return(
 
+
     	<div id="register-module-container">
       	
-        <button type="button" id="register-button" onClick={ ()=> this.setState({show: true}) }> Register for an account </button>
-			
-  			<div id="register-module" style={{ display: this.state.show? 'block' : 'none' }}>
+  			<div id="register-module" style={{ display: this.props.showRegisterModal? 'block' : 'none' }}>
   				<form style={{ border: "1px solid blue"}} onSubmit={ this.register }>
 
   				<input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({user: event.target.value})} />
@@ -347,9 +384,8 @@ class RegisterModule extends Component {
 
   				</form>
 
-  				<button type="button" id="close-signout-module" onClick={ ()=> this.setState({ show: false })} > CLOSE </button>
+  				<button type="button" id="close-signout-module" onClick={ this.sendToParent } > CLOSE </button>
   			</div>
-
 
       </div>
 
