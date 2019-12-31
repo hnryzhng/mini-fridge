@@ -410,8 +410,8 @@ class Logo extends Component {
   render() {
     return(
     
-      <a className="navbar-brand" id="logo-container" href="#">
-        <p> Mini Fridge </p>
+      <a className="navbar-brand" id="logo-container" href="/">
+        <img src={ require("./static/logo_cropped.png") }/>
       </a>  
     
 
