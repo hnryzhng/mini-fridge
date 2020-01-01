@@ -28,6 +28,7 @@
 }
 
 .nav-item.dropdown {
+	float: right;
 }
 
 #logo-container {
