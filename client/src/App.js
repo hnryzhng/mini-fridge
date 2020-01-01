@@ -478,8 +478,8 @@ class NavigationMenu extends Component {
 
 		        <li className="nav-item dropdown">
 
-		          <button type="button" className="nav-link dropdown-toggle btn btn-link" href="#" id="navbar-dropdown-menu-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		            Hey {this.props.user} 
+		          <button type="button" className="nav-link dropdown-toggle btn btn-link" href="#" id="nav-dropdown-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		            Hey {this.props.user}
 		          </button>
 
 		          <div className="dropdown-menu" aria-labelledby="navbar-dropdown-menu-link">

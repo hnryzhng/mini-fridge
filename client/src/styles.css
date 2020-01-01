@@ -17,10 +17,17 @@
 	width: 100%;
 	height: 4.5rem;
 	background-color: #c0c0c0;
+	z-index: 9999;
 }
 
 .nav-item.dropdown {
-	float: right;
+	position: absolute;
+	top: 0.5em;
+	right: 3em;
+}
+
+#nav-dropdown-link {
+	font-size: 1.5em
 }
 
 #logo-container {
@@ -72,7 +79,7 @@
 }
 
 #upload-file-button {
-	background-color: blue;
+	background-color: #3a4ddf;
 	color: white;
 }	
 
