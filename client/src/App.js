@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import axios from 'axios';
 import download from 'downloadjs';
 import "./styles.css" // import CSS stylesheet
@@ -540,12 +539,18 @@ class UploadFileForm extends Component {
 		this.fileSubmitButton = React.createRef();
 	}
 
+  clearFileUploadStates = () => {
+    this.setState({ fileData: null });
+    this.setState({ hasFileWaiting: false });
+  }
+
 	uploadFile = (event) => {
 
 		const fileData = this.state.fileData;
 		const fileName = ((fileData)? fileData.name: null);
 		const user = this.props.user;
 		const loggedIn = this.props.loggedIn;
+    const fileRecordsArray = this.props.fileRecordsArray;
 
 		// multer + react: https://blog.stvmlbrn.com/2017/12/17/upload-files-using-react-to-node-express-server.html
 		event.preventDefault();
@@ -556,18 +561,30 @@ class UploadFileForm extends Component {
 		console.log("file name: ", fileName);
 		console.log("fileData: ", fileData);
 
+
+
 		// check that file data exists upon submitting
 		if (!fileData) {
-			console.log("please add a file before submitting");
 			alert("please add a file before submitting");
-			return // return to terminate function
+      return // terminate function
 		}
 
-		// allow upload only if logged in
+		// check for logged-in user
 		if (!loggedIn) {
-			console.log("you must be logged in to upload file");
+			alert("you must be logged in to upload file");
+      this.clearFileUploadStates();
 			return // terminate function
 		}
+
+    // check that there's no filename collision in fileRecordsArray
+    for (var i=0; i<fileRecordsArray.length; i++) {
+      const fName = fileRecordsArray[i].fileName;
+      if (fileName === fName) {
+        alert("file with same name already exists");
+        this.clearFileUploadStates();
+        return
+      }
+    }
 
 		// file validation: file size < 500 kb
 		const fileSize = fileData.size;
@@ -593,16 +610,14 @@ class UploadFileForm extends Component {
 			          this.props.handleFileUploadComponent(data, true);
 
                 // reset states to no file
-                this.setState({ fileData: null });
-                this.setState({ hasFileWaiting: false });
+                this.clearFileUploadStates();
 
 			        } else {
 			          console.log("error: trouble uploading your file");
 			          this.props.handleFileUploadComponent(null, false);
 
                 // reset states to no file
-                this.setState({ fileData: null });
-                this.setState({ hasFileWaiting: false });
+                this.clearFileUploadStates();
 
 			        }
 			      })
@@ -740,7 +755,7 @@ class Item extends Component {
     URL.revokeObjectURL(fileURL);
   }
 
-  dLoad = async(user, fId, fName, downloadHelper) => {
+  dLoad = async(user, fId, fName) => {
     // TASK BOOKMARK
     // keep name of downloaded file
 
@@ -754,7 +769,7 @@ class Item extends Component {
     })
     .then((response) => {
 
-      downloadHelper(response, fName);
+      this.downloadHelper(response, fName);
 
 
       // console.log("response content:", response.data)
@@ -819,7 +834,7 @@ class Item extends Component {
     		  
           <a href="#" className="col-sm-8"><li id={ fileId } > { this.props.fileName } </li></a>
     		  <a href="#" className="col-sm-2"><img src={ require("./static/icons/delete.png") } className="delete-icon icon" alt="DELETE" onClick={ () => { this.del(user, fileId, fileRecordsArray) } } /></a>
-          <a href="#" className="col-sm-2"><img src={ require("./static/icons/download.png") } className="download-icon icon" alt="DOWNLOAD" onClick={ () => { this.dLoad(user, fileId, fileName, this.downloadHelper) } } /></a>
+          <a href="#" className="col-sm-2"><img src={ require("./static/icons/download.png") } className="download-icon icon" alt="DOWNLOAD" onClick={ () => { this.dLoad(user, fileId, fileName) } } /></a>
 
           <a href="#" id="download-tag" ref={ this.a } >DOWNLOAD LINK</a> 
 
