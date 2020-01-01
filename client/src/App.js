@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import axios from 'axios';
 import download from 'downloadjs';
 import "./styles.css" // import CSS stylesheet
@@ -478,19 +479,19 @@ class UserModule extends Component {
   render() {
     return(
       <div>
-        <li className="nav-item dropdown">
-          
+        <div className="nav-item dropdown">
+
           <a className="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Hey {this.props.user} 
           </a>
 
-          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="#">
+          <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <a className="dropdown-item" href="#">
               <SignOutButton handleSignOut={this.props.handleSignOut} /> 
             </a>
           </div>
           
-        </li>
+        </div>
       </div>
     )
   }
@@ -577,7 +578,6 @@ class UploadFileForm extends Component {
 			// instantiate react form object to hold file data
 			const formDataObj = new FormData();
 
-			// TASK: backend user logged_in: true ? 
 			formDataObj.append("user", user);
 			formDataObj.append("fileName", fileName);
 			formDataObj.append("fileData", fileData);
@@ -695,7 +695,39 @@ class List extends Component {
 
 class Item extends Component {
 
-  dLoad = async(user, fId, fName) => {
+  downloadHelper = (response, filename) => {
+    // helper function allows greater control over file download on front-end
+
+    // render blob into downloadable url, create <a>, bind element to DOM, assign el with name and url attributes, function to trigger click on link to download
+
+    console.log("download helper response data", response.data);
+
+    // create Blob and downloadable url
+    var blob = new Blob([response.data], {type: response.headers['content-type']}); // render Blob from response data and set content type in header
+    console.log("Blob file:", blob);
+    const fileURL = URL.createObjectURL(blob);  // produce downloadable url from Blob 
+    
+    // create <a> element
+    // set <a> attributes
+    const a = React.createElement('a', {href: fileURL, download: filename, display: 'none'});  // hide <a>
+    // console.log("<a> element: ", a);
+
+    // bind to DOM
+    ReactDOM.render(
+      a, 
+      document.getElementById('root')
+    );
+
+    // click element to download
+    a.click();
+
+    // remove browser's reference to the file
+    URL.revokeObjectURL(fileURL);
+
+
+  }
+
+  dLoad = async(user, fId, fName, downloadHelper) => {
     // TASK BOOKMARK
     // keep name of downloaded file
 
@@ -708,13 +740,15 @@ class Item extends Component {
       responseType: 'arraybuffer'
     })
     .then((response) => {
-      console.log("response content:", response.data)
+
+      downloadHelper(response, fName);
 
 
-      var blob = new Blob([response.data], {type: response.headers['content-type']});
-      console.log("Blob file:", blob);
-      
-      download(blob)
+      // console.log("response content:", response.data)
+      // var blob = new Blob([response.data], {type: response.headers['content-type']});
+      // console.log("Blob file:", blob);
+      // download(blob)
+
 
       // const fileURL = URL.createObjectURL(blob);
       // console.log("file URL:", fileURL);
@@ -772,7 +806,7 @@ class Item extends Component {
     		  
           <a href="#" className="col-sm-8"><li id={ fileId } > { this.props.fileName } </li></a>
     		  <a href="#" className="col-sm-2"><img src={ require("./static/icons/delete.png") } className="delete-icon icon" alt="DELETE" onClick={ () => { this.del(user, fileId, fileRecordsArray) } } /></a>
-          <a href="#" className="col-sm-2"><img src={ require("./static/icons/download.png") } className="download-icon icon" alt="DOWNLOAD" onClick={ () => { this.dLoad(user, fileId, fileName) } } /></a>
+          <a href="#" className="col-sm-2"><img src={ require("./static/icons/download.png") } className="download-icon icon" alt="DOWNLOAD" onClick={ () => { this.dLoad(user, fileId, fileName, this.downloadHelper) } } /></a>
 
           </div>
     	</div>

@@ -27,10 +27,7 @@
 	height: 80%;
 }
 
-.nav-item .dropdown {
-	background-color: blue;
-	float: right;
-	text-align: right;
+.nav-item.dropdown {
 }
 
 #logo-container {
