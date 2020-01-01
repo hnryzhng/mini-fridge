@@ -47,7 +47,7 @@ conn.on('connected', () => {
 	gfs = new mongoose.mongo.GridFSBucket(conn.db, {
 		bucketName: 'uploads'
 	});
-	console.log("mongoose.connection:", conn);
+	// console.log("mongoose.connection:", conn);
 	
 });
 
