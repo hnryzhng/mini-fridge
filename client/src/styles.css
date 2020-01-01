@@ -87,9 +87,15 @@
 	display: none;
 }
 
+
 #filename-display-text {
+	padding-bottom: 2%;
+	margin-top: 2%;
+	text-align: center;
+	border-radius: 10px;
 	color: #496057;
-	font-size: 1em;
+	font-size: 1.6em;
+	font-weight: bold;
 }
 
 #list-container {
@@ -125,6 +131,10 @@
 .download-icon {
 	width: 18px;
 	//border: 1px solid black;
+}
+
+#download-tag {
+	display: none;
 }
 
 

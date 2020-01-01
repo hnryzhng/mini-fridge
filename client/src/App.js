@@ -592,13 +592,18 @@ class UploadFileForm extends Component {
 			          // send file name back to parent to update fileRecordsArray
 			          this.props.handleFileUploadComponent(data, true);
 
+                // reset states to no file
+                this.setState({ fileData: null });
                 this.setState({ hasFileWaiting: false });
 
 			        } else {
 			          console.log("error: trouble uploading your file");
 			          this.props.handleFileUploadComponent(null, false);
 
+                // reset states to no file
+                this.setState({ fileData: null });
                 this.setState({ hasFileWaiting: false });
+
 			        }
 			      })
 			      .catch(error => console.log("upload file error:", error));
@@ -695,10 +700,20 @@ class List extends Component {
 
 class Item extends Component {
 
+  constructor(props) {
+    
+    super(props);
+
+    // grab reference to <a> download element DOM node
+    this.a = React.createRef();
+
+  }
+
   downloadHelper = (response, filename) => {
     // helper function allows greater control over file download on front-end
 
-    // render blob into downloadable url, create <a>, bind element to DOM, assign el with name and url attributes, function to trigger click on link to download
+    // render blob into downloadable url
+    // grab hidden <a> download-tag, assign el with filename and file download url attributes, trigger element click to initiate download
 
     console.log("download helper response data", response.data);
 
@@ -706,25 +721,23 @@ class Item extends Component {
     var blob = new Blob([response.data], {type: response.headers['content-type']}); // render Blob from response data and set content type in header
     console.log("Blob file:", blob);
     const fileURL = URL.createObjectURL(blob);  // produce downloadable url from Blob 
+    console.log("download file url:", fileURL)
     
-    // create <a> element
-    // set <a> attributes
-    const a = React.createElement('a', {href: fileURL, download: filename, display: 'none'});  // hide <a>
-    // console.log("<a> element: ", a);
+    // get element
+    const a = this.a.current;
+    console.log("current <a>:", a);
 
-    // bind to DOM
-    ReactDOM.render(
-      a, 
-      document.getElementById('root')
-    );
+    // set attributes
+    a.setAttribute('href', fileURL);  // set <a> tag url to file url
+    a.setAttribute('download', filename); // set <a> tag filename 
+
+    console.log('download <a> with attr:', a);
 
     // click element to download
     a.click();
 
     // remove browser's reference to the file
     URL.revokeObjectURL(fileURL);
-
-
   }
 
   dLoad = async(user, fId, fName, downloadHelper) => {
@@ -807,6 +820,8 @@ class Item extends Component {
           <a href="#" className="col-sm-8"><li id={ fileId } > { this.props.fileName } </li></a>
     		  <a href="#" className="col-sm-2"><img src={ require("./static/icons/delete.png") } className="delete-icon icon" alt="DELETE" onClick={ () => { this.del(user, fileId, fileRecordsArray) } } /></a>
           <a href="#" className="col-sm-2"><img src={ require("./static/icons/download.png") } className="download-icon icon" alt="DOWNLOAD" onClick={ () => { this.dLoad(user, fileId, fileName, this.downloadHelper) } } /></a>
+
+          <a href="#" id="download-tag" ref={ this.a } >DOWNLOAD LINK</a> 
 
           </div>
     	</div>
