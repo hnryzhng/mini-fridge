@@ -185,7 +185,7 @@ class SearchFilter extends Component {
       <div id="search-filter-container">
 
   			<div id="search-filter">
-  				<input type="text" className="form-control form-control-lg" id="search-filter-input" placeholder="type to search for your file" onChange={ this.searchFilter } />
+  				<input type="text" className="form-control form-control-lg" id="search-filter-input" placeholder="SEARCH FOR YOUR FILE" onChange={ this.searchFilter } />
   			</div>	
 
       </div>  
@@ -282,32 +282,25 @@ class LoginModule extends Component {
       return(
 
         <div className="container" id="login-register-module-container">
-          <div className="row">
-
-
-			<div className="col-sm">
 
 				<form className="form-inline" id="login-module" onSubmit={this.login}>
 
 				  <div className="row">
 
-				      <input type="text" className="form-control form-control-lg col-sm" id="login-username" placeholder="username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
-				      <input type="password" className="form-control form-control-lg col-sm" id="login-password" placeholder="password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+					<input type="text" className="form-control form-control-lg col-sm " id="login-username" placeholder="username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />				      
 
-				      <button type="submit" className="btn btn-primary ">
-				        SIGN IN 
-				      </button>
+					<input type="password" className="form-control form-control-lg col-sm" id="login-password" placeholder="password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+
+					<button type="submit" className="btn btn-primary col-sm">
+						SIGN IN 
+					</button>
+
+					<button type="button" className="col-sm" id="register-button" onClick={ this.sendToParent }> Register </button>
 
 				  </div>
 
 				</form>
-			</div>
-          
-          
-			<button type="button col-sm" id="register-button" onClick={ this.sendToParent }> Register </button>
-          
-
-          </div>
+			
         </div>
 
       )
