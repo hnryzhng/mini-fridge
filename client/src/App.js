@@ -245,8 +245,10 @@ class LoginModule extends Component {
 
     event.preventDefault();
 
+    const baseURL = process.env.baseURL || "http://localhost:3001";
+
     // send POST request to backend
-    axios.post("http://localhost:3001/api/login", {
+    axios.post(`${baseURL}/api/login`, {
     // axios.post("/api/login", { 
           user: this.state.usernameInput,
           password: this.state.passwordInput
@@ -334,9 +336,10 @@ class RegisterModule extends Component {
 
     event.preventDefault();
     
+    const baseURL = process.env.baseURL || "http://localhost:3001";
+
     // send POST request
-    //axios.post("/api/register", {      
-    axios.post("http://localhost:3001/api/register", {
+    axios.post(`${baseURL}/api/register`, {
             user: this.state.user,
             password: this.state.password,
             passwordConfirm: this.state.passwordConfirm
@@ -449,7 +452,7 @@ class Logo extends Component {
     return(
     
       <a className="navbar-brand" id="logo-container" href="/">
-        <img src={ require("./static/logo_cropped.png") }/>
+        <img src={ require("./static/logo_cropped.png") } alt="Mini Fridge"/>
       </a>  
     
 
@@ -599,7 +602,9 @@ class UploadFileForm extends Component {
 			formDataObj.append("fileName", fileName);
 			formDataObj.append("fileData", fileData);
 
-			axios.post("http://localhost:3001/api/uploadFileGridFS", formDataObj)
+			const baseURL = process.env.baseURL || "http://localhost:3001";
+
+			axios.post(`${baseURL}/api/uploadFileGridFS`, formDataObj)
 			//axios.post("/api/uploadFileGridFS", formDataObj)
 			      .then(response => response.data) 
 			      .then(data => {
@@ -761,7 +766,8 @@ class Item extends Component {
 
     console.log("standalone download function:", user, ",", fId, ",", fName);
     
-    const reqUrl = `http://localhost:3001/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
+    const baseURL = process.env.baseURL || "http://localhost:3001";
+    const reqUrl = `${baseURL}/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
 
     axios(reqUrl, {
       method: 'GET',
@@ -793,7 +799,9 @@ class Item extends Component {
     // list item delete 
 
     console.log("standalone delete function:", user, ",", fId);
-    axios.get("http://localhost:3001/api/deleteFileGridFS", {
+
+    const baseURL = process.env.baseURL || "http://localhost:3001";
+    axios.get(`${baseURL}/api/deleteFileGridFS`, {
             params: {
               user: user, 
               fileId: fId
