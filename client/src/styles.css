@@ -19,14 +19,6 @@
 	background-color: #c0c0c0;
 }
 
-#navigation-control-container {
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 100%;
-	height: 80%;
-}
-
 .nav-item.dropdown {
 	float: right;
 }
@@ -38,6 +30,14 @@
 #logo {
 	color: #ffffff;
 }
+
+#login-register-module-container {
+	margin-left: 10%;
+	width: 1200px;
+	padding-right: 5em;
+
+}
+
 
 #login-module {
 	width: 100%;

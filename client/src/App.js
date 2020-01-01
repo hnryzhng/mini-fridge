@@ -226,7 +226,7 @@ class LoginRegisterModule extends Component {
   render() {
     return(
       <>
-        <LoginModule handleLoginModule={ this.props.handleLoginModule } handleShowRegisterModal={ this.handleShowRegisterModal } />
+    	<LoginModule handleLoginModule={ this.props.handleLoginModule } handleShowRegisterModal={ this.handleShowRegisterModal } />
         <RegisterModule handleRegisterModule={ this.props.handleRegisterModule } showRegisterModal={ this.state.showRegisterModal } handleShowRegisterModal={ this.handleShowRegisterModal } />
       </>
     )
@@ -281,29 +281,30 @@ class LoginModule extends Component {
     render() {
       return(
 
-        <div className="container">
+        <div className="container" id="login-register-module-container">
           <div className="row">
 
 
-          <div className="col-sm">
-            <form className="form-inline" id="login-module" onSubmit={this.login}>
+			<div className="col-sm">
 
-              <div className="row">
+				<form className="form-inline" id="login-module" onSubmit={this.login}>
 
-                  <input type="text" className="form-control form-control-lg col-sm" id="login-username" placeholder="username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
-                  <input type="password" className="form-control form-control-lg col-sm" id="login-password" placeholder="password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+				  <div className="row">
 
-                  <button type="submit" className="btn btn-primary ">
-                    SIGN IN 
-                  </button>
+				      <input type="text" className="form-control form-control-lg col-sm" id="login-username" placeholder="username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />
+				      <input type="password" className="form-control form-control-lg col-sm" id="login-password" placeholder="password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
 
-              </div>
+				      <button type="submit" className="btn btn-primary ">
+				        SIGN IN 
+				      </button>
 
-            </form>
-          </div>
+				  </div>
+
+				</form>
+			</div>
           
           
-          <button type="button col-sm" id="register-button" onClick={ this.sendToParent }> Register </button>
+			<button type="button col-sm" id="register-button" onClick={ this.sendToParent }> Register </button>
           
 
           </div>
@@ -408,22 +409,17 @@ class NaviBar extends Component {
 	render() {
 		return(
 
-		  <nav id="navibar" className="navbar navbar-expand-md shadow-sm p-3 mb-5 bg-white rounded">
+		  <nav id="navibar" className="navbar navbar-expand-md shadow-sm bg-white rounded">
 
-        <div className="container">
-          <div className="row">
-        
-            <div className="col-sm-4">
-              <Logo />
-            </div>
+             
 
-            <div className="col-sm-8">
-  		        <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLoginModule={ this.props.handleLoginModule } handleRegisterModule={ this.props.handleRegisterModule } handleSignOut={ this.props.handleSignOut } />
-            </div>
 
-          </div>
-        </div>
+            <Logo />
+            
 
+            
+  		    <NavigationControl user={ this.props.user } loggedIn={ this.props.loggedIn } handleLoginModule={ this.props.handleLoginModule } handleRegisterModule={ this.props.handleRegisterModule } handleSignOut={ this.props.handleSignOut } />
+            
 
 		  </nav>
 
@@ -441,21 +437,16 @@ class NavigationControl extends Component {
 	const isLoggedIn = this.props.loggedIn;
 
 	if (isLoggedIn) {
-	  showComponent = <UserModule user={ this.props.user } handleSignOut={ this.props.handleSignOut } />
+	  showComponent = <NavigationMenu user={ this.props.user } handleSignOut={ this.props.handleSignOut } />
 	} else {
 	  showComponent = <LoginRegisterModule { ...this.props } />
 	}
 
     return(
-
-    	<div className="collapse navbar-collapse" id="navigation-control-container">
-        <ul className="navbar-nav">
-    	  
-         { showComponent }
-        
-        </ul>
-    	</div>
-    	);
+		<>
+			{ showComponent }
+		</>
+	);
   }
 
 }
@@ -474,24 +465,40 @@ class Logo extends Component {
   }
 }
 
-class UserModule extends Component {
+class NavigationMenu extends Component {
   render() {
     return(
-      <div>
-        <div className="nav-item dropdown">
 
-          <a className="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Hey {this.props.user} 
-          </a>
+    	<div id="navigation-menu-container">
+			
+			{console.log("TOGGLE MENU BUTTON AT MOBILE")}
+			<button className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navigation-menu" aria-controls="navigation-menu" aria-expanded="false" aria-label="Toggle navigation">
+						<span className="navbar-toggler-icon"></span>
+			</button>        	
 
-          <div className="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a className="dropdown-item" href="#">
-              <SignOutButton handleSignOut={this.props.handleSignOut} /> 
-            </a>
-          </div>
-          
-        </div>
-      </div>
+			{console.log("NAV MENU")}
+			<div className="navbar-collapse" id="navigation-menu">
+					
+		      <ul className="navbar-nav">
+
+		        <li className="nav-item dropdown">
+
+		          <a className="nav-link dropdown-toggle" href="#" id="navbar-dropdown-menu-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		            Hey {this.props.user} 
+		          </a>
+
+		          <div className="dropdown-menu" aria-labelledby="navbar-dropdown-menu-link">
+		            <a className="dropdown-item" href="#">
+		              <SignOutButton handleSignOut={this.props.handleSignOut} /> 
+		            </a>
+		          </div>
+		          
+		        </li>
+		      </ul>
+
+	      	</div>
+
+    	</div>
     )
   }
 }
