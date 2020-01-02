@@ -20,10 +20,11 @@
 	z-index: 9999;
 }
 
+#navigation-menu-container {
+	width: 100%;
+}
+
 .nav-item.dropdown {
-	position: absolute;
-	top: 0.5em;
-	right: 3em;
 }
 
 #nav-dropdown-link {

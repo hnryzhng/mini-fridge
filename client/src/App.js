@@ -225,8 +225,8 @@ class LoginRegisterModule extends Component {
   render() {
     return(
       <>
-    	<LoginModule handleLoginModule={ this.props.handleLoginModule } handleShowRegisterModal={ this.handleShowRegisterModal } />
-        <RegisterModule handleRegisterModule={ this.props.handleRegisterModule } showRegisterModal={ this.state.showRegisterModal } handleShowRegisterModal={ this.handleShowRegisterModal } />
+    	   <LoginModule handleLoginModule={ this.props.handleLoginModule } handleShowRegisterModal={ this.handleShowRegisterModal } />
+         <RegisterModule handleRegisterModule={ this.props.handleRegisterModule } showRegisterModal={ this.state.showRegisterModal } handleShowRegisterModal={ this.handleShowRegisterModal } />
       </>
     )
   }
@@ -282,7 +282,7 @@ class LoginModule extends Component {
     render() {
       return(
 
-        <div className="container" id="login-register-module-container">
+        <div className="container-fluid" id="login-register-module-container">
 
 				<form className="form-inline" id="login-module" onSubmit={this.login}>
 
@@ -464,36 +464,29 @@ class NavigationMenu extends Component {
   render() {
     return(
 
-    	<div id="navigation-menu-container">
-			
-			{console.log("TOGGLE MENU BUTTON AT MOBILE")}
-			<button className="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navigation-menu" aria-controls="navigation-menu" aria-expanded="false" aria-label="Toggle navigation">
-						<span className="navbar-toggler-icon"></span>
-			</button>        	
+      <div className="container-fluid">
+        <div className="d-md-flex justify-content-end" id="navigation-menu-container">  	
 
-			{console.log("NAV MENU")}
-			<div className="navbar-collapse" id="navigation-menu">
-					
-		      <ul className="navbar-nav">
+          <div className="" id="navigation-menu">  					
+  		      <ul className="navbar-nav">
 
-		        <li className="nav-item dropdown">
+  		        <li className="nav-item dropdown">
+  		          <button type="button" className="nav-link dropdown-toggle btn btn-link" href="#" id="nav-dropdown-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  		            Hey {this.props.user}
+  		          </button>
 
-		          <button type="button" className="nav-link dropdown-toggle btn btn-link" href="#" id="nav-dropdown-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-		            Hey {this.props.user}
-		          </button>
+  		          <div className="dropdown-menu" aria-labelledby="navbar-dropdown-menu-link">
+  		            <button type="button" className="dropdown-item btn btn-link" href="#">
+  		              <SignOutButton handleSignOut={this.props.handleSignOut} /> 
+  		            </button>
+  		          </div>  		          
+  		        </li>
 
-		          <div className="dropdown-menu" aria-labelledby="navbar-dropdown-menu-link">
-		            <button type="button" className="dropdown-item btn btn-link" href="#">
-		              <SignOutButton handleSignOut={this.props.handleSignOut} /> 
-		            </button>
-		          </div>
-		          
-		        </li>
-		      </ul>
+  		      </ul>
+  	      </div>
 
-	      	</div>
-
-    	</div>
+      	</div>
+      </div>
     )
   }
 }
