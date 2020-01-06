@@ -28,7 +28,7 @@ const path = require("path");
 require("dotenv").config();
 
 // ping Heroku
-const pingHeroku = require(path.join(__dirname, "/ping-heroku.js"));
+// const pingHeroku = require(path.join(__dirname, "/ping-heroku.js"));
 // pingHeroku("https://mini-fridge.herokuapp.com", 900000);	// every 900 seconds, or 15 minutes
 
 // GRIDFS
@@ -70,13 +70,13 @@ app.use(cors());
 // app.use("/api", router);
 app.use("/api", require("./routes"));
 
-/*
+
 // SERVE FRONT-END SCRIPTS FOR HEROKU BUILD 
 app.use(express.static(path.join(__dirname, "/../", "client", "build")));	// Adds the react production build to serve react requests
 
 app.get("*", (req, res) => {
 	res.sendFile(path.join(__dirname, "/../", "client", "build", "index.html"));
 });
-*/
+
 
 app.listen(api_port, () => console.log(`Listening to ${api_port}`));
