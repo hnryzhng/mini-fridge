@@ -155,13 +155,13 @@ class Landing extends Component {
 
               <div className="row">
                 <button href="#" className="btn btn-secondary w-100">
-                  SIGN UP 
+                  SIGN UP ROUTER PAGE
                 </button>
               </div>
 
               <div className="row justify-content-center">
                 <a href="#" alt=""> 
-                  Sign In 
+                  Sign In ROUTER PAGE
                 </a>
               </div>
 
