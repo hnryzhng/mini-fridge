@@ -119,36 +119,56 @@ class UserModule extends Component {
 
 class Landing extends Component {
   render() {
+
+    const landingText = `
+
+      Get your very own mini cloud. Our service is perfect for saving small files such 
+      as Word docs so you can access them anywhere.
+
+    `
+
     return(
 
-      <div className="section-container parallax" id="landing-section">
-
-        <div className="container-fluid">
+      <div className="container-fluid section-container parallax d-flex" id="landing-section">
             
-            <div className="row">
-              
-              <div className="col-md" id="landing-section-left">
-                <img src="" alt="" />LANDING IMAGE
+          <div className="row align-self-center">
+            
+            <div className="col-md" id="landing-section-left">
+              <img src="" alt="" />LANDING IMAGE
+            </div>
+
+            <div className="col-md" id="landing-section-right">
+      
+              <div className="row">
+                <p id="landing-text">
+                
+                  { landingText }
+
+                </p>
               </div>
 
-              <div className="col-md" id="landing-section-right">
-        
-                <div className="row">
-                  <p id="landing-text">
-                  LANDING TEXT
-                  </p>
-                </div>
+              <div className="row">
+                <button href="#" className="btn btn-primary w-100"> 
+                  TRY DEMO 
+                </button>
+              </div>
 
-                <button href="#" className="btn btn-primary"> TRY DEMO </button>
+              <div className="row">
+                <button href="#" className="btn btn-secondary w-100">
+                  SIGN UP 
+                </button>
+              </div>
 
-                <button href="#" className="btn btn-secondary"> SIGN UP </button>
-
-                <a href="#" alt=""> Sign In </a>
-
+              <div className="row justify-content-center">
+                <a href="#" alt=""> 
+                  Sign In 
+                </a>
               </div>
 
             </div>
-        </div>
+
+          </div>
+
 
       </div>
 
