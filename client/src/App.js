@@ -178,6 +178,69 @@ class Landing extends Component {
 
 }
 
+class RegisterPage extends Component {
+  state = {
+    user: null,
+    password: null,
+    passwordConfirm: null,
+  };
+
+  register = (event) => {
+
+    event.preventDefault();
+    
+    const baseURL = process.env.baseURL || "http://localhost:3001";
+
+    // send POST request
+    axios.post(`${baseURL}/api/register`, {
+            user: this.state.user,
+            password: this.state.password,
+            passwordConfirm: this.state.passwordConfirm
+        })
+        .then(response => response.data)
+        .then(data => {
+          if (data.success) {
+            console.log("new user registered!");
+            
+            // send data back to App component
+            this.props.handleRegisterModule(this.state.user, true);
+
+
+          } else {      
+            console.log("registration failed");
+            console.log(data.error);
+
+            // send data back to App component
+            this.props.handleRegisterModule(null, false);
+
+          }
+        })
+        .catch(err => console.log("registration error:", err));
+  }
+
+  render() {
+    return(
+
+      <div id="register-page-container">
+
+        <form style={{ border: "1px solid blue"}} onSubmit={ this.register }>
+
+          <input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({user: event.target.value})} />
+          <input type="password" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({password: event.target.value})} />
+          <input type="password" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({passwordConfirm: event.target.value})} />
+          <button type="submit">
+            REGISTER 
+          </button>
+
+        </form>
+
+      </div>
+
+    )
+  }
+
+}
+
 class LoginPage extends Component {
 
   state = {
