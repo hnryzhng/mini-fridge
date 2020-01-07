@@ -155,13 +155,13 @@ class Landing extends Component {
 
               <div className="row">
                 <a href="#" className="btn btn-outline-primary btn-lg btn-block" id="landing-register-button">
-                  Sign Up ROUTER PAGE
+                  Sign Up
                 </a>
               </div>
 
               <div className="row justify-content-center">
-                <a href="#" alt=""> 
-                  Log In ROUTER PAGE
+                <a href="#" alt="" id="landing-login-link"> 
+                  Log In
                 </a>
               </div>
 

@@ -87,6 +87,7 @@
 }
 
 .parallax {
+	background: url("./static/clouds.jpg");
 	background-attachment: fixed;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -103,10 +104,15 @@
 
 #landing-text-container {
 	margin-bottom: 1.6em;
+	padding: 1em 2em 1em 2em;
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 2em;
+
 }
 
 #landing-text {
-	font-size: 1.8em
+	font-size: 1.8em;
+	color: #fff;
 }
 
 
@@ -114,6 +120,22 @@
 	margin-bottom: 1.2em;
 	border-radius: 1em;
 	font-size: 1.5em;
+}
+
+#landing-register-button {
+	color: #ffffff;
+	font-weight: 500;
+	border-width: 3px;
+	border-color: #fff;
+}
+
+#landing-register-button:hover {
+	color: #000;
+	background-color: #fff;
+}
+
+#landing-login-link {
+	color: #fff;
 }
 
 #upload-file-button {
