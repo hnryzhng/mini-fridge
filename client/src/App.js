@@ -178,6 +178,10 @@ class Landing extends Component {
 
 }
 
+class LoginPage extends Component {
+  
+}
+
 class ListContainer extends Component {
 
 	state = {
