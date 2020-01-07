@@ -238,7 +238,7 @@ class LoginPage extends Component {
             SIGN IN 
           </button>
 
-          <button type="button" className="col-sm" id="login-page-register-button" onClick={ }> Register PAGE </button>
+          <button type="button" className="col-sm" id="login-page-register-button"> Register PAGE </button>
 
           </div>
 
