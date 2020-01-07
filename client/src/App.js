@@ -160,7 +160,7 @@ class Landing extends Component {
                 </a>
               
                 <a href="#" className="col-md btn btn-outline-light btn-lg" id="landing-login-button">
-                  Log In PAGE REACT ROUTER LINK
+                  Log In
                 </a>
               
               </div>
