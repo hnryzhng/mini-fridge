@@ -80,21 +80,82 @@ class App extends Component {
 
   render() {
 
+    let showComponent;
+
+    if (this.state.loggedIn) {
+      showComponent = <UserModule { ... this.state } handleFileUploadComponent={ this.handleFileUploadComponent } handleFileRecordsUpdate={ this.handleFileRecordsUpdate } />;
+    } else {
+      showComponent = <Landing />;
+    }
+
 
     return (
       <div>
         
         <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} handleRegisterModule={this.handleRegisterModule} handleSignOut={this.handleSignOut} />
 
-        <UploadFileControl {...this.state} handleFileUploadComponent={this.handleFileUploadComponent} />
+        { showComponent }
 
-        <ListContainer { ...this.state } handleFileRecordsUpdate={ this.handleFileRecordsUpdate } />
-
-
-        
       </div>
     );
   }
+}
+
+
+class UserModule extends Component {
+  render() {
+    return(
+      <>
+
+        <UploadFileControl {...this.props} handleFileUploadComponent={this.props.handleFileUploadComponent} />
+
+        <ListContainer { ...this.props } handleFileRecordsUpdate={ this.props.handleFileRecordsUpdate } />
+      
+      </>
+    )
+  }
+}
+
+
+class Landing extends Component {
+  render() {
+    return(
+
+      <div className="section-container parallax" id="landing-section">
+
+        <div className="container-fluid">
+            
+            <div className="row">
+              
+              <div className="col-md" id="landing-section-left">
+                <img src="" alt="" />LANDING IMAGE
+              </div>
+
+              <div className="col-md" id="landing-section-right">
+        
+                <div className="row">
+                  <p id="landing-text">
+                  LANDING TEXT
+                  </p>
+                </div>
+
+                <button href="#" className="btn btn-primary"> TRY DEMO </button>
+
+                <button href="#" className="btn btn-secondary"> SIGN UP </button>
+
+                <a href="#" alt=""> Sign In </a>
+
+              </div>
+
+            </div>
+        </div>
+
+      </div>
+
+
+    )
+  }
+
 }
 
 class ListContainer extends Component {
