@@ -87,7 +87,7 @@
 }
 
 .parallax {
-	background: url("./static/clouds.jpg");
+	background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(126,134,199,1) 0%, rgba(27,178,228,1) 0%, rgba(20,187,235,1) 0%, rgba(184,229,241,1) 0%, rgba(19,189,236,1) 0%, rgba(19,188,236,1) 0%, rgba(179,238,255,1) 0%, rgba(13,83,231,1) 100%, rgba(23,140,170,1) 100%, rgba(0,212,255,1) 100%);
 	background-attachment: fixed;
 	background-position: center;
 	background-repeat: no-repeat;
@@ -99,13 +99,14 @@
 }
 
 #landing-image {
-	width: 80%;
+	width: 60%;
+	border-radius: 10px;
 }
 
 #landing-text-container {
 	margin-bottom: 1.6em;
 	padding: 1em 2em 1em 2em;
-	background-color: rgba(0, 0, 0, 0.4);
+	background-color: rgba(0, 0, 0, 0.2);
 	border-radius: 2em;
 
 }
@@ -119,23 +120,20 @@
 #landing-section a {
 	margin-bottom: 1.2em;
 	border-radius: 1em;
-	font-size: 1.5em;
 }
 
-#landing-register-button {
-	color: #ffffff;
-	font-weight: 500;
+#demo-button {
 	border-width: 3px;
+	font-size: 1.8em;
+	font-weight: 500;
+}
+
+#landing-register-button #landing-login-button {	border-width: 3px;
 	border-color: #fff;
-}
-
-#landing-register-button:hover {
-	color: #000;
-	background-color: #fff;
-}
-
-#landing-login-link {
-	color: #fff;
+	color: #ffffff;
+	font-size: 1.5em;
+	font-weight: 700;
+	margin-left: 1.3em;
 }
 
 #upload-file-button {

@@ -129,18 +129,18 @@ class Landing extends Component {
 
     return(
 
-      <div className="container-fluid section-container parallax d-flex" id="landing-section">
+      <div className="container-fluid section-container parallax" id="landing-section">
             
           <div className="row" id="landing-row">
             
-            <div className="col-md align-self-center" id="landing-section-left">
-              <img src={ require("./static/landing_image.png") } alt="landing" id="landing-image" />
+            <div className="col-md d-flex align-self-center justify-content-center" id="landing-section-left">
+              <img src={ require("./static/landing_img.png") } alt="landing" id="landing-image" />
             </div>
 
-            <div className="col-md align-self-center" id="landing-section-right">
+            <div className="col-md align-self-center justify-content-center" id="landing-section-right">
       
-              <div className="row" id="landing-text-container">
-                <p id="landing-text">
+              <div className="row d-flex" id="landing-text-container">
+                <p className="d-flex justify-content-center" id="landing-text">
                 
                   { landingText }
 
@@ -148,21 +148,21 @@ class Landing extends Component {
               </div>
 
               <div className="row">
-                <a href="#" className="btn btn-primary btn-lg btn-block" id="demo-button"> 
+                <a href="#" className="btn btn-outline-light btn-lg btn-block" id="demo-button"> 
                   Try Demo 
                 </a>
               </div>
 
-              <div className="row">
-                <a href="#" className="btn btn-outline-primary btn-lg btn-block" id="landing-register-button">
+              <div className="row justify-content-center">
+              
+                <a href="#" className="col-md btn btn-outline-light btn-lg" id="landing-register-button">
                   Sign Up
                 </a>
-              </div>
-
-              <div className="row justify-content-center">
-                <a href="#" alt="" id="landing-login-link"> 
+              
+                <a href="#" className="col-md btn btn-outline-light btn-lg" id="landing-login-button">
                   Log In
                 </a>
+              
               </div>
 
             </div>
