@@ -160,7 +160,7 @@ class Landing extends Component {
                 </a>
               
                 <a href="#" className="col-md btn btn-outline-light btn-lg" id="landing-login-button">
-                  Log In
+                  Log In PAGE REACT ROUTER LINK
                 </a>
               
               </div>
@@ -179,7 +179,75 @@ class Landing extends Component {
 }
 
 class LoginPage extends Component {
-  
+
+  state = {
+    usernameInput: null,
+    passwordInput: null
+  }
+
+  login = (event) => {
+
+    event.preventDefault();
+
+    const baseURL = process.env.baseURL || "http://localhost:3001";
+
+    // send POST request to backend
+    axios.post(`${baseURL}/api/login`, {
+    // axios.post("/api/login", { 
+          user: this.state.usernameInput,
+          password: this.state.passwordInput
+        })
+        .then(response => response.data)
+        .then(data => {
+          if (data.success) {
+            // change app state 
+            console.log("user:", this.state.usernameInput);
+            console.log("user's file records:", data.fileRecordsArray);
+
+            // send data up to App parent component 
+            this.props.handleLoginModule(this.state.usernameInput, data.fileRecordsArray, true);
+
+          } else {
+            // cannot find user
+            console.log(data.error);
+
+            // send data up to App parent component 
+            this.props.handleLoginModule(data.user, data.fileRecordsArray, false);
+          };
+        })
+        .catch(error => console.log("sign in error:", error));
+    
+
+  }
+
+  render() {
+    return(
+
+
+      <div className="container-fluid">
+
+        <form className="form-inline" id="login-page-form" onSubmit={this.login}>
+
+          <div className="row">
+
+          <input type="text" className="form-control form-control-lg col-sm " id="login-page-username" placeholder="username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />             
+
+          <input type="password" className="form-control form-control-lg col-sm" id="login-page-password" placeholder="password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+
+          <button type="submit" className="btn btn-primary col-sm">
+            SIGN IN 
+          </button>
+
+          <button type="button" className="col-sm" id="login-page-register-button" onClick={ }> Register PAGE </button>
+
+          </div>
+
+        </form>
+    
+      </div>
+
+    )
+  }
 }
 
 class ListContainer extends Component {
