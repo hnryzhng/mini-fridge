@@ -8,7 +8,6 @@
 	width: 100%;
 }
 
-
 .navbar-nav {
 	width: 100%;
 }
@@ -94,14 +93,33 @@
 	background-size: cover;
 }
 
+#landing-row {
+	height: 100%;
+}
+
+#landing-image {
+	width: 80%;
+}
+
+#landing-text-container {
+	margin-bottom: 1.6em;
+}
+
+#landing-text {
+	font-size: 1.8em
+}
 
 
-
+#landing-section a {
+	margin-bottom: 1.2em;
+	border-radius: 1em;
+	font-size: 1.5em;
+}
 
 #upload-file-button {
 	background-color: #3a4ddf;
 	color: white;
-}	
+}
 
 #upload-file-container {
 	margin: 0 auto;

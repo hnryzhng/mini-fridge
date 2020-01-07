@@ -123,7 +123,7 @@ class Landing extends Component {
     const landingText = `
 
       Get your very own mini cloud. Our service is perfect for saving small files such 
-      as Word docs so you can access them anywhere.
+      as Word docs so you can access them wherever you are.
 
     `
 
@@ -131,15 +131,15 @@ class Landing extends Component {
 
       <div className="container-fluid section-container parallax d-flex" id="landing-section">
             
-          <div className="row align-self-center">
+          <div className="row" id="landing-row">
             
-            <div className="col-md" id="landing-section-left">
-              <img src="" alt="" />LANDING IMAGE
+            <div className="col-md align-self-center" id="landing-section-left">
+              <img src={ require("./static/landing_image.png") } alt="landing" id="landing-image" />
             </div>
 
-            <div className="col-md" id="landing-section-right">
+            <div className="col-md align-self-center" id="landing-section-right">
       
-              <div className="row">
+              <div className="row" id="landing-text-container">
                 <p id="landing-text">
                 
                   { landingText }
@@ -148,20 +148,20 @@ class Landing extends Component {
               </div>
 
               <div className="row">
-                <button href="#" className="btn btn-primary w-100"> 
-                  TRY DEMO 
-                </button>
+                <a href="#" className="btn btn-primary btn-lg btn-block" id="demo-button"> 
+                  Try Demo 
+                </a>
               </div>
 
               <div className="row">
-                <button href="#" className="btn btn-secondary w-100">
-                  SIGN UP ROUTER PAGE
-                </button>
+                <a href="#" className="btn btn-outline-primary btn-lg btn-block" id="landing-register-button">
+                  Sign Up ROUTER PAGE
+                </a>
               </div>
 
               <div className="row justify-content-center">
                 <a href="#" alt=""> 
-                  Sign In ROUTER PAGE
+                  Log In ROUTER PAGE
                 </a>
               </div>
 
