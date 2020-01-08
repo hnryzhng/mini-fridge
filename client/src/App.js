@@ -96,6 +96,10 @@ class App extends Component {
 
         { showComponent }
 
+        // react router
+        // show component should be a route? while login and register pages are separate routes
+        // can I define route here, and put link in child component?
+
       </div>
     );
   }
