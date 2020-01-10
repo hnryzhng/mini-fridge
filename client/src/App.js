@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import axios from 'axios';
 import "./styles.css" // import CSS stylesheet
 
@@ -85,26 +86,86 @@ class App extends Component {
     if (this.state.loggedIn) {
       showComponent = <UserModule { ... this.state } handleFileUploadComponent={ this.handleFileUploadComponent } handleFileRecordsUpdate={ this.handleFileRecordsUpdate } />;
     } else {
-      showComponent = <Landing />;
+      showComponent = <RoutesComponent { ...this.state } handleLoginModule={this.handleLoginModule} handleRegisterModule={this.handleRegisterModule}/>
     }
 
 
     return (
-      <div>
-        
-        <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} handleRegisterModule={this.handleRegisterModule} handleSignOut={this.handleSignOut} />
+      <Router>
+        <div>
 
-        { showComponent }
+          <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} handleRegisterModule={this.handleRegisterModule} handleSignOut={this.handleSignOut} />
 
-        // react router
-        // show component should be a route? while login and register pages are separate routes
-        // can I define route here, and put link in child component?
 
-      </div>
+
+          { showComponent }
+
+          <ul>
+            <li><Link to={'/register-page'}>Register</Link></li>
+            <li><Link to={'/login-page'}>Login</Link></li>
+          </ul>
+
+
+
+
+        </div>
+
+
+
+
+      </Router>
     );
   }
 }
 
+class TestComponent1 extends Component {
+
+  render() {
+    return(
+
+      <div className="container-fluid section-container parallax" id="test-section">
+            
+          <p>ThIs iS a TeSt 1 ONEE!</p>
+
+
+      </div>
+
+    )
+  }
+
+}
+
+class TestComponent2 extends Component {
+
+  render() {
+    return(
+
+      <div className="container-fluid section-container parallax" id="test-section">
+            
+          <p>ThIs iS a TeSt 2 TWOO!</p>
+
+
+      </div>
+
+    )
+  }
+
+}
+
+class RoutesComponent extends Component {
+  render() {
+    return(
+
+      <Switch> 
+        <Route exact path='/' component={ Landing } />
+        <Route exact path='/register-page' render={(props)=> <RegisterPage { ...props } handleRegisterModule={this.props.handleRegisterModule} /> } />
+        <Route exact path='/login-page' render={(props)=> <LoginPage { ...props } handleLoginModule={this.props.handleLoginModule} /> } />
+
+      </Switch>
+
+    )
+  }
+}
 
 class UserModule extends Component {
   render() {
@@ -159,14 +220,18 @@ class Landing extends Component {
 
               <div className="row justify-content-center">
               
-                <a href="#" className="col-md btn btn-outline-light btn-lg" id="landing-register-button">
-                  Sign Up
-                </a>
+                  <a href="#" className="col-md btn btn-outline-light btn-lg" id="landing-register-button">
+                  </a>
+                <Link to="/register-page">
+                    Sign Up
+                </Link>
               
-                <a href="#" className="col-md btn btn-outline-light btn-lg" id="landing-login-button">
-                  Log In
-                </a>
-              
+                  <a href="#" className="col-md btn btn-outline-light btn-lg" id="landing-login-button">
+                  </a>
+                <Link to="/login-page">
+                    Log In
+                </Link>
+
               </div>
 
             </div>
@@ -193,7 +258,7 @@ class RegisterPage extends Component {
 
     event.preventDefault();
     
-    const baseURL = process.env.baseURL || "http://localhost:3001";
+    const baseURL = process.env.baseURL || "http://localhost:3001";      
 
     // send POST request
     axios.post(`${baseURL}/api/register`, {
@@ -280,6 +345,9 @@ class LoginPage extends Component {
 
             // send data up to App parent component 
             this.props.handleLoginModule(data.user, data.fileRecordsArray, false);
+
+            this.props.history.push('/')  // uses React Router to navigate back to homepage route after login
+
           };
         })
         .catch(error => console.log("sign in error:", error));
