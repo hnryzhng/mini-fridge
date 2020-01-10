@@ -96,61 +96,15 @@ class App extends Component {
 
           <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} handleRegisterModule={this.handleRegisterModule} handleSignOut={this.handleSignOut} />
 
-
-
           { showComponent }
 
-          <ul>
-            <li><Link to={'/register-page'}>Register</Link></li>
-            <li><Link to={'/login-page'}>Login</Link></li>
-          </ul>
-
-
-
-
         </div>
-
-
-
 
       </Router>
     );
   }
 }
 
-class TestComponent1 extends Component {
-
-  render() {
-    return(
-
-      <div className="container-fluid section-container parallax" id="test-section">
-            
-          <p>ThIs iS a TeSt 1 ONEE!</p>
-
-
-      </div>
-
-    )
-  }
-
-}
-
-class TestComponent2 extends Component {
-
-  render() {
-    return(
-
-      <div className="container-fluid section-container parallax" id="test-section">
-            
-          <p>ThIs iS a TeSt 2 TWOO!</p>
-
-
-      </div>
-
-    )
-  }
-
-}
 
 class RoutesComponent extends Component {
   render() {
@@ -220,15 +174,11 @@ class Landing extends Component {
 
               <div className="row justify-content-center">
               
-                  <a href="#" className="col-md btn btn-outline-light btn-lg" id="landing-register-button">
-                  </a>
-                <Link to="/register-page">
+                <Link to="/register-page" className="col-md btn btn-outline-light btn-lg" id="landing-register-button">
                     Sign Up
                 </Link>
               
-                  <a href="#" className="col-md btn btn-outline-light btn-lg" id="landing-login-button">
-                  </a>
-                <Link to="/login-page">
+                <Link to="/login-page" className="col-md btn btn-outline-light btn-lg" id="landing-login-button">
                     Log In
                 </Link>
 
