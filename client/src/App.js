@@ -309,23 +309,27 @@ class LoginPage extends Component {
     return(
 
 
-      <div className="container-fluid">
+      <div className="container-fluid d-flex" id="login-page-container">
 
-        <form className="form-inline" id="login-page-form" onSubmit={this.login}>
+        <form className="form-inline align-self-center" id="login-page-form" onSubmit={this.login}>
 
-          <div className="row">
+            <div className="row">
+              <input type="text" className="form-control form-control-lg col-md" id="login-page-username" placeholder="username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />             
+            </div>
 
-          <input type="text" className="form-control form-control-lg col-sm " id="login-page-username" placeholder="username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />             
+            <div className="row">
+              <input type="password" className="form-control form-control-lg col-md" id="login-page-password" placeholder="password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+            </div>
 
-          <input type="password" className="form-control form-control-lg col-sm" id="login-page-password" placeholder="password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+            <div className="row mt-3">
+  
+              <button type="submit" className="btn btn-primary col-sm">
+                SIGN IN 
+              </button>
 
-          <button type="submit" className="btn btn-primary col-sm">
-            SIGN IN 
-          </button>
+              <button type="button" className="col-sm btn btn-link" id="login-page-register-button"> Register PAGE </button>
 
-          <button type="button" className="col-sm" id="login-page-register-button"> Register PAGE </button>
-
-          </div>
+            </div>
 
         </form>
     
