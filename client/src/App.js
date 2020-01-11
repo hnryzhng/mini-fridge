@@ -204,7 +204,9 @@ class RegisterPage extends Component {
 
     event.preventDefault();
     
-    const baseURL = process.env.baseURL || "http://localhost:3001";      
+    const production = "https://mini-fridge.herokuapp.com";
+    const development = "http://localhost:3001";
+    const baseURL = (process.env.NODE_ENV? production: development);
 
     // send POST request
     axios.post(`${baseURL}/api/register`, {
@@ -285,7 +287,9 @@ class LoginPage extends Component {
 
     event.preventDefault();
 
-    const baseURL = process.env.baseURL || "http://localhost:3001";
+    const production = "https://mini-fridge.herokuapp.com";
+    const development = "http://localhost:3001";
+    const baseURL = (process.env.NODE_ENV? production: development);
 
     // send POST request to backend
     axios.post(`${baseURL}/api/login`, {
@@ -501,8 +505,10 @@ class LoginModule extends Component {
 
     event.preventDefault();
 
-    const baseURL = "https://mini-fridge.herokuapp.com" || "http://localhost:3001";
-
+    const production = "https://mini-fridge.herokuapp.com";
+    const development = "http://localhost:3001";
+    const baseURL = (process.env.NODE_ENV? production: development);
+    
     // send POST request to backend
     axios.post(`${baseURL}/api/login`, {
     // axios.post("/api/login", { 
@@ -592,7 +598,9 @@ class RegisterModule extends Component {
 
     event.preventDefault();
     
-    const baseURL = "https://mini-fridge.herokuapp.com" || "http://localhost:3001";
+    const production = "https://mini-fridge.herokuapp.com";
+    const development = "http://localhost:3001";
+    const baseURL = (process.env.NODE_ENV? production: development);
 
     // send POST request
     axios.post(`${baseURL}/api/register`, {
@@ -851,7 +859,9 @@ class UploadFileForm extends Component {
 			formDataObj.append("fileName", fileName);
 			formDataObj.append("fileData", fileData);
 
-			const baseURL = process.env.baseURL || "http://localhost:3001";
+      const production = "https://mini-fridge.herokuapp.com";
+      const development = "http://localhost:3001";
+      const baseURL = (process.env.NODE_ENV? production:development);
 
 			axios.post(`${baseURL}/api/uploadFileGridFS`, formDataObj)
 			//axios.post("/api/uploadFileGridFS", formDataObj)
