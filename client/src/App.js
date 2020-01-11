@@ -501,7 +501,7 @@ class LoginModule extends Component {
 
     event.preventDefault();
 
-    const baseURL = process.env.baseURL || "http://localhost:3001";
+    const baseURL = "https://mini-fridge.herokuapp.com" || "http://localhost:3001";
 
     // send POST request to backend
     axios.post(`${baseURL}/api/login`, {
@@ -592,7 +592,7 @@ class RegisterModule extends Component {
 
     event.preventDefault();
     
-    const baseURL = process.env.baseURL || "http://localhost:3001";
+    const baseURL = "https://mini-fridge.herokuapp.com" || "http://localhost:3001";
 
     // send POST request
     axios.post(`${baseURL}/api/register`, {
