@@ -508,7 +508,9 @@ class LoginModule extends Component {
     const production = "https://mini-fridge.herokuapp.com";
     const development = "http://localhost:3001";
     const baseURL = (process.env.NODE_ENV? production: development);
-    
+
+    console.log("process.env.node_env:", process.env.NODE_ENV);
+
     // send POST request to backend
     axios.post(`${baseURL}/api/login`, {
     // axios.post("/api/login", { 
@@ -1025,7 +1027,10 @@ class Item extends Component {
 
     console.log("standalone download function:", user, ",", fId, ",", fName);
     
-    const baseURL = process.env.baseURL || "http://localhost:3001";
+    const production = "https://mini-fridge.herokuapp.com";
+    const development = "http://localhost:3001";
+    const baseURL = (process.env.NODE_ENV? production: development);
+
     const reqUrl = `${baseURL}/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
 
     axios(reqUrl, {
@@ -1059,7 +1064,10 @@ class Item extends Component {
 
     console.log("standalone delete function:", user, ",", fId);
 
-    const baseURL = process.env.baseURL || "http://localhost:3001";
+    const production = "https://mini-fridge.herokuapp.com";
+    const development = "http://localhost:3001";
+    const baseURL = (process.env.NODE_ENV? production: development);
+
     axios.get(`${baseURL}/api/deleteFileGridFS`, {
             params: {
               user: user, 
