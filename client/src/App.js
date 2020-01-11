@@ -166,18 +166,14 @@ class Landing extends Component {
                 </p>
               </div>
 
-              <div className="row">
-                <a href="#" className="btn btn-outline-light btn-lg btn-block" id="demo-button"> 
-                  Try Demo 
-                </a>
-              </div>
-
               <div className="row justify-content-center">
               
                 <Link to="/register-page" className="col-md btn btn-outline-light btn-lg" id="landing-register-button">
                     Sign Up
                 </Link>
-              
+              </div>
+
+              <div className="row justify-content-center">              
                 <Link to="/login-page" className="col-md btn btn-outline-light btn-lg" id="landing-login-button">
                     Log In
                 </Link>
@@ -258,7 +254,7 @@ class RegisterPage extends Component {
           </div>
 
           <div className="row">            
-            <button type="submit" className="btn btn-primary col-sm">
+            <button type="submit" className="btn btn-primary col-sm mt-3">
               REGISTER 
             </button>
           </div>
