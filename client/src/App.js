@@ -509,8 +509,6 @@ class LoginModule extends Component {
     const development = "http://localhost:3001";
     const baseURL = (process.env.NODE_ENV? production: development);
 
-    console.log("process.env.node_env:", process.env.NODE_ENV);
-
     // send POST request to backend
     axios.post(`${baseURL}/api/login`, {
     // axios.post("/api/login", { 
