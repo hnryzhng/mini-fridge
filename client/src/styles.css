@@ -144,15 +144,16 @@
 	font-weight: 500;
 }
 
-#login-page-container {
+#login-page-container, #register-page-container {
 	height: 100vh;
 	background-color: #f2f2f2;
 }
 
-#login-page-form {
+#login-page-form, #register-page-form {
 	margin: 0 auto;
 	width: 50%;
 }
+
 
 #register-page-container {
 }

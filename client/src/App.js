@@ -224,6 +224,7 @@ class RegisterPage extends Component {
             // send data back to App component
             this.props.handleRegisterModule(this.state.user, true);
 
+            this.props.history.push('/')  // uses React Router to navigate back to homepage route after successful registration
 
           } else {      
             console.log("registration failed");
@@ -240,16 +241,33 @@ class RegisterPage extends Component {
   render() {
     return(
 
-      <div id="register-page-container">
+      <div className="container-fluid d-flex" id="register-page-container">
 
-        <form style={{ border: "1px solid blue"}} onSubmit={ this.register }>
+        <form className="form-inline align-self-center" id="register-page-form" onSubmit={ this.register }>
 
-          <input type="text" style={{ width: "300px" }} placeholder="type new username" name="username" onChange= {event=>this.setState({user: event.target.value})} />
-          <input type="password" style={{ width: "300px" }} placeholder="type new password" name="password" onChange= {event=>this.setState({password: event.target.value})} />
-          <input type="password" style={{ width: "300px" }} placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({passwordConfirm: event.target.value})} />
-          <button type="submit">
-            REGISTER 
-          </button>
+          <div className="row">
+            <input type="text" className="form-control form-control-lg col-md" placeholder="type new username" name="username" onChange= {event=>this.setState({user: event.target.value})} />
+          </div>
+
+          <div className="row">
+            <input type="password" className="form-control form-control-lg col-md" placeholder="type new password" name="password" onChange= {event=>this.setState({password: event.target.value})} />
+          </div>
+
+          <div className="row">
+            <input type="password" className="form-control form-control-lg col-md" placeholder="confirm new password" name="passwordConfirm" onChange= {event=>this.setState({passwordConfirm: event.target.value})} />
+          </div>
+
+          <div className="row">            
+            <button type="submit" className="btn btn-primary col-sm">
+              REGISTER 
+            </button>
+          </div>
+
+          <div className="row">
+            <Link to="/login-page" className="col-sm btn btn-link" id="register-page-login-button"> 
+              Login 
+            </Link>
+          </div>
 
         </form>
 
@@ -289,6 +307,8 @@ class LoginPage extends Component {
             // send data up to App parent component 
             this.props.handleLoginModule(this.state.usernameInput, data.fileRecordsArray, true);
 
+            this.props.history.push('/')  // uses React Router to navigate back to homepage route after successful login
+
           } else {
             // cannot find user
             console.log(data.error);
@@ -296,7 +316,6 @@ class LoginPage extends Component {
             // send data up to App parent component 
             this.props.handleLoginModule(data.user, data.fileRecordsArray, false);
 
-            this.props.history.push('/')  // uses React Router to navigate back to homepage route after login
 
           };
         })
@@ -322,13 +341,13 @@ class LoginPage extends Component {
             </div>
 
             <div className="row mt-3">
-  
               <button type="submit" className="btn btn-primary col-sm">
                 SIGN IN 
               </button>
+            </div>
 
-              <button type="button" className="col-sm btn btn-link" id="login-page-register-button"> Register PAGE </button>
-
+            <div className="row">
+              <Link to="/register-page" className="col-sm btn btn-link" id="login-page-register-button"> Register </Link>
             </div>
 
         </form>
