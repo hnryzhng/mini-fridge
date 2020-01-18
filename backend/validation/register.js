@@ -23,7 +23,7 @@ const validateRegisterInput = function(data) {
 		errors.passwordConfirm = "Please type password again for confirmation";
 	}
 
-	if (!Validator.isLength(data.password, { min: 8, max: 30} )) {
+	if (!Validator.isLength(data.password, { min: 1, max: 30} )) {
 		errors.password = "Your password must be between 8 to 30 characters";
 	}
 

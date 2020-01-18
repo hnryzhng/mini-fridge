@@ -195,10 +195,38 @@ class Landing extends Component {
 
 class RegisterPage extends Component {
   state = {
-    user: null,
-    password: null,
-    passwordConfirm: null,
+    user: "",
+    password: "",
+    passwordConfirm: "",
   };
+
+  validateInput(user, password, passwordConfirm) {
+  	// checks register input fields
+
+  	// check if any empty fields 
+  	if (user.length === 0 || password.length === 0 || passwordConfirm.length === 0) {
+  		alert("all fields must be filled out");
+  		return false;
+  	}
+
+  	// check password length
+  	const minLength = 6
+  	const maxLength = 30
+  	if (password.length < minLength || password.length > maxLength ) {
+  		alert("password must be between 6 and 30 characters");
+  		return false;
+  	}
+
+  	// check if password fields match
+  	if (password !== passwordConfirm) {
+  		alert("password and password confirmation must match");
+  		return false;
+  	}
+
+  	// returns true if no validation errors in checks above
+  	return true;
+
+  }
 
   register = (event) => {
 
@@ -208,32 +236,38 @@ class RegisterPage extends Component {
     const development = "http://localhost:3001";
     const baseURL = (process.env.NODE_ENV? production: development);
 
-    // send POST request
-    axios.post(`${baseURL}/api/register`, {
-            user: this.state.user,
-            password: this.state.password,
-            passwordConfirm: this.state.passwordConfirm
-        })
-        .then(response => response.data)
-        .then(data => {
-          if (data.success) {
-            console.log("new user registered!");
-            
-            // send data back to App component
-            this.props.handleRegisterModule(this.state.user, true);
+    const { user, password, passwordConfirm } = this.state;
 
-            this.props.history.push('/')  // uses React Router to navigate back to homepage route after successful registration
+    const isValid = this.validateInput(user, password, passwordConfirm);
 
-          } else {      
-            console.log("registration failed");
-            console.log(data.error);
+    if (isValid) {
+	    // send POST request
+	    axios.post(`${baseURL}/api/register`, {
+	            user: this.state.user,
+	            password: this.state.password,
+	            passwordConfirm: this.state.passwordConfirm
+	        })
+	        .then(response => response.data)
+	        .then(data => {
+	          if (data.success) {
+	            console.log("new user registered!");
+	            
+	            // send data back to App component
+	            this.props.handleRegisterModule(this.state.user, true);
 
-            // send data back to App component
-            this.props.handleRegisterModule(null, false);
+	            this.props.history.push('/')  // uses React Router to navigate back to homepage route after successful registration
 
-          }
-        })
-        .catch(err => console.log("registration error:", err));
+	          } else {      
+	            console.log("registration failed");
+	            console.log(data.error);
+
+	            // send data back to App component
+	            this.props.handleRegisterModule(null, false);
+
+	          }
+	        })
+	        .catch(err => console.log("registration error:", JSON.stringify(err.errors)));
+	    };
   }
 
   render() {
@@ -588,11 +622,39 @@ class SignOutButton extends Component {
 class RegisterModule extends Component {
 
   state = {
-    user: null,
-    password: null,
-    passwordConfirm: null,
+    user: "",
+    password: "",
+    passwordConfirm: "",
     show: false
   };
+
+  validateInput(user, password, passwordConfirm) {
+  	// checks register input fields
+
+  	// check if any empty fields 
+  	if (user.length === 0 || password.length === 0 || passwordConfirm.length === 0) {
+  		alert("all fields must be filled out");
+  		return false;
+  	}
+
+  	// check password length
+  	const minLength = 6
+  	const maxLength = 30
+  	if (password.length < minLength || password.length > maxLength ) {
+  		alert("password must be between 6 and 30 characters");
+  		return false;
+  	}
+
+  	// check if password fields match
+  	if (password !== passwordConfirm) {
+  		alert("password and password confirmation must match");
+  		return false;
+  	}
+
+  	// returns true if no validation errors in checks above
+  	return true;
+
+  }
 
   register = (event) => {
 
@@ -602,31 +664,37 @@ class RegisterModule extends Component {
     const development = "http://localhost:3001";
     const baseURL = (process.env.NODE_ENV? production: development);
 
-    // send POST request
-    axios.post(`${baseURL}/api/register`, {
-            user: this.state.user,
-            password: this.state.password,
-            passwordConfirm: this.state.passwordConfirm
-        })
-        .then(response => response.data)
-        .then(data => {
-          if (data.success) {
-            console.log("new user registered!");
-            
-            // send data back to App component
-            this.props.handleRegisterModule(this.state.user, true);
+    const { user, password, passwordConfirm } = this.state;
+
+	const isValid = this.validateInput(user, password, passwordConfirm);
+
+	if (isValid) {
+	    // send POST request
+	    axios.post(`${baseURL}/api/register`, {
+	            user: this.state.user,
+	            password: this.state.password,
+	            passwordConfirm: this.state.passwordConfirm
+	        })
+	        .then(response => response.data)
+	        .then(data => {
+	          if (data.success) {
+	            console.log("new user registered!");
+	            
+	            // send data back to App component
+	            this.props.handleRegisterModule(this.state.user, true);
 
 
-          } else {      
-            console.log("registration failed");
-            console.log(data.error);
+	          } else {      
+	            console.log("registration failed");
+	            console.log(data.error);
 
-            // send data back to App component
-            this.props.handleRegisterModule(null, false);
+	            // send data back to App component
+	            this.props.handleRegisterModule(null, false);
 
-          }
-        })
-        .catch(err => console.log("registration error:", err));
+	          }
+	        })
+	        .catch(err => console.log("registration error:", err));
+	};
   }
 
   sendToParent = () => {

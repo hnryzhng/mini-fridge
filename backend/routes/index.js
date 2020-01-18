@@ -566,13 +566,6 @@ router.post("/register", (req, res) => {
 	console.log("register raw password:", password);
 	console.log("register raw password confirm:", passwordConfirm);
 
-	// validate user inputs
-	const { errors, isValid } = validateRegisterInput(req.body)	// validates user, password, passwordConfirm
-
-	if (!isValid) {
-		return res.status(400).json(errors);
-	}
-
 	Users.findOne({ user: username }).then(doc => {
 		if (doc) {
 			console.log("there is already a user with this username");
