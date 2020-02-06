@@ -797,15 +797,16 @@ class NavigationMenu extends Component {
   render() {
     return(
 
-      <div className="container-fluid">
-        <div className="d-md-flex justify-content-end" id="navigation-menu-container">  	
+      
+        <div className="container-fluid d-md-flex justify-content-end" id="navigation-menu-container">  	
 
           <div className="" id="navigation-menu">  					
   		      <ul className="navbar-nav">
 
   		        <li className="nav-item dropdown">
+
   		          <button type="button" className="nav-link dropdown-toggle btn btn-link" href="#" id="nav-dropdown-link" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-  		            Hey {this.props.user}
+    		        <p id="nav-dropdown-text"> Hey {this.props.user} </p>
   		          </button>
 
   		          <div className="dropdown-menu" aria-labelledby="navbar-dropdown-menu-link">
@@ -819,7 +820,7 @@ class NavigationMenu extends Component {
   	      </div>
 
       	</div>
-      </div>
+      
     )
   }
 }
@@ -1173,9 +1174,9 @@ class Item extends Component {
     	<div className="container list-group-item list-group-item-action">
         <div className="row">
     		  
-        <button type="button" className="col-sm-8 btn btn-link"><li id={ fileId } className="file-list-item"> { this.props.fileName } </li></button>
-    	<button type="button" className="col-sm-2 btn btn-link"><img src={ require("./static/icons/delete.png") } className="delete-icon icon" alt="DELETE" onClick={ () => { this.del(user, fileId, fileRecordsArray) } } /></button>
-        <button type="button" className="col-sm-2 btn btn-link"><img src={ require("./static/icons/download.png") } className="download-icon icon" alt="DOWNLOAD" onClick={ () => { this.dLoad(user, fileId, fileName) } } /></button>
+        <button type="button" className="col-md-8 btn btn-link"><li id={ fileId } className="file-list-item"> { this.props.fileName } </li></button>
+    	  <button type="button" className="col-md-2 btn btn-link"><img src={ require("./static/icons/delete.png") } className="delete-icon icon" alt="DELETE" onClick={ () => { this.del(user, fileId, fileRecordsArray) } } /></button>
+        <button type="button" className="col-md-2 btn btn-link"><img src={ require("./static/icons/download.png") } className="download-icon icon" alt="DOWNLOAD" onClick={ () => { this.dLoad(user, fileId, fileName) } } /></button>
 
         <a href="#" id="download-tag" ref={ this.a } >DOWNLOAD LINK</a> 
 

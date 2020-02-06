@@ -28,7 +28,11 @@
 }
 
 #nav-dropdown-link {
-	font-size: 1.5em
+	font-size: 1.2em;
+}
+
+#nav-dropdown-text {
+	margin-bottom: 0em;
 }
 
 #logo-container {
@@ -230,3 +234,50 @@
 .opaque {
 	opacity: 0.8;
 }
+
+@media only screen and (max-width: 768px) {
+	/* mobile screens only */
+	
+	#logo-container {
+		margin: 0 auto;
+	}
+
+	#login-register-module-container {
+		display: none;
+	}
+
+	#landing-section {
+		padding-top: 8em;
+		overflow: auto;	/* to contain elements that are not within view */
+	}
+
+	#landing-row {
+		width: 100vw;
+	}
+
+	#landing-text {
+		font-size: 1.5em;
+	}
+
+
+	#nav-dropdown-link {
+		font-size: 2.5em;
+		position: relative;
+		bottom: 1.6em;
+	}
+
+	#nav-dropdown-text {
+		display: none;
+	}
+
+	#upload-file-container {
+		width: 80vw;
+	}
+
+	#list-container {
+		width: 80vw;
+	}
+
+
+
+};
