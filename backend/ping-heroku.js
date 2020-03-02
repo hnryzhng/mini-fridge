@@ -6,7 +6,7 @@ var http = require('http');
 
 function pingHeroku(appUrl, pingInterval) {
 	setInterval(function() {
-		http.get(appUrl);	// url: https://hospital-cost-map.herokuapp.com/
+		http.get(appUrl);	
 	}, pingInterval);	// interval between pings in milliseconds
 };
 

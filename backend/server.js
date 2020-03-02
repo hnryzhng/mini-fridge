@@ -9,8 +9,8 @@ const path = require("path");
 require("dotenv").config();
 
 // ping Heroku
-// const pingHeroku = require(path.join(__dirname, "/ping-heroku.js"));
-// pingHeroku("https://mini-fridge.herokuapp.com", 900000);	// every 900 seconds, or 15 minutes
+const pingHeroku = require(path.join(__dirname, "/ping-heroku.js"));
+pingHeroku("https://mini-fridge.herokuapp.com", 1799000);	// every 1799 seconds, or almost 30 minutes (1800 sec)
 
 // INSTANTIATE APP 	
 const app = express();
