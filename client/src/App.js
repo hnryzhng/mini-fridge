@@ -280,7 +280,7 @@ class RegisterPage extends Component {
         {	
         	alert(
 	          		"If you want to try out the demo version, use the following to SIGN IN: " +
-	          		"USERNAME: testuser | " + 
+	          		"USERNAME: testuser " + 
 	          		"PASSWORD: testuser123"
           		)
 		}
@@ -889,7 +889,7 @@ class UploadFileForm extends Component {
 		const fileName = ((fileData)? fileData.name: null);
 		const user = this.props.user;
 		const loggedIn = this.props.loggedIn;
-    const fileRecordsArray = this.props.fileRecordsArray;
+    	const fileRecordsArray = this.props.fileRecordsArray;
 
 		// multer + react: https://blog.stvmlbrn.com/2017/12/17/upload-files-using-react-to-node-express-server.html
 		event.preventDefault();
@@ -943,7 +943,6 @@ class UploadFileForm extends Component {
 			const baseURL = (process.env.NODE_ENV? production:development);
 
 			axios.post(`${baseURL}/api/uploadFileGridFS`, formDataObj)
-			//axios.post("/api/uploadFileGridFS", formDataObj)
 			      .then(response => response.data) 
 			      .then(data => {
 			        if (data.success) {
@@ -952,11 +951,15 @@ class UploadFileForm extends Component {
 			          // send file name back to parent to update fileRecordsArray
 			          this.props.handleFileUploadComponent(data, true);
 
-                // reset states to no file
-                this.clearFileUploadStates();
+                	// reset states to no file
+                	this.clearFileUploadStates();
 
 			        } else {
 			          console.log("error: trouble uploading your file");
+			          console.log("DATA:", data);
+
+			          alert(data.error);
+
 			          this.props.handleFileUploadComponent(null, false);
 
                 // reset states to no file

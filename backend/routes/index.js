@@ -85,10 +85,14 @@ router.post("/uploadFileGridFS", upload.single('fileData'), (req, res) => {
 			// file validation: users have no more than numFiles
 			const numFiles = 5;
 			if (userDoc.file_records.length >= numFiles) {
+				
 				console.log(`${userDoc.user} has 5 files already`);
 				
-				res.json({success: false});
-				return	// terminates this function
+				res.json({
+					success: false,
+					error: "You've already reached the limit of 5 files. Please delete files if you want to upload more."
+				});
+				// return	// terminates this function
 			}
 			
 			// save file info to user collection
@@ -342,7 +346,9 @@ router.post("/uploadFile", (req, res) => {
 					unlinkAsync(file.path);
 					console.log(`deleted ${fileRecord._id} from files directory`)
 
-					res.json({success: false});
+					res.json({
+						success: false
+					});
 					return	// terminates this function
 				}
 				
