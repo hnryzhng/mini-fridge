@@ -1,8 +1,5 @@
 const express = require("express");
 const mongoose = require("mongoose");
-// const bodyParser = require("body-parser");
-// const logger = require("morgan");
-// const cors = require("cors");
 const multer = require("multer");	// package for processing binary data of uploaded files
 const uuid = require("uuid-v4");
 const path = require("path");
@@ -23,13 +20,6 @@ const validateLoginInput = require(path.join(__dirname, "/../", "/validation/log
 const bcrypt = require("bcryptjs");	// password encryption
 const jwt = require("jsonwebtoken");	// validating endpoint transmissions 
 const keys  = require(path.join(__dirname, "/../", "/config/keys.js"));	// holds keys
-
-// load environment variables
-// require("dotenv").config();
-
-// ping Heroku
-// const pingHeroku = require(path.join(__dirname, "/../", "/ping-heroku.js"));
-// pingHeroku("https://mini-fridge.herokuapp.com", 900000);	// every 900 seconds, or 15 minutes
 
 // GRIDFS
 let GridFsStorage = require("multer-gridfs-storage");
@@ -78,72 +68,60 @@ const upload = multer({ storage });	// name of file input field is 'fileData'
 
 router.post("/uploadFileGridFS", upload.single('fileData'), (req, res) => {
 
-	//upload(req, res, function(err) {
-		// request object is record in gfs file collection, bucketName 'uploads'
+	const file = req.file;
+	const fileId = file.filename;	// filename in gfs doc is file id
+	const username = req.body.user;
+	// console.log("req body", req.body);
+	console.log("request obj:", file);
+	console.log("user:", username);
+	console.log("file id:", fileId);
 
-		//if (err) {
-		//	console.log("GridFS file upload error");
-		//}
+	console.log("connected to database in route uploadFile");
 
-		// console.log("gridfs upload file request object: ", req);
+	Users
+		.findOne({user: username})
+		.then(userDoc => {
 
-		const file = req.file;
-		const fileId = file.filename;	// filename in gfs doc is file id
-		const username = req.body.user;
-		// console.log("req body", req.body);
-		console.log("request obj:", file);
-		console.log("user:", username);
-		console.log("file id:", fileId);
-
-		console.log("connected to database in route uploadFile");
-
-		Users
-			.findOne({user: username})
-			.then(userDoc => {
-
-				// file validation: users have no more than numFiles
-				const numFiles = 5;
-				if (userDoc.file_records.length >= numFiles) {
-					console.log(`${userDoc.user} has 5 files already`);
-					
-					res.json({success: false});
-					return	// terminates this function
-				}
+			// file validation: users have no more than numFiles
+			const numFiles = 5;
+			if (userDoc.file_records.length >= numFiles) {
+				console.log(`${userDoc.user} has 5 files already`);
 				
-				// save file info to user collection
-				const fileRec = {
-					file_id: fileId,
-					file_name: file.originalname
-				}
+				res.json({success: false});
+				return	// terminates this function
+			}
+			
+			// save file info to user collection
+			const fileRec = {
+				file_id: fileId,
+				file_name: file.originalname
+			}
 
-				// save file transaction record to user collection
-				const fileTransaction = {
-					file_id: fileId,
-					action: "UPLOAD"
-				}
+			// save file transaction record to user collection
+			const fileTransaction = {
+				file_id: fileId,
+				action: "UPLOAD"
+			}
 
-				userDoc.file_records.push(fileRec);
-				userDoc.file_transactions.push(fileTransaction);
-				
-				console.log(`${userDoc.user}'s user record: `, userDoc);
+			userDoc.file_records.push(fileRec);
+			userDoc.file_transactions.push(fileTransaction);
+			
+			console.log(`${userDoc.user}'s user record: `, userDoc);
 
-				userDoc
-					.save()
-					.then(console.log(`file id ${fileId} saved to user ${userDoc.user}`));
-				
-				var responseObj = {
-					success: true,
-					file_name: fileRec.file_name,
-					file_id: fileRec.file_id
-				}
+			userDoc
+				.save()
+				.then(console.log(`file id ${fileId} saved to user ${userDoc.user}`));
+			
+			var responseObj = {
+				success: true,
+				file_name: fileRec.file_name,
+				file_id: fileRec.file_id
+			}
 
-				res.json(responseObj);				
+			res.json(responseObj);				
 
-			})
-			.catch( err => console.log("error finding user to save file:", err));
-	
-	
-	//});
+		})
+		.catch( err => console.log("error finding user to save file:", err));
 
 });
 
@@ -569,7 +547,10 @@ router.post("/register", (req, res) => {
 	Users.findOne({ user: username }).then(doc => {
 		if (doc) {
 			console.log("there is already a user with this username");
-			return res.status(400).json({error: "there is already a user with this username"});
+			return res.json({
+						success: false,
+						error: "there is already a user with this username"
+					});
 		} else {		
 			// add user if existing user record not found
 			const userObj = {
