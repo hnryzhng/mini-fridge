@@ -149,14 +149,6 @@ class Landing extends Component {
 
     return(
       <div className="container-fluid section-container parallax" id="landing-section">
-
-          { 
-          	alert(
-	          		"If you want to try out the demo version, use the following login details: " +
-	          		"USERNAME: testuser | " + 
-	          		"PASSWORD: testuser123"
-          		)
-          }
             
           <div className="row" id="landing-row">
             
@@ -284,6 +276,14 @@ class RegisterPage extends Component {
     return(
 
       <div className="container-fluid d-flex" id="register-page-container">
+
+        {	
+        	alert(
+	          		"If you want to try out the demo version, use the following to SIGN IN: " +
+	          		"USERNAME: testuser | " + 
+	          		"PASSWORD: testuser123"
+          		)
+		}
 
         <form className="form-inline align-self-center" id="register-page-form" onSubmit={ this.register }>
 
