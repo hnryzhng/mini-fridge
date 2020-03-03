@@ -279,7 +279,7 @@ class RegisterPage extends Component {
 
         {	
         	alert(
-	          		"If you want to try out the demo version, use the following to SIGN IN: " +
+	          		"If you want to try out the demo version, use the following credentials to sign in instead of registering for an account: " +
 	          		"USERNAME: testuser " + 
 	          		"PASSWORD: testuser123"
           		)
