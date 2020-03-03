@@ -148,8 +148,15 @@ class Landing extends Component {
     `
 
     return(
-
       <div className="container-fluid section-container parallax" id="landing-section">
+
+          { 
+          	alert(
+	          		"If you want to try out the demo version, use the following login details: " +
+	          		"USERNAME: testuser | " + 
+	          		"PASSWORD: testuser123"
+          		)
+          }
             
           <div className="row" id="landing-row">
             
