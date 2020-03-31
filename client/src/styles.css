@@ -158,6 +158,12 @@
 }
 
 
+#demo-modal-close-button {
+	width: 70%;
+	margin: 0 auto;
+	margin-bottom: 2em;
+}
+
 #upload-file-button {
 	background-color: #3a4ddf;
 	color: white;

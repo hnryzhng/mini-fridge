@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import axios from 'axios';
-import "./styles.css" // import CSS stylesheet
 
+// import stylesheets
+import "./styles.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// import components
+import Footer from './components/Footer.js';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 
 class App extends Component {
 
@@ -100,6 +107,8 @@ class App extends Component {
           { showComponent }
 
         </div>
+          
+        <Footer />
 
       </Router>
     );
@@ -136,8 +145,47 @@ class UserModule extends Component {
   }
 }
 
+class DemoModal extends Component {
+  state = {
+    showModal: true
+  }
+
+  closeModal = () => {
+    this.setState({ showModal: false });
+  }
+
+  render(){
+    return(
+
+      <Modal id="demo-modal" show={ this.state.showModal } onHide={ this.closeModal } animation={ false } centered>
+        
+        <Modal.Header closeButton>
+          <h3>Demo</h3>
+        </Modal.Header>
+
+        <Modal.Body>
+          <p>If you want to try out this demo without registering for an account, use the credentials below to sign in:</p>
+          <p>Username: <b>testuser</b></p>
+          <p>Password: <b>testuser123</b></p>
+        </Modal.Body>
+
+        <Button id="demo-modal-close-button" variant="primary" onClick={ this.closeModal } >
+          Got it!
+        </Button>
+
+      </Modal>
+    )
+  }
+
+}
 
 class Landing extends Component {
+
+  state = {
+    showModal: true
+  }
+
+
   render() {
 
     const landingText = `
@@ -150,6 +198,8 @@ class Landing extends Component {
     return(
       <div className="container-fluid section-container parallax" id="landing-section">
             
+          <DemoModal />
+
           <div className="row" id="landing-row">
             
             <div className="col-md d-flex align-self-center justify-content-center" id="landing-section-left">
@@ -179,6 +229,7 @@ class Landing extends Component {
                 </Link>
 
               </div>
+
 
             </div>
 
@@ -277,13 +328,7 @@ class RegisterPage extends Component {
 
       <div className="container-fluid d-flex" id="register-page-container">
 
-        {	
-        	alert(
-	          		"If you want to try out the demo version, use the following credentials to sign in instead of registering for an account: " +
-	          		"USERNAME: testuser " + 
-	          		"PASSWORD: testuser123"
-          		)
-		}
+        <DemoModal />
 
         <form className="form-inline align-self-center" id="register-page-form" onSubmit={ this.register }>
 
@@ -373,6 +418,8 @@ class LoginPage extends Component {
 
 
       <div className="container-fluid d-flex" id="login-page-container">
+
+        <DemoModal />
 
         <form className="form-inline align-self-center" id="login-page-form" onSubmit={this.login}>
 
