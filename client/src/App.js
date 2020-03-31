@@ -18,7 +18,7 @@ class App extends Component {
     loggedIn: false,
     fileData: null,
     fileName: null,
-    fileRecordsArray: []
+    fileRecordsArray: [],
   };
 
   //componentWillMount() {
@@ -87,6 +87,8 @@ class App extends Component {
 
   }
 
+
+
   render() {
 
     let showComponent;
@@ -107,6 +109,8 @@ class App extends Component {
           { showComponent }
 
         </div>
+
+        <UploadFileModal loggedIn={this.state.loggedIn} />
           
         <Footer />
 
@@ -882,6 +886,48 @@ class NavigationMenu extends Component {
   }
 }
 
+class UploadFileModal extends Component {
+
+  state = {
+    showUploadFileModal: false
+  }
+
+  componentWillUpdate(prevProps, prevState) {
+    // show if logged in
+    // console.log("uploadfilemodal will update")
+    if (prevProps !== this.props) {
+      if (this.props.loggedIn) {
+        this.setState({ showUploadFileModal: true })
+      }
+    }
+  }
+
+  closeModal = () => {
+    this.setState({ showUploadFileModal: false });
+  }
+
+  render(){
+    return(
+
+      <Modal id="upload-file-modal" show={ this.state.showUploadFileModal } onHide={ this.closeModal } animation={ false } centered>
+
+        <Modal.Header closeButton>
+        </Modal.Header>
+
+        <Modal.Body>
+          <p>Since this is a demo using free storage, you can only upload files that are 500 kilobytes or smaller. Think Word documents or low-resolution images. The cloud can get expensive!</p>
+        </Modal.Body>
+
+        <Button id="demo-modal-close-button" variant="primary" onClick={ this.closeModal } >
+          Understood!
+        </Button>
+
+      </Modal>
+
+    )
+  }
+}
+
 class UploadFileControl extends Component {
 
   render() {
@@ -936,9 +982,8 @@ class UploadFileForm extends Component {
 		const fileName = ((fileData)? fileData.name: null);
 		const user = this.props.user;
 		const loggedIn = this.props.loggedIn;
-    	const fileRecordsArray = this.props.fileRecordsArray;
+    const fileRecordsArray = this.props.fileRecordsArray;
 
-		// multer + react: https://blog.stvmlbrn.com/2017/12/17/upload-files-using-react-to-node-express-server.html
 		event.preventDefault();
 
 		console.log("---UploadFileForm component---");
@@ -946,8 +991,6 @@ class UploadFileForm extends Component {
 		console.log("loggedIn: ", loggedIn);
 		console.log("file name: ", fileName);
 		console.log("fileData: ", fileData);
-
-
 
 		// check that file data exists upon submitting
 		if (!fileData) {
@@ -977,7 +1020,7 @@ class UploadFileForm extends Component {
 		const fileSizeLimit = 500000; // bytes; fileSizeLimit/1000 = kilobytes
 
 		// send file data with POST request
-		if (fileSize < fileSizeLimit) {
+		if (fileSize <= fileSizeLimit) {
 			// instantiate react form object to hold file data
 			const formDataObj = new FormData();
 
@@ -1050,7 +1093,6 @@ class UploadFileForm extends Component {
 		console.log('fileinputobj clicked:', fileInputObj);
 	}
 
-
 	render() {
 
     let currentButton;
@@ -1073,8 +1115,6 @@ class UploadFileForm extends Component {
 			        </div>
 
 			    </div>
-
-
 
 				<div id="upload-file-form">
 			        <form onSubmit={this.uploadFile}>
