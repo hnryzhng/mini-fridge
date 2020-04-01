@@ -7,8 +7,8 @@ import "./styles.css";
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 // import components
-// import Modal from 'react-bootstrap/Modal';
-// import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 import Footer from './components/Footer.js';
 
 class App extends Component {
@@ -99,12 +99,11 @@ class App extends Component {
       showComponent = <RoutesComponent { ...this.state } handleLoginModule={this.handleLoginModule} handleRegisterModule={this.handleRegisterModule}/>
     }
 
-    // <UploadFileModal loggedIn={this.state.loggedIn} />
 
     return (
       <Router>
         <div>
-          
+          <UploadFileModal loggedIn={this.state.loggedIn} />
 
           <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} handleRegisterModule={this.handleRegisterModule} handleSignOut={this.handleSignOut} />
 
@@ -150,6 +149,40 @@ class UserModule extends Component {
   }
 }
 
+class DemoModal extends Component {
+  state = {
+    showModal: true
+  }
+
+  closeModal = () => {
+    this.setState({ showModal: false });
+  }
+
+  render(){
+    return(
+
+      <Modal id="demo-modal" show={ this.state.showModal } onHide={ this.closeModal } animation={ false } centered>
+        
+        <Modal.Header closeButton>
+          <h3>Demo</h3>
+        </Modal.Header>
+
+        <Modal.Body>
+          <p>If you want to try out this demo without registering for an account, use the credentials below to sign in:</p>
+          <p>Username: <b>testuser</b></p>
+          <p>Password: <b>testuser123</b></p>
+        </Modal.Body>
+
+        <Button id="demo-modal-close-button" variant="primary" onClick={ this.closeModal } >
+          Got it!
+        </Button>
+
+      </Modal>
+    )
+  }
+
+}
+
 class Landing extends Component {
 
   state = {
@@ -165,11 +198,11 @@ class Landing extends Component {
       as Word docs so you can access them wherever you are.
 
     `
-    // <DemoModal />
 
     return(
       <div className="container-fluid section-container parallax" id="landing-section">
             
+          <DemoModal />
 
           <div className="row" id="landing-row">
             
@@ -295,11 +328,11 @@ class RegisterPage extends Component {
   }
 
   render() {
-        // <DemoModal />
     return(
 
       <div className="container-fluid d-flex" id="register-page-container">
 
+        <DemoModal />
 
         <form className="form-inline align-self-center" id="register-page-form" onSubmit={ this.register }>
 
@@ -385,12 +418,12 @@ class LoginPage extends Component {
   }
 
   render() {
-        // <DemoModal />
     return(
 
 
       <div className="container-fluid d-flex" id="login-page-container">
 
+        <DemoModal />
 
         <form className="form-inline align-self-center" id="login-page-form" onSubmit={this.login}>
 
@@ -849,6 +882,48 @@ class NavigationMenu extends Component {
 
       	</div>
       
+    )
+  }
+}
+
+class UploadFileModal extends Component {
+
+  state = {
+    showUploadFileModal: false
+  }
+
+  componentWillUpdate(prevProps, prevState) {
+    // show if logged in
+    // console.log("uploadfilemodal will update")
+    if (prevProps !== this.props) {
+      if (this.props.loggedIn) {
+        this.setState({ showUploadFileModal: true })
+      }
+    }
+  }
+
+  closeModal = () => {
+    this.setState({ showUploadFileModal: false });
+  }
+
+  render(){
+    return(
+
+      <Modal id="upload-file-modal" show={ this.state.showUploadFileModal } onHide={ this.closeModal } animation={ false } centered>
+
+        <Modal.Header closeButton>
+        </Modal.Header>
+
+        <Modal.Body>
+          <p>Since this is a demo using free storage, you can only upload files that are 500 kilobytes or smaller. Think Word documents or low-resolution images. The cloud can get expensive!</p>
+        </Modal.Body>
+
+        <Button id="demo-modal-close-button" variant="primary" onClick={ this.closeModal } >
+          Understood!
+        </Button>
+
+      </Modal>
+
     )
   }
 }
