@@ -4,7 +4,7 @@ import axios from 'axios';
 
 // import stylesheets
 import "./styles.css";
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
 // import components
 import Footer from './components/Footer.js';
