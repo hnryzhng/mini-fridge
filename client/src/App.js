@@ -112,9 +112,10 @@ class App extends Component {
 
         <UploadFileModal loggedIn={this.state.loggedIn} />
           
-        <Footer />
 
       </Router>
+      
+      <Footer />
     );
   }
 }
