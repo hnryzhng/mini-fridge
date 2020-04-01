@@ -7,8 +7,8 @@ import "./styles.css";
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 // import components
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+// import Modal from 'react-bootstrap/Modal';
+// import Button from 'react-bootstrap/Button';
 import Footer from './components/Footer.js';
 
 class App extends Component {
@@ -99,11 +99,12 @@ class App extends Component {
       showComponent = <RoutesComponent { ...this.state } handleLoginModule={this.handleLoginModule} handleRegisterModule={this.handleRegisterModule}/>
     }
 
-
+    // <UploadFileModal loggedIn={this.state.loggedIn} />
+    
     return (
       <Router>
         <div>
-          <UploadFileModal loggedIn={this.state.loggedIn} />
+          
 
           <NaviBar user={this.state.user} loggedIn={this.state.loggedIn} handleLoginModule={this.handleLoginModule} handleRegisterModule={this.handleRegisterModule} handleSignOut={this.handleSignOut} />
 
