@@ -1,0 +1,40 @@
+#footer-container {
+	padding: 2em 0 2.5em 0;
+	width: 100vw;
+	height: 30%;
+	background-color: #000;
+	color: #fff;
+	z-index: 2;
+}
+
+#footer-brand-link {
+	color: #fff;
+}
+
+#footer-brand-link:hover {
+	color: #ADD8E6;
+}
+
+#footer-logo {
+	width: 10em;
+	height: 10em;
+	margin: 0 auto;
+	border-radius: 50%;
+	background-color: #000;
+	text-align: center;
+}
+
+.footer-brand-text {
+	font-family: "Courier New", Courier, monospace;
+	font-weight: 500;
+}
+
+#footer-brand-top-text {
+	position: relative;
+	top: 1.5em;
+	font-size: 1.3em;
+}
+
+#footer-brand-bottom-text {
+	font-size: 5.5em;	
+}
