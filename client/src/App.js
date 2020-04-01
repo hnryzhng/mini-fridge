@@ -100,7 +100,7 @@ class App extends Component {
     }
 
     // <UploadFileModal loggedIn={this.state.loggedIn} />
-    
+
     return (
       <Router>
         <div>
@@ -199,11 +199,11 @@ class Landing extends Component {
       as Word docs so you can access them wherever you are.
 
     `
+    // <DemoModal />
 
     return(
       <div className="container-fluid section-container parallax" id="landing-section">
             
-          <DemoModal />
 
           <div className="row" id="landing-row">
             
