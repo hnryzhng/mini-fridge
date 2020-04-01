@@ -108,14 +108,14 @@ class App extends Component {
 
           { showComponent }
 
+          <Footer />
+
         </div>
 
         <UploadFileModal loggedIn={this.state.loggedIn} />
           
 
       </Router>
-      
-      <Footer />
     );
   }
 }
