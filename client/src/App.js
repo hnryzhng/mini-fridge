@@ -289,7 +289,7 @@ class RegisterPage extends Component {
     
     const production = "https://mini-fridge.herokuapp.com";
     const development = "http://localhost:3001";
-    const baseURL = (process.env.NODE_ENV? production: development);
+    const baseURL = (process.env.NODE_ENV === "production"? production: development);
 
     const { user, password, passwordConfirm } = this.state;
 
@@ -382,7 +382,7 @@ class LoginPage extends Component {
 
     const production = "https://mini-fridge.herokuapp.com";
     const development = "http://localhost:3001";
-    const baseURL = (process.env.NODE_ENV? production: development);
+    const baseURL = (process.env.NODE_ENV === "production"? production: development);
 
     // send POST request to backend
     axios.post(`${baseURL}/api/login`, {
@@ -602,7 +602,7 @@ class LoginModule extends Component {
 
     const production = "https://mini-fridge.herokuapp.com";
     const development = "http://localhost:3001";
-    const baseURL = (process.env.NODE_ENV? production: development);
+    const baseURL = (process.env.NODE_ENV === "production"? production: development);
 
     // send POST request to backend
     axios.post(`${baseURL}/api/login`, {
@@ -723,7 +723,7 @@ class RegisterModule extends Component {
     
     const production = "https://mini-fridge.herokuapp.com";
     const development = "http://localhost:3001";
-    const baseURL = (process.env.NODE_ENV? production: development);
+    const baseURL = (process.env.NODE_ENV === "production"? production: development);
 
     const { user, password, passwordConfirm } = this.state;
 
@@ -1030,7 +1030,7 @@ class UploadFileForm extends Component {
 
 			const production = "https://mini-fridge.herokuapp.com";
 			const development = "http://localhost:3001";
-			const baseURL = (process.env.NODE_ENV? production:development);
+			const baseURL = (process.env.NODE_ENV === "production"? production:development);
 
 			axios.post(`${baseURL}/api/uploadFileGridFS`, formDataObj)
 			      .then(response => response.data) 
@@ -1196,7 +1196,7 @@ class Item extends Component {
     
     const production = "https://mini-fridge.herokuapp.com";
     const development = "http://localhost:3001";
-    const baseURL = (process.env.NODE_ENV? production: development);
+    const baseURL = (process.env.NODE_ENV === "production"? production: development);
 
     const reqUrl = `${baseURL}/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
 
@@ -1233,7 +1233,7 @@ class Item extends Component {
 
     const production = "https://mini-fridge.herokuapp.com";
     const development = "http://localhost:3001";
-    const baseURL = (process.env.NODE_ENV? production: development);
+    const baseURL = (process.env.NODE_ENV === "production"? production: development);
 
     axios.get(`${baseURL}/api/deleteFileGridFS`, {
             params: {
