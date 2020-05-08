@@ -17,7 +17,7 @@ const Files = require(path.join(__dirname, "/../", "/models/files.js"));
 const validateRegisterInput = require(path.join(__dirname, "/../", "/validation/register.js"));
 const validateLoginInput = require(path.join(__dirname, "/../", "/validation/login.js"));
 
-const auth = require(path.join(__dirname, "/../", "middleware/auth.js");	// load custom authentication middleware
+const auth = require(path.join(__dirname, "/../", "middleware/auth.js"));	// load custom authentication middleware
 const bcrypt = require("bcryptjs");	// password encryption
 
 
