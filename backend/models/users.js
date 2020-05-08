@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 
 const Schema = mongoose.Schema;
 const userSchema = new Schema(
@@ -30,5 +31,11 @@ const userSchema = new Schema(
 		}]
 	}
 );
+
+// custom method for generating authentication token
+userSchema.methods.generateAuthToken = function() {
+	const token = jwt.sign({ _id: this._id }, process.env.PRIVATE_KEY);	// create token with user id for payload and private key for signature
+	return token;
+}
 
 module.exports = mongoose.model("Users", userSchema, "users");	// third param is collection name

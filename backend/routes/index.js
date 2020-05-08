@@ -17,9 +17,9 @@ const Files = require(path.join(__dirname, "/../", "/models/files.js"));
 const validateRegisterInput = require(path.join(__dirname, "/../", "/validation/register.js"));
 const validateLoginInput = require(path.join(__dirname, "/../", "/validation/login.js"));
 
+const auth = require(path.join(__dirname, "/../", "middleware/auth.js");	// load custom authentication middleware
 const bcrypt = require("bcryptjs");	// password encryption
-const jwt = require("jsonwebtoken");	// validating endpoint transmissions 
-const keys  = require(path.join(__dirname, "/../", "/config/keys.js"));	// holds keys
+
 
 // GRIDFS
 let GridFsStorage = require("multer-gridfs-storage");
@@ -129,7 +129,7 @@ router.post("/uploadFileGridFS", upload.single('fileData'), (req, res) => {
 
 });
 
-router.get("/downloadFileGridFS", (req, res)=> {
+router.get("/downloadFileGridFS", auth, (req, res)=> {
 
 	const username = req.query.user;
 	const fileId = req.query.fileId;
@@ -324,7 +324,17 @@ router.post("/register", (req, res) => {
 						.save()
 						.then(d => {
 							console.log("new user added to database:", d)
-							res.json({ success: true });
+
+							// user is now registered and logged in
+							
+							// generate authentication token (JWT) using custom method defined in User model
+							const token = userDoc.generateAuthToken();
+							// set token to header and send success in payload
+							res.header("x-auth-token", token).json({
+								success: true
+							});
+
+							// res.json({ success: true });
 						})
 						.catch(err => {
 							console.log("could not save user:", err)
@@ -349,9 +359,6 @@ router.post("/register", (req, res) => {
 
 router.post("/login", (req, res) => {
 
-
-	// TASK BOOKMARK: add password, credential validation
-
 	const username = req.body.user;
 	const password = req.body.password;
 
@@ -368,7 +375,6 @@ router.post("/login", (req, res) => {
 				.json({ error: "User is not found"});
 			
 		} else {
-
 
 			// validate password
 			bcrypt.compare(password, userDoc.password).then(isMatch => {
@@ -397,28 +403,16 @@ router.post("/login", (req, res) => {
 					});
 
 					/*
-					// create payload for found user
-					const payload = {
-						id: userDoc.id,
-						name: userDoc.user
-					}
 
-					// response: send sign token, file names array
-					jwt.sign(
-						payload,
-						keys.secretOrKey,
-						{
-							expiresIn: 604800	// 7 days in seconds
-						},
-						(err, token) => {
-							// send response of token and file names array
-							res.json({
-								success: true,
-								fileNamesArray: fArray,
-								token: "Bearer " + token
-							});
-						}
-					); 
+					// generate authentication token (JWT) using custom method defined in User model
+					const token = userDoc.generateAuthToken();
+					
+					// response: set token to header, send file names array
+					res.header("x-auth-token", token).json({
+						success: true,
+						fileRecordsArray: fArray
+					})
+
 					*/
 
 				} else {
