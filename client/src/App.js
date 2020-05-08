@@ -306,6 +306,9 @@ class RegisterPage extends Component {
 	        .then(data => {
 	          if (data.success) {
 	            console.log("new user registered!");
+
+              // store token in session storage
+              sessionStorage.setItem('x-access-token', data.token);
 	            
 	            // send data back to App component
 	            this.props.handleRegisterModule(this.state.user, true);
@@ -396,6 +399,9 @@ class LoginPage extends Component {
             // change app state 
             console.log("user:", this.state.usernameInput);
             console.log("user's file records:", data.fileRecordsArray);
+
+            // store token in session storage
+            sessionStorage.setItem('x-access-token', data.token);
 
             // send data up to App parent component 
             this.props.handleLoginModule(this.state.usernameInput, data.fileRecordsArray, true);
@@ -617,6 +623,9 @@ class LoginModule extends Component {
     				console.log("user:", this.state.usernameInput);
     				console.log("user's file records:", data.fileRecordsArray);
 
+            // store token in session storage
+            sessionStorage.setItem('x-access-token', data.token);
+
     				// send data up to App parent component 
     				this.props.handleLoginModule(this.state.usernameInput, data.fileRecordsArray, true);
 
@@ -741,6 +750,9 @@ class RegisterModule extends Component {
 	          if (data.success) {
 	            console.log("new user registered!");
 	            
+              // store token in session storage
+              sessionStorage.setItem('x-access-token', data.token);
+
 	            // send data back to App component
 	            this.props.handleRegisterModule(this.state.user, true);
 
@@ -1032,7 +1044,13 @@ class UploadFileForm extends Component {
 			const development = "http://localhost:3001";
 			const baseURL = (process.env.NODE_ENV === "production"? production:development);
 
-			axios.post(`${baseURL}/api/uploadFileGridFS`, formDataObj)
+      const token = sessionStorage.getItem('x-access-token'); // get auth token from current session
+
+			axios.post(`${baseURL}/api/uploadFileGridFS`, formDataObj, { 
+              headers: {
+                'x-access-token': token 
+              }
+            })
 			      .then(response => response.data) 
 			      .then(data => {
 			        if (data.success) {
@@ -1200,9 +1218,14 @@ class Item extends Component {
 
     const reqUrl = `${baseURL}/api/downloadFileGridFS?user=${user}&fileId=${fId}&fileName=${fName}`;
 
+    const token = sessionStorage.getItem('x-access-token'); // get auth token from current session
+
     axios(reqUrl, {
       method: 'GET',
-      responseType: 'arraybuffer'
+      responseType: 'arraybuffer',
+      headers: {
+        'x-access-token': token
+      }
     })
     .then((response) => {
 
@@ -1235,10 +1258,15 @@ class Item extends Component {
     const development = "http://localhost:3001";
     const baseURL = (process.env.NODE_ENV === "production"? production: development);
 
+    const token = sessionStorage.getItem('x-access-token'); // get auth token from current session
+
     axios.get(`${baseURL}/api/deleteFileGridFS`, {
             params: {
               user: user, 
               fileId: fId
+            },
+            headers: {
+              'x-access-token': token
             }
           })
           .then(response => response.data)

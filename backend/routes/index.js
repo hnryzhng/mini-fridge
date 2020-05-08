@@ -66,7 +66,7 @@ const storage = new GridFsStorage({
 
 const upload = multer({ storage });	// name of file input field is 'fileData'
 
-router.post("/uploadFileGridFS", upload.single('fileData'), (req, res) => {
+router.post("/uploadFileGridFS", upload.single('fileData'), auth, (req, res) => {
 
 	const file = req.file;
 	const fileId = file.filename;	// filename in gfs doc is file id
@@ -129,7 +129,12 @@ router.post("/uploadFileGridFS", upload.single('fileData'), (req, res) => {
 
 });
 
-router.get("/downloadFileGridFS", (req, res)=> {
+router.get("/downloadFileGridFS", auth, (req, res)=> {
+
+	console.log("req header x-access-token:", req.header('x-access-token'));
+
+	// BOOKMARK
+	console.log("decoded payload:", req.decoded);
 
 	const username = req.query.user;
 	const fileId = req.query.fileId;
@@ -210,7 +215,9 @@ router.get("/downloadFileGridFS", (req, res)=> {
 
 });
 
-router.get("/deleteFileGridFS", (req, res) => {
+router.get("/deleteFileGridFS", auth, (req, res) => {
+
+	console.log("req header x-access-token:", req.header('x-access-token'));
 
 	const username = req.query.user;
 	const fileId = req.query.fileId;
@@ -329,9 +336,10 @@ router.post("/register", (req, res) => {
 							
 							// generate authentication token (JWT) using custom method defined in User model
 							const token = userDoc.generateAuthToken();
-							// set token to header and send success in payload
-							res.header("x-auth-token", token).json({
-								success: true
+							// send token in payload
+							res.json({
+								success: true,
+								token: token
 							});
 
 							// res.json({ success: true });
@@ -386,23 +394,24 @@ router.post("/login", (req, res) => {
 					// extract file name and id from each file record into new array of records
 					const fArray = fileRecordsArray.map( (fileRecord) => { 
 														
-														const fileObj = { 
-															fileName: fileRecord.file_name,
-															fileId: fileRecord.file_id
-														}
+						const fileObj = { 
+							fileName: fileRecord.file_name,
+							fileId: fileRecord.file_id
+						}
 
-														return fileObj;
+						return fileObj;
 
-													});	
+					});	
 					console.log("login user record:", userDoc);
 					console.log(`array of ${username} file records:`, fArray);
 
 					// generate authentication token (JWT) using custom method defined in User model
 					const token = userDoc.generateAuthToken();
 					
-					// response: set token to header, send file names array
-					res.header("x-auth-token", token).json({
+					// response: send token and file names array
+					res.json({
 						success: true,
+						token: token,
 						fileRecordsArray: fArray
 					})
 
