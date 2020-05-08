@@ -4,12 +4,11 @@ const jwt = require("jsonwebtoken");
 
 module.exports = function(req, res, next) {
 	// get token from header 
-	
-	const token = req.header("x-access-token");
+
+	const token = req.header("x-access-token") || req.header("authorization");
 
 	// if no token, return response without proceeding to subsequent middleware or route
 	if (!token) return res.status(401).send("Access denied. No token.");
-
 
 	// if token exists, verify and move onto next middleware or route
 	try {
