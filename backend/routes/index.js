@@ -129,7 +129,7 @@ router.post("/uploadFileGridFS", upload.single('fileData'), (req, res) => {
 
 });
 
-router.get("/downloadFileGridFS", auth, (req, res)=> {
+router.get("/downloadFileGridFS", (req, res)=> {
 
 	const username = req.query.user;
 	const fileId = req.query.fileId;
@@ -397,13 +397,6 @@ router.post("/login", (req, res) => {
 					console.log("login user record:", userDoc);
 					console.log(`array of ${username} file records:`, fArray);
 
-					res.json({
-						success: true,
-						fileRecordsArray: fArray
-					});
-
-					/*
-
 					// generate authentication token (JWT) using custom method defined in User model
 					const token = userDoc.generateAuthToken();
 					
@@ -412,6 +405,13 @@ router.post("/login", (req, res) => {
 						success: true,
 						fileRecordsArray: fArray
 					})
+
+					/*
+
+					res.json({
+						success: true,
+						fileRecordsArray: fArray
+					});
 
 					*/
 
