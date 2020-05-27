@@ -335,7 +335,7 @@ router.post("/register", (req, res) => {
 							// user is now registered and logged in
 							
 							// generate authentication token (JWT) using custom method defined in User model
-							const token = userDoc.generateAuthToken();
+							const token = d.generateAuthToken();
 							// send token in payload
 							res.json({
 								success: true,
@@ -348,7 +348,7 @@ router.post("/register", (req, res) => {
 							console.log("could not save user:", err)
 							res.json({ 
 								success: false,
-								error: err
+								error: "could not save user"
 							});
 						});
 

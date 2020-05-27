@@ -733,12 +733,15 @@ class RegisterModule extends Component {
     const production = "https://mini-fridge.herokuapp.com";
     const development = "http://localhost:3001";
     const baseURL = (process.env.NODE_ENV === "production"? production: development);
+    console.log("baseURL:", baseURL);
 
     const { user, password, passwordConfirm } = this.state;
 
-	const isValid = this.validateInput(user, password, passwordConfirm);
+    const isValid = this.validateInput(user, password, passwordConfirm);
 
-	if (isValid) {
+
+
+  	if (isValid) {
 	    // send POST request
 	    axios.post(`${baseURL}/api/register`, {
 	            user: this.state.user,
@@ -759,7 +762,7 @@ class RegisterModule extends Component {
 
 	          } else {      
 	            console.log("registration failed");
-	            console.log(data.error);
+	            console.log("error:", data.error);
 
 	            // send data back to App component
 	            this.props.handleRegisterModule(null, false);
@@ -767,7 +770,7 @@ class RegisterModule extends Component {
 	          }
 	        })
 	        .catch(err => console.log("registration error:", err));
-	};
+    };
   }
 
   sendToParent = () => {
