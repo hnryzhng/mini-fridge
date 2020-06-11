@@ -254,7 +254,7 @@
 
 	#landing-section {
 		padding-top: 8em;
-		overflow: auto;	/* to contain elements that are not within view */
+		min-height: 150vh;
 	}
 
 	#landing-row {
