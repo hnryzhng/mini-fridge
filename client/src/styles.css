@@ -254,7 +254,7 @@
 
 	#landing-section {
 		padding-top: 8em;
-		min-height: 150vh;
+		min-height: 100vh;
 	}
 
 	#landing-row {
@@ -262,9 +262,11 @@
 	}
 
 	#landing-text {
-		font-size: 1.5em;
+		font-size: 1.2em;
 	}
 
+	#landing-login-button, #landing-register-button {
+	}
 
 	#nav-dropdown-link {
 		font-size: 2.5em;
