@@ -655,15 +655,13 @@ class LoginModule extends Component {
 
 				  <div className="row">
 
-					<input type="text" className="form-control form-control-lg col-sm " id="login-username" placeholder="username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />				      
+					<input type="text" className="form-control form-control-lg col-sm ml-2-md" id="login-username" placeholder="username" name="username" onChange= {event=>this.setState({usernameInput: event.target.value})} />				      
 
-					<input type="password" className="form-control form-control-lg col-sm" id="login-password" placeholder="password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
+					<input type="password" className="form-control form-control-lg col-sm ml-2-md" id="login-password" placeholder="password" name="password" onChange= {event=>this.setState({passwordInput: event.target.value})} />
 
-					<button type="submit" className="btn btn-primary col-sm">
+					<button type="submit" className="btn btn-primary col-sm ml-2-md">
 						SIGN IN 
 					</button>
-
-					<button type="button" className="col-sm" id="register-button" onClick={ this.sendToParent }> Register </button>
 
 				  </div>
 
