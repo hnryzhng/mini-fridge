@@ -21,17 +21,17 @@ const api_port  = process.env.PORT || 3001;
 // CREATE NEW DATABASE WITH NEW ACCESS URL AND HIDDEN KEY without GITHUB RECORD
 
 // CONNECT TO DATABASE
-const dbRoute = process.env.MONGOLAB_URI;
-mongoose
-	.connect(
-		dbRoute,
-		{
-			useNewUrlParser: true,
-			useUnifiedTopology: true
-		}
-	)
-	.then(() => console.log("connected to MongoDB database"))
-	.catch((err) => console.log("error connecting to MongoDB:", err));
+// const dbRoute = process.env.MONGOLAB_URI;
+// mongoose
+// 	.connect(
+// 		dbRoute,
+// 		{
+// 			useNewUrlParser: true,
+// 			useUnifiedTopology: true
+// 		}
+// 	)
+// 	.then(() => console.log("connected to MongoDB database"))
+// 	.catch((err) => console.log("error connecting to MongoDB:", err));
 
 
 // LOAD MIDDLEWARE
